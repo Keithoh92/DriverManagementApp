@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">DriverManagement</string>
+    <string name="dialog_title">Drivers</string>
+    <string name="ok_label">OK</string>
+    <string name="dismiss_label">Dismiss</string>
+    <string name="clear_label">Clear</string>
+
+    <string-array name="recipents">
+        <item>Contact 1</item>
+        <item>Contact 2</item>
+        <item>Contact 3</item>
+        <item>Contact 4</item>
+    </string-array>
+
+    <string-array name="driver_notifications">
+        <item>How many deliveries</item>
+        <item>Held up in traffic</item>
+        <item>Held up at roadworks</item>
+        <item>On lunch</item>
+        <item>Ill be 20 mins</item>
+        <item>Ill be 30 mins</item>
+        <item>Ill be 40 mins</item>
+        <item>Ill be 50 mins</item>
+        <item>Ill be 1 hour</item>
+    </string-array>
+
+</resources>
