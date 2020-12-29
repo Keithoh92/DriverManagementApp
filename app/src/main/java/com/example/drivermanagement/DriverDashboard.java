@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class DriverDashboard extends AppCompatActivity implements RecyclerViewAdapter.ItemClickListener{
 
-    String[] driverNotifications;
+    String[] driverNotifications, messageReplies;
     RecyclerViewAdapter recycleAdapter;
 
     @Override
@@ -23,10 +23,11 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_dashboard);
         driverNotifications = getResources().getStringArray(R.array.driver_notifications);
+        messageReplies = getResources().getStringArray(R.array.message_replies);
 
         ArrayList<String> message_arr = new ArrayList<>();
         message_arr.add("Can you go to swords and pick up returns?");
-        message_arr.add("Steve cancelled, no need to go anymore");
+        //message_arr.add("From: Jacob");
 
         ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, driverNotifications);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
@@ -34,6 +35,23 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
         spinner.setAdapter(adapter);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(DriverDashboard.this, parent.getItemAtPosition(position).toString(), Toast.LENGTH_LONG).show();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        ArrayAdapter adapter1 = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, messageReplies);
+        adapter1.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        Spinner spinner1  = findViewById(R.id.message_reply_spinner);
+        spinner1.setAdapter(adapter1);
+
+        spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(DriverDashboard.this, parent.getItemAtPosition(position).toString(), Toast.LENGTH_LONG).show();
@@ -57,4 +75,5 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
     @Override
     public void onItemClick(View view, int position) {
     }
+
 }

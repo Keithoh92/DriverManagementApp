@@ -4,6 +4,7 @@
     <string name="ok_label">OK</string>
     <string name="dismiss_label">Dismiss</string>
     <string name="clear_label">Clear</string>
+    <string name="recycleview_name">Jacob</string>
 
     <string-array name="recipents">
         <item>Contact 1</item>
@@ -13,6 +14,7 @@
     </string-array>
 
     <string-array name="driver_notifications">
+        <item>Select notification</item>
         <item>How many deliveries</item>
         <item>Held up in traffic</item>
         <item>Held up at roadworks</item>
@@ -22,6 +24,21 @@
         <item>Ill be 40 mins</item>
         <item>Ill be 50 mins</item>
         <item>Ill be 1 hour</item>
+    </string-array>
+
+    <string-array name="message_replies">
+        <item>Choose reply</item>
+        <item>Yes no bother</item>
+        <item>I will when i finish my drops</item>
+        <item>Under a bit of pressure, is there anyone else available to do it</item>
+        <item>Call me</item>
+        <item>Send me on the details</item>
+
+    </string-array>
+
+    <string-array name="register_cred">
+        <item>Management</item>
+        <item>Driver</item>
     </string-array>
 
 </resources>

@@ -17,7 +17,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        TextView myTextView;
+        TextView myTextView, recipient;
 
         ViewHolder(View v) {
             super(v);
@@ -29,6 +29,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             });
 
             myTextView = v.findViewById(R.id.recycle_textview);
+            recipient = v.findViewById(R.id.textView2);
+
         }
     }
     RecyclerViewAdapter(List<String> data) {
@@ -51,6 +53,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.myTextView.setText(mData.get(position));
+        //holder.recipient.setText(mData.get(position));
     }
 
     // Return the size of your dataset (invoked by the layout manager)
