@@ -1,6 +1,7 @@
 package com.example.drivermanagement;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +18,7 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
 
     String[] driverNotifications, messageReplies;
     RecyclerViewAdapter recycleAdapter;
+    Toolbar driverToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,10 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
         setContentView(R.layout.activity_driver_dashboard);
         driverNotifications = getResources().getStringArray(R.array.driver_notifications);
         messageReplies = getResources().getStringArray(R.array.message_replies);
+        driverToolbar = (Toolbar) findViewById(R.id.driver_dashboard_toolbar);
+
+        setSupportActionBar(driverToolbar);
+        getSupportActionBar().setTitle("DriverX");
 
         ArrayList<String> message_arr = new ArrayList<>();
         message_arr.add("Can you go to swords and pick up returns?");

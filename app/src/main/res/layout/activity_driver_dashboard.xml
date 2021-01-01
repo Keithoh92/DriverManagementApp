@@ -4,24 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E83D3D"
+    android:background="@drawable/shadow_corners"
     tools:context=".DriverDashboard">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar2"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_marginBottom="675dp"
-        android:background="#3E3D3D"
-        android:minHeight="?attr/actionBarSize"
-        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:stateListAnimator="@drawable/spinner_sla"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:layout_constraintBottom_toTopOf="@+id/dateTextView"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="0dp" />
-
+    <include
+        android:id="@+id/driver_dashboard_toolbar"
+        layout="@layout/toolbar_management">
+    </include>
+    <!--    <androidx.appcompat.widget.Toolbar-->
+    <!--        android:id="@+id/toolbar2"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="?attr/actionBarSize"-->
+    <!--        android:layout_marginBottom="675dp"-->
+    <!--        android:background="#3E3D3D"-->
+    <!--        android:minHeight="?attr/actionBarSize"-->
+    <!--        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"-->
+    <!--        android:stateListAnimator="@drawable/spinner_sla"-->
+    <!--        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"-->
+    <!--        app:layout_constraintBottom_toTopOf="@+id/dateTextView"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:layout_constraintVertical_bias="0.0"-->
+    <!--        tools:layout_editor_absoluteX="0dp" />-->
+    <!--This is Where i left off!!!!!!!!11-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottomNavigationView2"
         android:layout_width="match_parent"
@@ -29,7 +33,7 @@
         android:layout_marginTop="619dp"
         android:background="#3E3D3D"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar2"
+        app:layout_constraintTop_toBottomOf="@+id/driver_dashboard_toolbar"
         app:layout_constraintVertical_bias="1.0"
         tools:layout_editor_absoluteX="0dp">
 
@@ -65,28 +69,17 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
-        android:id="@+id/dateTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="17dp"
-        android:layout_marginLeft="17dp"
-        android:layout_marginTop="11dp"
-        android:text="Date"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
-
-    <TextView
         android:id="@+id/driverDashboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="35dp"
         android:text="Driver Dashboard"
         android:textColor="#070707"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
+        app:layout_constraintTop_toBottomOf="@+id/driver_dashboard_toolbar" />
 
     <TextView
         android:id="@+id/textView3"
@@ -124,6 +117,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/round_textview"
+        android:elevation="10dp"
         android:paddingLeft="5dp"
         android:text="Delivery ready: 1 - Baldoyle \nDelivery ready: 2 - Santry"
         android:textColor="#040303"
@@ -140,6 +134,7 @@
         android:layout_marginTop="22dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/round_textview"
+        android:elevation="10dp"
         app:layout_constraintStart_toStartOf="@+id/textView4"
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
@@ -160,7 +155,7 @@
         android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="23dp"
+        android:layout_marginTop="12dp"
         android:text="Messages"
         android:textColor="#F6F1F1"
         android:textSize="24sp"
@@ -179,16 +174,17 @@
         android:layout_marginBottom="183dp"
         android:background="@drawable/round_textview"
         android:paddingLeft="10dp"
+        android:elevation="10dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Spinner
         android:id="@+id/message_reply_spinner"
-        android:layout_width="match_parent"
+        android:layout_width="380dp"
         android:layout_height="40dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="47dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="44dp"
         android:background="@drawable/round_textview"
         app:layout_constraintStart_toStartOf="@+id/editTextTextPersonName"
         app:layout_constraintTop_toBottomOf="@+id/recyclerview" />
@@ -202,6 +198,7 @@
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:elevation="10dp"
         app:layout_constraintStart_toStartOf="@+id/textView7"
         app:layout_constraintTop_toBottomOf="@+id/recyclerview" />
 
@@ -213,6 +210,7 @@
         android:layout_marginLeft="9dp"
         android:layout_marginTop="9dp"
         android:background="@drawable/round_textview"
+        android:elevation="10dp"
         android:ems="10"
         android:hint="Custom message"
         android:inputType="textPersonName"
@@ -233,5 +231,15 @@
         android:textColor="#0E0E0E"
         app:layout_constraintStart_toEndOf="@+id/editTextTextPersonName"
         app:layout_constraintTop_toBottomOf="@+id/message_reply_spinner" />
+
+    <TextView
+        android:id="@+id/dateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="9dp"
+        android:layout_marginTop="16dp"
+        android:text="Date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/driver_dashboard_toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

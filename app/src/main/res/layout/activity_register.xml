@@ -52,27 +52,28 @@
         <EditText
             android:id="@+id/editEmailRegister"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_height="69dp"
+            android:layout_marginStart="76dp"
+            android:layout_marginLeft="76dp"
+            android:layout_marginTop="4dp"
             android:ems="10"
             android:hint="Email"
             android:inputType="textEmailAddress"
             android:textColorHint="#ffffff"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView11" />
+            app:layout_constraintTop_toBottomOf="@+id/companyName" />
 
         <EditText
             android:id="@+id/editPasswordRegister"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="39dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="77dp"
+            android:layout_marginLeft="77dp"
+            android:layout_marginTop="1dp"
             android:ems="10"
             android:hint="Password"
             android:inputType="textPassword"
             android:textColorHint="#ffffff"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editEmailRegister" />
 
@@ -80,7 +81,7 @@
             android:id="@+id/registerButton"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="43dp"
+            android:layout_marginTop="31dp"
             android:background="@drawable/button_login"
             android:elevation="5dp"
             android:text="Register"
@@ -94,7 +95,7 @@
             android:id="@+id/registerSpinner"
             android:layout_width="200dp"
             android:layout_height="40dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="11dp"
             android:background="#84788F"
             app:layout_constraintStart_toStartOf="@+id/textView"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -103,12 +104,28 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="21dp"
+            android:layout_marginTop="14dp"
             android:text="User Type"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/editPasswordRegister"
             app:layout_constraintTop_toBottomOf="@+id/editPasswordRegister" />
+
+        <EditText
+            android:id="@+id/companyName"
+            android:layout_width="wrap_content"
+            android:layout_height="69dp"
+            android:layout_marginStart="77dp"
+            android:layout_marginLeft="77dp"
+            android:layout_marginTop="1dp"
+            android:ems="10"
+            android:hint="Company Name"
+            android:inputType="textPersonName"
+            android:textColorHint="#FFFFFF"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

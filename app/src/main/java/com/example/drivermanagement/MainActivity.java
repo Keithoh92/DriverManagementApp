@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView title, date, heading1, chosenRecipients;
     Button messageButton, driverButton, notification1, notification2, notification3, notification4, notification5, clearButton, sendNotifications, chooseRecipients;
-
+    Toolbar managementToolbar;
 
     String[] contacts;
     boolean[] checkedContacts;
@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         sendNotifications = (Button) findViewById(R.id.sendNotifications);
         chooseRecipients = (Button) findViewById(R.id.chooseRecipients);
         chosenRecipients = (TextView) findViewById(R.id.chosenRecipients);
+        managementToolbar = (Toolbar) findViewById(R.id.management_dashboard_toolbar);
 
 
 
@@ -114,14 +115,15 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(myToolbar);
+
+        setSupportActionBar(managementToolbar);
+        getSupportActionBar().setTitle("DriverX");
 
         //Set app name in toolbar
-        ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
-            actionBar.setTitle("MyApp");
-        }
+//        ActionBar actionBar = getSupportActionBar();
+//        if(actionBar != null){
+//            actionBar.setTitle("DriverX");
+//        }
 
         //Set date when app is open with current date
         LocalDate cal = LocalDate.now();

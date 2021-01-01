@@ -7,23 +7,28 @@
     android:background="#E83D3D"
     tools:context=".MainActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_marginBottom="673dp"
-        android:background="#3E3D3D"
-        android:minHeight="?attr/actionBarSize"
-        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:stateListAnimator="@drawable/spinner_sla"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:titleTextColor="#E42424" />
+<!--    <androidx.appcompat.widget.Toolbar-->
+<!--        android:id="@+id/toolbar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="?attr/actionBarSize"-->
+<!--        android:layout_marginBottom="673dp"-->
+<!--        android:background="#3E3D3D"-->
+<!--        android:minHeight="?attr/actionBarSize"-->
+<!--        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"-->
+<!--        android:stateListAnimator="@drawable/spinner_sla"-->
+<!--        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.0"-->
+<!--        app:titleTextColor="#E42424" />-->
+
+    <include
+        android:id="@+id/management_dashboard_toolbar"
+        layout="@layout/toolbar_management">
+    </include>
 
     <TextView
         android:id="@+id/date"
@@ -37,7 +42,7 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/management_dashboard_toolbar" />
 
     <TextView
         android:id="@+id/heading1"
@@ -134,7 +139,6 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="108dp"
-        android:layout_marginLeft="108dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/button_round"
         android:text="3"
@@ -146,8 +150,7 @@
         android:id="@+id/not4"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginStart="168dp"
-        android:layout_marginLeft="168dp"
+        android:layout_marginStart="160dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/button_round"
         android:text="4"
@@ -159,29 +162,28 @@
         android:id="@+id/not5"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginStart="228dp"
-        android:layout_marginLeft="228dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="144dp"
         android:background="@drawable/button_round"
         android:text="5"
         android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="@+id/clearButton"
-        app:layout_constraintStart_toStartOf="@+id/command1" />
+        app:layout_constraintStart_toEndOf="@+id/not4"
+        app:layout_constraintTop_toBottomOf="@+id/management_dashboard_toolbar" />
 
     <Button
         android:id="@+id/clearButton"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginStart="12dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginTop="145dp"
+        android:layout_marginTop="144dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:background="@drawable/button_corners"
         android:text="Clear all"
         android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.352"
         app:layout_constraintStart_toEndOf="@+id/not5"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/management_dashboard_toolbar" />
 
     <Spinner
         android:id="@+id/locationSpinner"
