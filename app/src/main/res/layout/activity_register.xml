@@ -5,13 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".RegisterActivity"
-    android:background="#444345">
+    android:background="#b5540e">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/relativeLayout"
-        android:layout_width="390dp"
-        android:layout_height="690dp"
-        android:background="@drawable/shadow_corners"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:background="@drawable/background_colour"
         android:elevation="5dp"
         android:gravity="center_horizontal|center_vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -26,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="48dp"
             android:text="DriverX"
-            android:textColor="#444345"
+            android:textColor="#e3792d"
             android:textSize="50sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -49,31 +50,35 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
+
         <EditText
             android:id="@+id/editEmailRegister"
             android:layout_width="wrap_content"
             android:layout_height="69dp"
-            android:layout_marginStart="76dp"
-            android:layout_marginLeft="76dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
             android:ems="10"
             android:hint="Email"
             android:inputType="textEmailAddress"
             android:textColorHint="#ffffff"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/companyName" />
+            app:layout_constraintBottom_toTopOf="@+id/editPasswordRegister"
+            app:layout_constraintStart_toStartOf="@+id/editPasswordRegister"
+            app:layout_constraintTop_toBottomOf="@+id/usernameTextview" />
+
 
         <EditText
             android:id="@+id/editPasswordRegister"
             android:layout_width="wrap_content"
             android:layout_height="70dp"
-            android:layout_marginStart="77dp"
-            android:layout_marginLeft="77dp"
-            android:layout_marginTop="1dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="11dp"
             android:ems="10"
             android:hint="Password"
             android:inputType="textPassword"
             android:textColorHint="#ffffff"
+            app:layout_constraintBottom_toTopOf="@+id/registerButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editEmailRegister" />
 
@@ -81,50 +86,42 @@
             android:id="@+id/registerButton"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="31dp"
-            android:background="@drawable/button_login"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/button_corners"
             android:elevation="5dp"
             android:text="Register"
-            android:textColor="#ffffff"
+            android:textColor="#000000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/registerSpinner" />
-
-        <Spinner
-            android:id="@+id/registerSpinner"
-            android:layout_width="200dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="11dp"
-            android:background="#84788F"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="User Type"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="@+id/editPasswordRegister"
             app:layout_constraintTop_toBottomOf="@+id/editPasswordRegister" />
 
         <EditText
             android:id="@+id/companyName"
             android:layout_width="wrap_content"
             android:layout_height="69dp"
-            android:layout_marginStart="77dp"
-            android:layout_marginLeft="77dp"
-            android:layout_marginTop="1dp"
+            android:layout_marginBottom="10dp"
             android:ems="10"
             android:hint="Company Name"
             android:inputType="textPersonName"
             android:textColorHint="#FFFFFF"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/usernameTextview"
+            app:layout_constraintStart_toStartOf="@+id/usernameTextview"
             app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
+        <EditText
+            android:id="@+id/usernameTextview"
+            android:layout_width="wrap_content"
+            android:layout_height="69dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:ems="10"
+            android:hint="Username"
+            android:inputType="textPersonName"
+            android:textColorHint="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/editEmailRegister"
+            app:layout_constraintStart_toStartOf="@+id/editEmailRegister"
+            app:layout_constraintTop_toBottomOf="@+id/companyName" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

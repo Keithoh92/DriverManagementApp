@@ -1,13 +1,18 @@
 package com.example.drivermanagement;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MessagesActivity extends AppCompatActivity {
@@ -17,6 +22,7 @@ public class MessagesActivity extends AppCompatActivity {
     private TabLayout messagesTablayout;
     private TabsAdaptor myTabsAdaptor;
 
+    FirebaseAuth fAuth;
     private FirebaseUser currentUser;
 
     @Override
@@ -36,6 +42,4 @@ public class MessagesActivity extends AppCompatActivity {
         messagesTablayout.setupWithViewPager(viewPager);
 
     }
-
-
 }

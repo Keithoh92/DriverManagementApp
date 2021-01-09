@@ -6,7 +6,7 @@
         <inset android:insetLeft="-1dp" android:insetRight="-1dp">
             <shape android:shape="rectangle">
                 <stroke android:width="3dp"
-                    android:color="#0390fc"/>
+                    android:color="#e3792d"/>
                 <solid android:color="#ffffff"/>
             </shape>
         </inset>

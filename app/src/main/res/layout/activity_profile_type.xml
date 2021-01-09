@@ -4,14 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#b5540e"
-    tools:context=".LoginActivity">
+    tools:context=".ProfileTypeActivity"
+    android:background="#b5540e">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/relativeLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp"
+        android:layout_width="390dp"
+        android:layout_height="690dp"
         android:background="@drawable/background_colour"
         android:elevation="5dp"
         android:gravity="center_horizontal|center_vertical"
@@ -36,78 +35,80 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView11"
+            android:id="@+id/welcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="46dp"
+            android:layout_marginTop="33dp"
+            android:layout_marginBottom="37dp"
+            android:text="Welcome to DriverX"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textColor="#e3792d"
+            app:layout_constraintBottom_toTopOf="@+id/registerTextview"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+        <TextView
+            android:id="@+id/registerTextview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="37dp"
             android:fontFamily="sans-serif-black"
-            android:text="Sign in"
+            android:text="Register"
             android:textColor="#CDEFD2D2"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView10" />
+            app:layout_constraintTop_toBottomOf="@+id/welcome" />
 
-        <EditText
-            android:id="@+id/editEmail"
+        <TextView
+            android:id="@+id/usertypeTextview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:ems="10"
-            android:hint="Email"
+            android:layout_marginTop="31dp"
+            android:text="Choose your user type"
             android:textColor="#ffffff"
-            android:inputType="textEmailAddress"
-            android:textColorHint="#ffffff"
+            android:textSize="20sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView11" />
-
-        <EditText
-            android:id="@+id/editPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="39dp"
-            android:ems="10"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:textColorHint="#ffffff"
-            android:textColor="#ffffff"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editEmail" />
+            app:layout_constraintTop_toBottomOf="@+id/registerTextview" />
 
         <Button
-            android:id="@+id/loginButton"
-            android:layout_width="120dp"
+            android:id="@+id/managementButtonRegister"
+            android:layout_width="230dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="52dp"
+            android:layout_marginTop="29dp"
+            android:layout_marginBottom="28dp"
             android:background="@drawable/button_corners"
-            android:elevation="5dp"
-            android:text="Login"
-            android:textColor="#000000"
+            android:elevation="10dp"
+            android:text="Management"
+            android:textColor="#ffffff"
+            app:layout_constraintBottom_toTopOf="@+id/driveRbuttonRegister"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editPassword" />
+            app:layout_constraintTop_toBottomOf="@+id/usertypeTextview" />
 
         <Button
-            android:id="@+id/registerButton"
-            android:layout_width="120dp"
+            android:id="@+id/driveRbuttonRegister"
+            android:layout_width="230dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="42dp"
+            android:layout_marginBottom="222dp"
             android:background="@drawable/button_corners"
-            android:elevation="5dp"
-            android:text="Register"
-            android:textColor="#000000"
+            android:elevation="10dp"
+            android:text="Driver"
+            android:textColor="#ffffff"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loginButton" />
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
+</androidx.constraintlayout.widget.ConstraintLayout>

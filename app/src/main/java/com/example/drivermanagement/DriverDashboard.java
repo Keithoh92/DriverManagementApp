@@ -1,16 +1,22 @@
 package com.example.drivermanagement;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -20,6 +26,8 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
     RecyclerViewAdapter recycleAdapter;
     Toolbar driverToolbar;
 
+    private FirebaseAuth fAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +35,8 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
         driverNotifications = getResources().getStringArray(R.array.driver_notifications);
         messageReplies = getResources().getStringArray(R.array.message_replies);
         driverToolbar = (Toolbar) findViewById(R.id.driver_dashboard_toolbar);
+
+        fAuth = FirebaseAuth.getInstance();
 
         setSupportActionBar(driverToolbar);
         getSupportActionBar().setTitle("DriverX");
@@ -81,5 +91,49 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
     @Override
     public void onItemClick(View view, int position) {
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        super.onOptionsItemSelected(item);
+
+        if(item.getItemId() == R.id.logout_option)
+        {
+            fAuth.signOut();
+            SendUserToLoginActivity();
+        }
+        if(item.getItemId() == R.id.add_drivers_option)
+        {
+
+        }
+        if(item.getItemId() == R.id.settings_option)
+        {
+            SendUserToChatSettingsActivity();
+            return true;
+        }
+        return true;
+    }
+    private void SendUserToLoginActivity()
+    {
+        Intent loginIntent = new Intent(DriverDashboard.this, LoginActivity.class);
+        startActivity(loginIntent);
+    }
+
+    private void SendUserToChatSettingsActivity()
+    {
+        Intent settingsIntent = new Intent(DriverDashboard.this, ChatSettingsActivity.class);
+        //settingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(settingsIntent);
+    }
+
 
 }

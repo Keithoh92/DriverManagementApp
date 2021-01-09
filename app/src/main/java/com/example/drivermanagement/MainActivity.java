@@ -1,5 +1,6 @@
 package com.example.drivermanagement;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -12,8 +13,11 @@ import java.util.Calendar;
 import java.time.LocalDate;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,11 +26,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class MainActivity extends AppCompatActivity {
 
     TextView title, date, heading1, chosenRecipients;
     Button messageButton, driverButton, notification1, notification2, notification3, notification4, notification5, clearButton, sendNotifications, chooseRecipients;
     Toolbar managementToolbar;
+
+    FirebaseAuth fAuth;
 
     String[] contacts;
     boolean[] checkedContacts;
@@ -54,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         chooseRecipients = (Button) findViewById(R.id.chooseRecipients);
         chosenRecipients = (TextView) findViewById(R.id.chosenRecipients);
         managementToolbar = (Toolbar) findViewById(R.id.management_dashboard_toolbar);
-
 
 
         contacts = getResources().getStringArray(R.array.recipents);
@@ -116,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
         setSupportActionBar(managementToolbar);
         getSupportActionBar().setTitle("DriverX");
 
@@ -166,8 +174,48 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        super.onCreateOptionsMenu(menu);
 
+        getMenuInflater().inflate(R.menu.options_menu, menu);
 
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        super.onOptionsItemSelected(item);
+
+        if(item.getItemId() == R.id.logout_option)
+        {
+            fAuth.signOut();
+            SendUserToLoginActivity();
+        }
+        if(item.getItemId() == R.id.add_drivers_option)
+        {
+
+        }
+        if(item.getItemId() == R.id.settings_option)
+        {
+            SendUserToChatSettingsActivity();
+        }
+        return true;
+    }
+
+    private void SendUserToLoginActivity()
+    {
+        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(loginIntent);
+    }
+
+    private void SendUserToChatSettingsActivity()
+    {
+        Intent settingsIntent = new Intent(MainActivity.this, ChatSettingsActivity.class);
+        startActivity(settingsIntent);
+    }
 
 
 //    public void setAdapter(ArrayAdapter adapter) {

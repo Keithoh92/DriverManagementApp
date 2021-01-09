@@ -27,10 +27,9 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText emailRegister, passwordRegister, companyName;
+    private EditText emailRegister, passwordRegister, companyName, username;
     private Button registerButton;
     String[] registerCreds;
-    ArrayAdapter adapter;
     String userType = "";
 
     private FirebaseAuth auth;
@@ -44,15 +43,21 @@ public class RegisterActivity extends AppCompatActivity {
         emailRegister = findViewById(R.id.editEmailRegister);
         passwordRegister = findViewById(R.id.editPasswordRegister);
         companyName = findViewById(R.id.companyName);
+        username = findViewById(R.id.usernameTextview);
         registerButton = findViewById(R.id.registerButton);
 
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
 
-        adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, registerCreds);
-        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        final Spinner spinner  = findViewById(R.id.registerSpinner);
-        spinner.setAdapter(adapter);
+        Intent intent = getIntent();
+        if(intent.getExtras().getString("userType").equals("Management"))
+        {
+            userType = intent.getStringExtra("userType");
+        }
+        if(intent.getExtras().getString("userType").equals("Driver"))
+        {
+            userType = intent.getStringExtra("userType");
+        }
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,27 +65,15 @@ public class RegisterActivity extends AppCompatActivity {
                 String txtEmail = emailRegister.getText().toString();
                 String txtPassword = passwordRegister.getText().toString();
                 String txtCompanyName = companyName.getText().toString();
-
-                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(RegisterActivity.this, parent.getItemAtPosition(position).toString(), Toast.LENGTH_LONG).show();
-                    String userType = spinner.getItemAtPosition(position).toString();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+                String txtUsername = username.getText().toString();
 
 
-                if(TextUtils.isEmpty(txtEmail) || TextUtils.isEmpty(txtPassword) || TextUtils.isEmpty(txtCompanyName) || userType.equals("Select User Type")){
+                if(TextUtils.isEmpty(txtEmail) || TextUtils.isEmpty(txtPassword) || TextUtils.isEmpty(txtCompanyName) || TextUtils.isEmpty(txtCompanyName) || TextUtils.isEmpty(txtUsername)){
                     Toast.makeText(RegisterActivity.this, "Empty Credentials, Please fill in all fields!", Toast.LENGTH_SHORT).show();
                 }else if(txtPassword.length() < 6){
                     Toast.makeText(RegisterActivity.this, "Password too short!", Toast.LENGTH_SHORT).show();
                 }else{
-                    registerUser(txtEmail, txtPassword, userType);
+                    registerUser(txtEmail, txtPassword);
                 }
             }
         });
@@ -104,7 +97,7 @@ public class RegisterActivity extends AppCompatActivity {
 //        });
     }
 
-    private void registerUser(String txtEmail, String txtPassword, final String userType)
+    private void registerUser(String txtEmail, String txtPassword)
     {
         auth.createUserWithEmailAndPassword(txtEmail, txtPassword).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
             @Override
@@ -116,9 +109,9 @@ public class RegisterActivity extends AppCompatActivity {
                     Map<String, Object> userInfo = new HashMap<>();
                     userInfo.put("Company Name", companyName.getText().toString());
                     userInfo.put("Email", emailRegister.getText().toString());
-                    //specify if user is admin
-
+                    userInfo.put("Username", username.getText().toString());
                     userInfo.put("UserType", userType);
+                    userInfo.put("Profile Picture", "");
                     df.set(userInfo);
 
 

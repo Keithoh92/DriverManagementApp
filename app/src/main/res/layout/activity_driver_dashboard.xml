@@ -4,13 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shadow_corners"
+    android:background="@drawable/background_colour"
     tools:context=".DriverDashboard">
 
     <include
         android:id="@+id/driver_dashboard_toolbar"
-        layout="@layout/toolbar_management">
-    </include>
+        layout="@layout/toolbar_management"></include>
     <!--    <androidx.appcompat.widget.Toolbar-->
     <!--        android:id="@+id/toolbar2"-->
     <!--        android:layout_width="match_parent"-->
@@ -31,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="619dp"
-        android:background="#3E3D3D"
+        android:background="#1c1a19"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/driver_dashboard_toolbar"
         app:layout_constraintVertical_bias="1.0"
@@ -43,12 +42,15 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="65dp"
             android:layout_marginLeft="65dp"
-            android:background="#00FFFFFF"
+            android:background="#1c1a19"
+            android:shadowColor="#e3792d"
+            android:shadowRadius="45"
             android:text="Maps"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/barrier"/>
 
         <Button
             android:id="@+id/button2"
@@ -58,14 +60,23 @@
             android:layout_marginLeft="114dp"
             android:layout_marginEnd="52dp"
             android:layout_marginRight="52dp"
-            android:background="#00FFFFFF"
+            android:background="#1c1a19"
+            android:shadowColor="#e3792d"
+            android:shadowRadius="45"
             android:text="Scan"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/button"
+            app:layout_constraintStart_toStartOf="@id/barrier"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/button"
             app:layout_constraintTop_toTopOf="@+id/button" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="left" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
@@ -74,8 +85,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="35dp"
         android:text="Driver Dashboard"
-        android:textColor="#070707"
+        android:textAllCaps="true"
+        android:textColor="#e3792d"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -87,6 +100,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="9dp"
         android:text="Logged in:"
+        android:textColor="#e3792d"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -101,7 +115,7 @@
         android:layout_marginLeft="17dp"
         android:layout_marginTop="52dp"
         android:text="Notifications"
-        android:textColor="#FFFFFF"
+        android:textColor="#e3792d"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -110,7 +124,7 @@
     <TextView
         android:id="@+id/textView6"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="70dp"
         android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="19dp"
@@ -141,12 +155,13 @@
     <Button
         android:id="@+id/button5"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="30dp"
         android:layout_marginTop="7dp"
         android:layout_marginEnd="15dp"
-        android:layout_marginRight="15dp"
+        android:layout_marginBottom="4dp"
         android:background="@drawable/button_corners"
         android:text="Send"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerview"
         app:layout_constraintEnd_toEndOf="@+id/button6"
         app:layout_constraintStart_toStartOf="@+id/button6"
         app:layout_constraintTop_toBottomOf="@+id/notifications_driver_spinner" />
@@ -157,7 +172,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="Messages"
-        android:textColor="#F6F1F1"
+        android:textColor="#e3792d"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/textView4"
@@ -168,16 +183,16 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
         android:layout_marginBottom="183dp"
         android:background="@drawable/round_textview"
-        android:paddingLeft="10dp"
         android:elevation="10dp"
+        android:paddingLeft="10dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button5" />
 
     <Spinner
         android:id="@+id/message_reply_spinner"
@@ -193,22 +208,25 @@
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginEnd="334dp"
+        android:layout_marginBottom="13dp"
+        android:elevation="10dp"
         android:text="Reply"
-        android:textColor="#FFFFFF"
+        android:textColor="#e3792d"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:elevation="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/message_reply_spinner"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textView7"
         app:layout_constraintTop_toBottomOf="@+id/recyclerview" />
 
     <EditText
         android:id="@+id/editTextTextPersonName"
-        android:layout_width="300dp"
+        android:layout_width="230dp"
         android:layout_height="75dp"
         android:layout_marginStart="9dp"
-        android:layout_marginLeft="9dp"
         android:layout_marginTop="9dp"
+        android:layout_marginEnd="8dp"
         android:background="@drawable/round_textview"
         android:elevation="10dp"
         android:ems="10"
@@ -216,6 +234,7 @@
         android:inputType="textPersonName"
         android:paddingLeft="10dp"
         android:textColor="#040303"
+        app:layout_constraintEnd_toStartOf="@+id/button6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/message_reply_spinner" />
 
@@ -224,11 +243,12 @@
         android:layout_width="80dp"
         android:layout_height="40dp"
         android:layout_marginStart="7dp"
-        android:layout_marginLeft="7dp"
         android:layout_marginTop="27dp"
+        android:layout_marginEnd="15dp"
         android:background="@drawable/button_corners"
         android:text="Send"
         android:textColor="#0E0E0E"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/editTextTextPersonName"
         app:layout_constraintTop_toBottomOf="@+id/message_reply_spinner" />
 
@@ -239,6 +259,7 @@
         android:layout_marginStart="9dp"
         android:layout_marginTop="16dp"
         android:text="Date"
+        android:textColor="#ffffff"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/driver_dashboard_toolbar" />
 
