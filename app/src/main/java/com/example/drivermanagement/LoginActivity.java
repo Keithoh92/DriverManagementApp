@@ -28,7 +28,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private Button login, register;
     private EditText email, password;
-//    private ProgressDialog loadingBar;
 
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
@@ -65,10 +64,6 @@ public class LoginActivity extends AppCompatActivity {
                 }else if(txtPassword.length() < 6){
                     Toast.makeText(LoginActivity.this, "Incorrect Password!", Toast.LENGTH_SHORT).show();
                 }else{
-//                    loadingBar.setTitle("Logging in");
-//                    loadingBar.setMessage("Please Wait");
-//                    loadingBar.setCanceledOnTouchOutside(true);
-//                    loadingBar.show();
                     loginUser(txtEmail, txtPassword);
                 }
             }
@@ -98,6 +93,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void checkUserAccessLevel(String uid) {
+//        FirebaseUser currentUser = fAuth.getCurrentUser();
         DocumentReference df = fStore.collection("Users").document(uid);
         //extract data from document
         df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -120,40 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
         });
-//        df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                Log.d("TAG", "OnSuccess: " + task.getResult().getData());
-//                //Identify the user access
-//
-//                if(task.isSuccessful()){
-//                    DocumentSnapshot document = task.getResult();
-//                    String userType = document.getString("UserType");
-//                       if(userType.equals("Management")){
-//                           //user is admin
-//                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-//                            finish();
-//                       }
-//                       if(userType.equals("Driver")){
-//                           startActivity(new Intent(LoginActivity.this, DriverDashboard.class));
-//                           finish();
-//                       }
-//                }
 
-
-
-//                if(task.getResult().getString("UserType").equals("Management")){
-//                    //user is admin
-//                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-//                    finish();
-//                }
-//                if(task.getResult().getString("UserType").equals("Driver")){
-//                    startActivity(new Intent(LoginActivity.this, DriverDashboard.class));
-//                    finish();
-//                }
-
-//            }
-//        });
     }
 
     @Override
@@ -184,6 +147,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         }
-//        onBackPressed();
+
     }
 }

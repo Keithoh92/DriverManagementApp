@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#b5540e"
+    android:elevation="10dp"
+    tools:context=".ManagementDashboard">
+
+    <include
+        android:id="@+id/management_dashboard_toolbar"
+        layout="@layout/toolbar_management"
+        android:elevation="10dp"></include>
+    
+    <fragment
+        android:id="@+id/manDash1"
+        android:layout_width="match_parent"
+        android:layout_height="800px"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:elevation="10dp"
+        android:name="com.example.drivermanagement.ManagementDash1Fragment"
+        app:layout_constraintTop_toBottomOf="@id/management_dashboard_toolbar"
+        />
+    
+    <fragment
+        android:id="@+id/manDash2"
+        android:layout_width="match_parent"
+        android:layout_height="800px"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:name="com.example.drivermanagement.ManagementDash2Fragment"
+        android:elevation="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintTop_toBottomOf="@+id/manDash1"
+        app:layout_constraintBottom_toTopOf="@+id/messagesButton"/>
+
+    <Button
+        android:id="@+id/messagesButton"
+        android:layout_width="540px"
+        android:layout_height="180px"
+        android:background="#000000"
+        android:shadowColor="#b5540e"
+        android:shadowRadius="20"
+        android:text="Messages"
+        android:textColor="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/driversButton"
+        android:layout_width="540px"
+        android:layout_height="180px"
+        android:background="#000000"
+        android:shadowColor="#b5540e"
+        android:shadowRadius="20"
+        android:text="Drivers"
+        android:textColor="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/messagesButton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         date = (TextView) findViewById(R.id.date);
         heading1 = (TextView) findViewById(R.id.heading1);
-        messageButton = (Button) findViewById(R.id.messageButton);
+        messageButton = (Button) findViewById(R.id.driverButton);
         driverButton = (Button) findViewById(R.id.driverButton);
         notification1 = (Button) findViewById(R.id.not1);
         notification2 = (Button) findViewById(R.id.not2);
@@ -63,9 +63,18 @@ public class MainActivity extends AppCompatActivity {
         chosenRecipients = (TextView) findViewById(R.id.chosenRecipients);
         managementToolbar = (Toolbar) findViewById(R.id.management_dashboard_toolbar);
 
-
+        fAuth = FirebaseAuth.getInstance();
         contacts = getResources().getStringArray(R.array.recipents);
         checkedContacts = new boolean[contacts.length];
+
+        messageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent messagesIntent = new Intent(MainActivity.this, MessagesActivity.class);
+                messagesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(messagesIntent);
+            }
+        });
 
         chooseRecipients.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,19 +128,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
-
         setSupportActionBar(managementToolbar);
         getSupportActionBar().setTitle("DriverX");
-
-        //Set app name in toolbar
-//        ActionBar actionBar = getSupportActionBar();
-//        if(actionBar != null){
-//            actionBar.setTitle("DriverX");
-//        }
 
         //Set date when app is open with current date
         LocalDate cal = LocalDate.now();
@@ -169,18 +167,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
-
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         super.onCreateOptionsMenu(menu);
-
         getMenuInflater().inflate(R.menu.options_menu, menu);
-
         return true;
     }
 
@@ -188,7 +182,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         super.onOptionsItemSelected(item);
-
         if(item.getItemId() == R.id.logout_option)
         {
             fAuth.signOut();
@@ -196,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
         }
         if(item.getItemId() == R.id.add_drivers_option)
         {
-
         }
         if(item.getItemId() == R.id.settings_option)
         {
@@ -208,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
     private void SendUserToLoginActivity()
     {
         Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
     }
 
@@ -216,13 +209,4 @@ public class MainActivity extends AppCompatActivity {
         Intent settingsIntent = new Intent(MainActivity.this, ChatSettingsActivity.class);
         startActivity(settingsIntent);
     }
-
-
-//    public void setAdapter(ArrayAdapter adapter) {
-//        this.adapter = adapter;
-//        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-//    }
-    //setDropDownViewResource(R.layout.spinner_dropdown_item);
-
-
 }

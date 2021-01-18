@@ -77,24 +77,6 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-
-
-
-//
-//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                Toast.makeText(RegisterActivity.this, parent.getItemAtPosition(position).toString(), Toast.LENGTH_LONG).show();
-//                    String userType = spinner.getItemAtPosition(position).toString();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
     }
 
     private void registerUser(String txtEmail, String txtPassword)

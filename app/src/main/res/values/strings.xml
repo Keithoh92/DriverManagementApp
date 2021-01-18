@@ -36,6 +36,35 @@
 
     </string-array>
 
+    <string-array name="manage_notifications2">
+        <item>1 orders</item>
+        <item>2 orders</item>
+        <item>3 orders</item>
+        <item>4 orders</item>
+        <item>5 orders</item>
+        <item>NO ORDERS</item>
+
+    </string-array>
+
+    <string-array name="locations_array">
+        <item>Locations</item>
+        <item>Baldoyle</item>
+        <item>Coolock</item>
+        <item>Blanchardstown</item>
+        <item>Santry</item>
+        <item>Finglas</item>
+
+    </string-array>
+
+    <string-array name="message_array">
+        <item>Choose Message</item>
+        <item>How long will you be?</item>
+        <item>How many deliveries have you left?</item>
+        <item>What is your status?</item>
+        <item>Can you call me when you get a chance?</item>
+
+    </string-array>
+
     <string-array name="register_cred">
         <item>Select User Type</item>
         <item>Management</item>

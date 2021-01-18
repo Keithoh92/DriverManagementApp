@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="900px"
+    android:background="@drawable/background_colour"
+    tools:context=".ManagementDash1Fragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <TextView
+        android:id="@+id/NotifyTextview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:text="Notify Drivers"
+        android:textColor="#e3792d"
+        android:textSize="30sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/sendButton"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="34dp"
+        android:background="@drawable/button_corners"
+        android:text="Send"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/not1"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/round_textview"
+        android:elevation="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sendButton" />
+
+
+    <Spinner
+        android:id="@+id/not2"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/round_textview"
+        android:elevation="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/not3" />
+
+    <Spinner
+        android:id="@+id/not3"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/round_textview"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/not2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/not1" />
+
+    <Button
+        android:id="@+id/chooseRecipients"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="27dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/button_corners"
+        android:elevation="10dp"
+        android:text="Choose recipents"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/not2" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="To:"
+        android:textColor="#e3792d"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/chooseRecipients"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/chosenRecipients"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="272dp"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

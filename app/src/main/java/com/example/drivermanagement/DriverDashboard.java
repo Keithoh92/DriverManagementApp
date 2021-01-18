@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
     String[] driverNotifications, messageReplies;
     RecyclerViewAdapter recycleAdapter;
     Toolbar driverToolbar;
+    Button messages;
 
     private FirebaseAuth fAuth;
 
@@ -35,6 +37,7 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
         driverNotifications = getResources().getStringArray(R.array.driver_notifications);
         messageReplies = getResources().getStringArray(R.array.message_replies);
         driverToolbar = (Toolbar) findViewById(R.id.driver_dashboard_toolbar);
+        messages = (Button) findViewById(R.id.button);
 
         fAuth = FirebaseAuth.getInstance();
 
@@ -44,6 +47,15 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
         ArrayList<String> message_arr = new ArrayList<>();
         message_arr.add("Can you go to swords and pick up returns?");
         //message_arr.add("From: Jacob");
+
+        messages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent messagesIntent = new Intent(DriverDashboard.this, MessagesActivity.class);
+                messagesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(messagesIntent);
+            }
+        });
 
         ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, driverNotifications);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
@@ -76,7 +88,6 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
 
@@ -113,7 +124,6 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
         }
         if(item.getItemId() == R.id.add_drivers_option)
         {
-
         }
         if(item.getItemId() == R.id.settings_option)
         {
@@ -125,6 +135,7 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
     private void SendUserToLoginActivity()
     {
         Intent loginIntent = new Intent(DriverDashboard.this, LoginActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
     }
 
@@ -134,6 +145,4 @@ public class DriverDashboard extends AppCompatActivity implements RecyclerViewAd
         //settingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(settingsIntent);
     }
-
-
 }

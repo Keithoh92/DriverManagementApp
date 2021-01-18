@@ -69,8 +69,8 @@ public class ChatSettingsActivity extends AppCompatActivity {
         userprofileImage = (ImageView) findViewById(R.id.profile_image);
 
         RetrieveUsername();
-        RetrieveProfilePhoto();
-        Log.d("TAG", "Retrieve username");
+//        RetrieveProfilePhoto();
+//        Log.d("TAG", "Retrieve username");
 
         userprofileImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -254,5 +254,15 @@ public class ChatSettingsActivity extends AppCompatActivity {
 //                // ...
 //            }
 //        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(fAuth.getCurrentUser() != null){
+            RetrieveProfilePhoto();
+            Log.d("TAG", "Retrieve username");
+        }
     }
 }

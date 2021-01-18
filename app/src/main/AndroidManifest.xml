@@ -3,8 +3,7 @@
     package="com.example.drivermanagement">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -13,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity android:name=".ChatSettingsActivity" />
         <activity android:name=".DriverDashboard" />
         <activity android:name=".ProfileTypeActivity" />
@@ -25,7 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity">
+        <activity android:name=".ManagementDashboard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
