@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,16 +17,20 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 
 public class ManagementDash2Fragment extends Fragment {
     Activity listener;
-    Button send, chooseRecipients1;
+    Button send, chooseRecipients1, chooseButton;
     TextView chosenRecipients1;
+    ImageView menuOption;
+    int count = 0;
 
     String[] contacts, messageArray;
     boolean[] checkedContacts;
@@ -66,6 +71,46 @@ public class ManagementDash2Fragment extends Fragment {
         messageArray = getResources().getStringArray(R.array.message_array);
         contacts = getResources().getStringArray(R.array.recipents);
         checkedContacts = new boolean[contacts.length];
+//        menuOption = (ImageView) view.findViewById(R.id.menuOption);
+//        chooseButton = (Button)getActivity().findViewById(R.id.chooseButton);
+
+
+//        menuOption.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                menuOption.setVisibility(View.INVISIBLE);
+//                if(count == 0){
+//                    Toast.makeText(getActivity(), "Click menu button again to choose new top dashboard", Toast.LENGTH_SHORT).show();
+//                    count++;
+//                }
+//                if(count == 1){
+//                    FragmentManager fragment = getActivity().getSupportFragmentManager();
+//                    Fragment myFrag = fragment.findFragmentById(R.id.chooserFrag);
+//                    fragment.beginTransaction()
+//                            .show(myFrag)
+//                            .commit();
+//
+//                    count = 0;
+//                    FragmentManager fragment2 = getActivity().getSupportFragmentManager();
+//                    Fragment myFrag2 = fragment2.findFragmentById(R.id.manDash1);
+//                    fragment2.beginTransaction()
+//                            .hide(myFrag2)
+//                            .commit();
+//
+//                    FragmentManager fragment3 = getActivity().getSupportFragmentManager();
+//                    Fragment myFrag3 = fragment3.findFragmentById(R.id.manDash2);
+//                    fragment3.beginTransaction()
+//                            .hide(myFrag3)
+//                            .commit();
+//
+////                    Activity act = getActivity();
+////                    Button btn = act.getResources().getLayout(R.id.chooseButton);
+////                    chooseButton.
+//
+//
+//                }
+//            }
+//        });
 
         chooseRecipients1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,6 +181,4 @@ public class ManagementDash2Fragment extends Fragment {
             }
         });
     }
-
-
 }

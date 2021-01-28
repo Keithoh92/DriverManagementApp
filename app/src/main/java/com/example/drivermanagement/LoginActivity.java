@@ -106,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                     String userType = documentSnapshot.getString("UserType");
                     if(userType.equals("Management")){
                         //user is admin
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        startActivity(new Intent(LoginActivity.this, ManagementDashboard.class));
                         finish();
                     }
                     if(userType.equals("Driver")){

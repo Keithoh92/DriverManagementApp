@@ -12,31 +12,34 @@
         android:id="@+id/management_dashboard_toolbar"
         layout="@layout/toolbar_management"
         android:elevation="10dp"></include>
-    
+
     <fragment
-        android:id="@+id/manDash1"
+        android:id="@+id/chooserFrag"
+        android:name="com.example.drivermanagement.chooserDashFragmnet"
         android:layout_width="match_parent"
-        android:layout_height="800px"
-        android:layout_marginTop="5dp"
+        android:layout_height="810px"
+        android:elevation="10dp"
+        android:layout_marginTop="3dp"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
-        android:elevation="10dp"
-        android:name="com.example.drivermanagement.ManagementDash1Fragment"
-        app:layout_constraintTop_toBottomOf="@id/management_dashboard_toolbar"
-        />
-    
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="56dp"
+        app:layout_constraintTop_toBottomOf="@id/management_dashboard_toolbar"/>
+
     <fragment
-        android:id="@+id/manDash2"
+        android:id="@+id/manDashBottom1"
+        android:name="com.example.drivermanagement.managementDash3Fragment"
         android:layout_width="match_parent"
         android:layout_height="800px"
         android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
-        android:name="com.example.drivermanagement.ManagementDash2Fragment"
-        android:elevation="10dp"
         android:layout_marginTop="5dp"
+        android:layout_marginRight="2dp"
         android:layout_marginBottom="5dp"
-        app:layout_constraintTop_toBottomOf="@+id/manDash1"
-        app:layout_constraintBottom_toTopOf="@+id/messagesButton"/>
+        android:elevation="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/messagesButton"
+        app:layout_constraintTop_toBottomOf="@+id/chooserFrag" />
+
+
 
     <Button
         android:id="@+id/messagesButton"

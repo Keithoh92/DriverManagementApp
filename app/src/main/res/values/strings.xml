@@ -56,6 +56,14 @@
 
     </string-array>
 
+    <string-array name="status_array">
+        <item>Status</item>
+        <item>Urgent</item>
+        <item>Normal</item>
+        <item>Low</item>
+
+    </string-array>
+
     <string-array name="message_array">
         <item>Choose Message</item>
         <item>How long will you be?</item>

@@ -3,32 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MessagesActivity">
-
-    <include
-        android:id="@+id/messages_toolbar"
-        layout="@layout/toolbar_management">
-    </include>
+    android:layout_height="900px"
+    android:background="@drawable/background_colour"
+    tools:context=".ChooseDashboards">
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tablayout_messages"
+        android:id="@+id/tablayout_dash_chooser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabIndicatorColor="#e3792d"
-        app:tabTextColor="#e3792d"
+        app:tabIndicatorColor="#E83D3D"
+        app:tabTextColor="#ffffff"
         app:tabRippleColor="#3E3D3D"
         app:tabSelectedTextColor="#E83D3D"
-        android:background="#3E3D3D"
-        android:layout_below="@+id/messages_toolbar">
+        android:background="#3E3D3D">
 
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/messages_tab_pager"
+        android:id="@+id/dash_chooser_tab_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tablayout_messages">
+        android:layout_below="@+id/tablayout_dash_chooser">
 
     </androidx.viewpager.widget.ViewPager>
 
