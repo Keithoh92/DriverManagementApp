@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -17,11 +18,16 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +40,7 @@ public class MessagesActivity extends AppCompatActivity {
     private TabsAdaptor myTabsAdaptor;
 
     FirebaseAuth fAuth;
+    private DatabaseReference RootRef;
     FirebaseFirestore fStore;
     private FirebaseUser currentUser;
 
@@ -43,7 +50,9 @@ public class MessagesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messages);
 
         fAuth = FirebaseAuth.getInstance();
+        currentUser = fAuth.getCurrentUser();
         fStore = FirebaseFirestore.getInstance();
+        RootRef = FirebaseDatabase.getInstance().getReference();
 
         messagesToolbar = (Toolbar) findViewById(R.id.messages_toolbar);
         setSupportActionBar(messagesToolbar);
@@ -137,16 +146,33 @@ public class MessagesActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void CreateNewGroup(String groupName)
+    private void CreateNewGroup(final String groupName)
     {
-        FirebaseUser user = fAuth.getCurrentUser();
-        if(user != null) {
+        Log.d("TAG", "Create new group got called");
+
             DocumentReference df = fStore.collection("Groups").document();
             Map<String, Object> groupInfo = new HashMap<>();
             groupInfo.put("Group Name", groupName);
             df.set(groupInfo);
-        }else{
-            Toast.makeText(MessagesActivity.this, "Couldnt create group", Toast.LENGTH_SHORT).show();
-        }
+
+
     }
 }
+
+
+            //            DocumentReference df = fStore.collection("Groups").document();
+//            Map<String, Object> groupInfo = new HashMap<>();
+//            groupInfo.put("Group Name", groupName);
+//            df.set(groupInfo);
+
+//RootRef.child("Groups").child(groupName).setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+//            @Override
+//            public void onComplete(@NonNull Task<Void> task) {
+//                Log.d("TAG", "onComplete attempting to add group to database");
+//                if(task.isSuccessful())
+//                Log.d("TAG", "Add group to database successful");
+//                {
+//                    Toast.makeText(MessagesActivity.this, groupName+ "group has been created successfully", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
