@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,6 +20,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -33,6 +36,9 @@ public class RegisterActivity extends AppCompatActivity {
     String userType = "";
 
     private FirebaseAuth auth;
+    FirebaseUser currentUser;
+    private FirebaseDatabase dbRef;
+    private DatabaseReference RootRef;
     FirebaseFirestore fStore;
 
     @Override
@@ -45,6 +51,8 @@ public class RegisterActivity extends AppCompatActivity {
         companyName = findViewById(R.id.companyName);
         username = findViewById(R.id.usernameTextview);
         registerButton = findViewById(R.id.registerButton);
+        dbRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/");
+        RootRef = dbRef.getReference("Users");
 
         auth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
@@ -85,16 +93,31 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    FirebaseUser user = auth.getCurrentUser();
+                    String currentUserId = auth.getCurrentUser().getUid();
+                    RootRef.child(currentUserId).setValue("");
                     Toast.makeText(RegisterActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-                    DocumentReference df = fStore.collection("Users").document(user.getUid());
+//                    DocumentReference df = fStore.collection("Users").document(user.getUid());
                     Map<String, Object> userInfo = new HashMap<>();
                     userInfo.put("Company Name", companyName.getText().toString());
+                    userInfo.put("uid", currentUserId);
                     userInfo.put("Email", emailRegister.getText().toString());
                     userInfo.put("Username", username.getText().toString());
                     userInfo.put("UserType", userType);
                     userInfo.put("Profile Picture", "");
-                    df.set(userInfo);
+                    RootRef.child(currentUserId).setValue(userInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                                 if(task.isSuccessful())
+                                 {
+                                     Toast.makeText(RegisterActivity.this, "Successfully created user profile", Toast.LENGTH_SHORT).show();
+                                 }
+                                 else
+                                 {
+                                     String message = task.getException().toString();
+                                     Toast.makeText(RegisterActivity.this, message+" Error creating profile, please try again", Toast.LENGTH_SHORT).show();
+                                 }
+                        }
+                    });
 
 
                     startActivity(new Intent(RegisterActivity.this, LoginActivity.class));

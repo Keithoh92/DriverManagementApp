@@ -23,8 +23,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -39,9 +42,10 @@ public class MessagesActivity extends AppCompatActivity {
     private TabLayout messagesTablayout;
     private TabsAdaptor myTabsAdaptor;
 
-    FirebaseAuth fAuth;
+    private FirebaseAuth fAuth;
+//    private FirebaseDatabase dbRef;
     private DatabaseReference RootRef;
-    FirebaseFirestore fStore;
+    private FirebaseFirestore fStore;
     private FirebaseUser currentUser;
 
     @Override
@@ -52,7 +56,9 @@ public class MessagesActivity extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         currentUser = fAuth.getCurrentUser();
         fStore = FirebaseFirestore.getInstance();
-        RootRef = FirebaseDatabase.getInstance().getReference();
+//        dbRef = FirebaseDatabase.getInstance();
+        Log.d("TAG", "Database reference created");
+        RootRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups");
 
         messagesToolbar = (Toolbar) findViewById(R.id.messages_toolbar);
         setSupportActionBar(messagesToolbar);
@@ -148,12 +154,42 @@ public class MessagesActivity extends AppCompatActivity {
 
     private void CreateNewGroup(final String groupName)
     {
-        Log.d("TAG", "Create new group got called");
+        Log.d("TAG", "Create new group got called " +groupName);
 
-            DocumentReference df = fStore.collection("Groups").document();
-            Map<String, Object> groupInfo = new HashMap<>();
-            groupInfo.put("Group Name", groupName);
-            df.set(groupInfo);
+//            DocumentReference df = fStore.collection("Groups").document();
+//            Map<String, Object> groupInfo = new HashMap<>();
+//            groupInfo.put("Group Name", groupName);
+//            df.set(groupInfo);
+//        FirebaseUser user = currentUser.getUid();
+//        if(currentUser != null) {
+//            String key = RootRef.push().getKey();
+            RootRef.child(groupName).setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d("TAG", "Create new group successful");
+                        Toast.makeText(MessagesActivity.this, groupName + " created successfully", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        Toast.makeText(MessagesActivity.this, "Failed to create " + groupName, Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            });
+//        }
+
+//        RootRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                String value = snapshot.getValue(String.class);
+//                Log.d("TAG", "Value is: " + value);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                Log.w("TAG", "Failed to read value.", error.toException());
+//            }
+//        });
 
 
     }

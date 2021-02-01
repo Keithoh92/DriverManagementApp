@@ -72,7 +72,7 @@ public class GroupsFragment extends Fragment {
         groupFragmentView = inflater.inflate(R.layout.fragment_groups, container, false);
         fAuth = FirebaseAuth.getInstance();
         GroupRef = FirebaseFirestore.getInstance();
-        RootRef = FirebaseDatabase.getInstance().getReference().child("Groups");
+        RootRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups");
 
         InitialiseFields();
 
@@ -98,67 +98,67 @@ public class GroupsFragment extends Fragment {
         list_view.setAdapter(arrayAdaptor);
     }
 
-    //    private void RetrieveAndDisplayGroups() {
-//        RootRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                Set<String> set = new HashSet<>();
-//                Iterator iterator = snapshot.getChildren().iterator();
-//                while(iterator.hasNext())
-//                {
-//                    set.add(((DataSnapshot)iterator.next()).getKey());
-//                }
-//                list_of_groups.clear();
-//                list_of_groups.addAll(set);
-//                arrayAdaptor.notifyDataSetChanged();
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
-//}
-    private void RetrieveAndDisplayGroups() {
-        FirebaseUser user = fAuth.getCurrentUser();
-//        DocumentReference df = GroupRef.collection("Groups").document();
-//        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//            @Override
-//            public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                String groupName = documentSnapshot.getString("Group Name");
-//
-//                list_of_groups.clear();
-//                list_of_groups.add(groupName);
-//                arrayAdaptor.notifyDataSetChanged();
-//            }
-//        });
-//        DocumentReference df = collection("cities")
-        GroupRef.collection("Groups")
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            list_of_groups.clear();
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d("TAG", document.getId() + " => " + document.getData());
-                                String stripped = document.getData().toString().replace("{Group Name=", "");
-                                String stripped2 = stripped.replace("}", "");
-                                Set<String> set = new HashSet<>();
-                                set.add(stripped2);
-//                                list_of_groups.clear();
-                                list_of_groups.addAll(set);
-                                arrayAdaptor.notifyDataSetChanged();
-                            }
+        private void RetrieveAndDisplayGroups() {
+        RootRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        } else {
-                            Log.d("TAG", "Error getting documents: ", task.getException());
-                        }
+                Set<String> set = new HashSet<>();
+                Iterator iterator = snapshot.getChildren().iterator();
+                while(iterator.hasNext())
+                {
+                    set.add(((DataSnapshot)iterator.next()).getKey());
+                }
+                list_of_groups.clear();
+                list_of_groups.addAll(set);
+                arrayAdaptor.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+}
+//    private void RetrieveAndDisplayGroups() {
+//        FirebaseUser user = fAuth.getCurrentUser();
+////        DocumentReference df = GroupRef.collection("Groups").document();
+////        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+////            @Override
+////            public void onSuccess(DocumentSnapshot documentSnapshot) {
+////                String groupName = documentSnapshot.getString("Group Name");
+////
+////                list_of_groups.clear();
+////                list_of_groups.add(groupName);
+////                arrayAdaptor.notifyDataSetChanged();
+////            }
+////        });
+////        DocumentReference df = collection("cities")
+//        GroupRef.collection("Groups")
+//                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            list_of_groups.clear();
+//                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                Log.d("TAG", document.getId() + " => " + document.getData());
+//                                String stripped = document.getData().toString().replace("{Group Name=", "");
+//                                String stripped2 = stripped.replace("}", "");
+//                                Set<String> set = new HashSet<>();
+//                                set.add(stripped2);
+////                                list_of_groups.clear();
+//                                list_of_groups.addAll(set);
+//                                arrayAdaptor.notifyDataSetChanged();
+//                            }
+//
+//                        } else {
+//                            Log.d("TAG", "Error getting documents: ", task.getException());
+//                        }
 //                        list_of_groups.clear();
 //                        list_of_groups.addAll(set);
-                    }
-                });
+//                    }
+//                });
 
 //                    @Override
 //                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -188,5 +188,5 @@ public class GroupsFragment extends Fragment {
 //                Toast.makeText(getActivity(), "You are not a memeber of any groups yet", Toast.LENGTH_SHORT).show();
 //            }
 //        });
-    }
-}
+//    }
+//}

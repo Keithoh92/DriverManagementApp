@@ -20,6 +20,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,6 +35,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText email, password;
 
     private FirebaseAuth fAuth;
+    private FirebaseDatabase dbRef;
+    private DatabaseReference RootRef;
     private FirebaseFirestore fStore;
 
     private FirebaseUser currentUser;
@@ -45,6 +52,8 @@ public class LoginActivity extends AppCompatActivity {
 
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
+        dbRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/");
+        RootRef = dbRef.getReference("Users");
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,11 +68,11 @@ public class LoginActivity extends AppCompatActivity {
                 String txtEmail = email.getText().toString();
                 String txtPassword = password.getText().toString();
 
-                if(TextUtils.isEmpty(txtEmail) || TextUtils.isEmpty(txtPassword)){
+                if (TextUtils.isEmpty(txtEmail) || TextUtils.isEmpty(txtPassword)) {
                     Toast.makeText(LoginActivity.this, "Empty Credentials!", Toast.LENGTH_SHORT).show();
-                }else if(txtPassword.length() < 6){
+                } else if (txtPassword.length() < 6) {
                     Toast.makeText(LoginActivity.this, "Incorrect Password!", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     loginUser(txtEmail, txtPassword);
                 }
             }
@@ -75,8 +84,8 @@ public class LoginActivity extends AppCompatActivity {
         fAuth.signInWithEmailAndPassword(txtEmail, txtPassword).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                Log.d("TAG", "Login is succesful" +task.getResult() + task.getException());
-                if(task.isSuccessful()){
+                Log.d("TAG", "Login is succesful" + task.getResult() + task.getException());
+                if (task.isSuccessful()) {
                     Log.d("TAG", "Login is succesful");
                     FirebaseUser user = fAuth.getCurrentUser();
                     Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
@@ -84,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
 //                    updateUI(user);
                     checkUserAccessLevel(user.getUid());
 //                    loadingBar.dismiss();
-                }else if(!task.isSuccessful()){
+                } else if (!task.isSuccessful()) {
                     Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -94,59 +103,94 @@ public class LoginActivity extends AppCompatActivity {
 
     private void checkUserAccessLevel(String uid) {
 //        FirebaseUser currentUser = fAuth.getCurrentUser();
-        DocumentReference df = fStore.collection("Users").document(uid);
-        //extract data from document
-        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Log.d("TAG", "OnSuccess: " + documentSnapshot.getData());
-                //Identify the user access
+//        DocumentReference df = fStore.collection("Users").document(uid);
 
-//                    DocumentSnapshot document = task.getResult();
-                    String userType = documentSnapshot.getString("UserType");
-                    if(userType.equals("Management")){
-                        //user is admin
+        //extract data from document
+        RootRef.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                if ((snapshot.exists()) && (snapshot.hasChild("UserType"))) {
+                    String retrieveUserType = snapshot.child("UserType").getValue().toString();
+                    if (retrieveUserType.equals("Management")) {
                         startActivity(new Intent(LoginActivity.this, ManagementDashboard.class));
                         finish();
                     }
-                    if(userType.equals("Driver")){
+                    if (retrieveUserType.equals("Driver")) {
                         startActivity(new Intent(LoginActivity.this, DriverDashboard.class));
                         finish();
                     }
                 }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
         });
+//        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//            @Override
+//            public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                Log.d("TAG", "OnSuccess: " + documentSnapshot.getData());
+//                //Identify the user access
+//
+////                    DocumentSnapshot document = task.getResult();
+//                    String userType = documentSnapshot.getString("UserType");
+//                    if(userType.equals("Management")){
+//                        //user is admin
+//                        startActivity(new Intent(LoginActivity.this, ManagementDashboard.class));
+//                        finish();
+//                    }
+//                    if(userType.equals("Driver")){
+//                        startActivity(new Intent(LoginActivity.this, DriverDashboard.class));
+//                        finish();
+//                    }
+//                }
+//
+//        });
 
     }
 
     @Override
-    protected void onStart()
-    {
+    protected void onStart() {
         super.onStart();
 
-        if(fAuth.getCurrentUser() != null)
-        {
-            DocumentReference df = fStore.collection("Users").document(fAuth.getUid());
-            df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        checkUserAccessLevel(fAuth.getCurrentUser().getUid());
-                    }else{
-                        fAuth.signOut();
-                        startActivity(new Intent(LoginActivity.this, LoginActivity.class));
-                        finish();
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    fAuth.signOut();
-                    startActivity(new Intent(LoginActivity.this, LoginActivity.class));
-                    finish();
-                }
-            });
+        if (fAuth.getCurrentUser() != null) {
+            FirebaseUser user = fAuth.getCurrentUser();
+            checkUserAccessLevel(user.getUid());
+        } else {
+            fAuth.signOut();
+            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
+            finish();
         }
-
     }
 }
+
+
+
+
+
+//            DocumentReference df = fStore.collection("Users").document(fAuth.getUid());
+//            df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                    if (task.isSuccessful()) {
+//                        checkUserAccessLevel(fAuth.getCurrentUser().getUid());
+//                    }else{
+//                        fAuth.signOut();
+//                        startActivity(new Intent(LoginActivity.this, LoginActivity.class));
+//                        finish();
+//                    }
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//                    fAuth.signOut();
+//                    startActivity(new Intent(LoginActivity.this, LoginActivity.class));
+//                    finish();
+//                }
+//            });
+//        }
+//
+//    }
+//}
