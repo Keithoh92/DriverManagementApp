@@ -110,6 +110,8 @@ public class RegisterActivity extends AppCompatActivity {
                                  if(task.isSuccessful())
                                  {
                                      Toast.makeText(RegisterActivity.this, "Successfully created user profile", Toast.LENGTH_SHORT).show();
+//                                     Intent phoneIntent = new Intent(RegisterActivity.this, PhoneLoginActivity.class);
+//                                     startActivity(phoneIntent);
                                  }
                                  else
                                  {
@@ -120,7 +122,7 @@ public class RegisterActivity extends AppCompatActivity {
                     });
 
 
-                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                    startActivity(new Intent(RegisterActivity.this, PhoneLoginActivity.class));
                     finish();
                 }
                 else{

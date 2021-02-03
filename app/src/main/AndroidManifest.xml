@@ -3,7 +3,7 @@
     package="com.example.drivermanagement">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".GroupChatActivity"></activity>
+        <activity android:name=".PhoneLoginActivity"></activity>
+        <activity android:name=".GroupChatActivity" />
         <activity android:name=".ChooseDashboards" />
         <activity android:name=".MessagesActivity" />
         <activity android:name=".MainActivity" />

@@ -31,7 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private Button login, register;
+    private Button login, register, loginWithPhoneButton;
     private EditText email, password;
 
     private FirebaseAuth fAuth;
@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         login = findViewById(R.id.loginButton);
         register = findViewById(R.id.registerButton);
+        loginWithPhoneButton = (Button) findViewById(R.id.login_with_phone_button);
         email = findViewById(R.id.editEmail);
         password = findViewById(R.id.editPassword);
 
@@ -75,6 +76,15 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     loginUser(txtEmail, txtPassword);
                 }
+            }
+        });
+
+        loginWithPhoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                Intent phoneLogin = new Intent(LoginActivity.this, PhoneLoginActivity.class);
+                startActivity(phoneLogin);
             }
         });
 
@@ -158,11 +168,12 @@ public class LoginActivity extends AppCompatActivity {
         if (fAuth.getCurrentUser() != null) {
             FirebaseUser user = fAuth.getCurrentUser();
             checkUserAccessLevel(user.getUid());
-        } else {
-            fAuth.signOut();
-            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
-            finish();
         }
+//        } else {
+//            fAuth.signOut();
+//            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
+//            finish();
+//        }
     }
 }
 
