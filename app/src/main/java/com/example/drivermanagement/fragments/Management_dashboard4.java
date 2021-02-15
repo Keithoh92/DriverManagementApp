@@ -1,4 +1,4 @@
-package com.example.drivermanagement;
+package com.example.drivermanagement.fragments;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -19,30 +18,28 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.drivermanagement.R;
 
 import java.util.ArrayList;
 
-
-public class ManagementDash1Fragment extends Fragment {
+public class Management_dashboard4 extends Fragment {
     Activity listener;
-    Button send, chooseRecipients;
+    Button chooseRecipients, sendButton, circleButton1, circleButton2, circleButton3, circleButton4, clearButton;
     TextView chosenRecipients;
 
-    String[] contacts, managementNotifications2, messageArray, locationArray;
+    String[] contacts, locationsArray;
     boolean[] checkedContacts;
     ArrayList<Integer> selectedContacts = new ArrayList<>();
 
-//    String[] locationsArray = {"Locations", "Baldoyle", "Coolock", "Blanchardstown", "Santry"};
-//    String[] messageArray = {"Choose message", "How long will you be?", "How many deliveries have you left?", "What is your status", "Can you call when you get the chance"};
 
-
-    public ManagementDash1Fragment() {
+    public Management_dashboard4() {
         // Required empty public constructor
     }
 
     @Override
-    public void onAttach(@NonNull Context context) {
+    public void onAttach(@NonNull Context context)
+    {
         super.onAttach(context);
         if(context instanceof ManagementDashboard){
             this.listener = (ManagementDashboard) context;
@@ -59,18 +56,21 @@ public class ManagementDash1Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_management_dashboard1, container, false);
+        return inflater.inflate(R.layout.fragment_management_dashboard4, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        managementNotifications2 = getResources().getStringArray(R.array.manage_notifications2);
-        chooseRecipients = (Button) view.findViewById(R.id.chooseRecipients);
-        chosenRecipients = (TextView) view.findViewById(R.id.chosenRecipients);
-        send = (Button) view.findViewById(R.id.sendButton);
-        messageArray = getResources().getStringArray(R.array.message_array);
-        locationArray = getResources().getStringArray(R.array.locations_array);
+        chooseRecipients = view.findViewById(R.id.chooseRecipients);
+        sendButton = view.findViewById(R.id.sendButton);
+        circleButton1 = view.findViewById(R.id.circleButton1);
+        circleButton2 = view.findViewById(R.id.circleButton2);
+        circleButton3 = view.findViewById(R.id.circleButton3);
+        circleButton4 = view.findViewById(R.id.circleButton4);
+        clearButton = view.findViewById(R.id.clearButton);
+        locationsArray = getResources().getStringArray(R.array.locations_array);
+        chosenRecipients = view.findViewById(R.id.chosenRecipients);
         contacts = getResources().getStringArray(R.array.recipents);
         checkedContacts = new boolean[contacts.length];
 
@@ -125,10 +125,10 @@ public class ManagementDash1Fragment extends Fragment {
                 mDialog.show();
             }
         });
-////////////////////////first dropdown/////////////////////////////////////////////////
-        ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, messageArray);
+
+        ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, locationsArray);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        Spinner spinner  = view.findViewById(R.id.not1);
+        Spinner spinner  = view.findViewById(R.id.locations1);
         spinner.setAdapter(adapter);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -142,40 +142,6 @@ public class ManagementDash1Fragment extends Fragment {
 
             }
         });
-////////////////////////Second dropdown/////////////////////////////////////////////////
-        ArrayAdapter adapter1 = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, managementNotifications2);
-        adapter1.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        Spinner spinner1  = view.findViewById(R.id.not2);
-        spinner1.setAdapter(adapter1);
 
-        spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        ////////////////////////Locations dropdown/////////////////////////////////////////////////
-        ArrayAdapter adapter2 = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, locationArray);
-        adapter2.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        Spinner spinner2  = view.findViewById(R.id.not3);
-        spinner2.setAdapter(adapter2);
-
-        spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
     }
 }

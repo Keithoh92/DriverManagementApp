@@ -1,4 +1,4 @@
-package com.example.drivermanagement;
+package com.example.drivermanagement.fragments;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,26 +16,28 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.drivermanagement.R;
 
 import java.util.ArrayList;
 
 
-public class ManagementDash2Fragment extends Fragment {
+public class ManagementDash1Fragment extends Fragment {
     Activity listener;
-    Button send, chooseRecipients1, chooseButton;
-    TextView chosenRecipients1;
-    ImageView menuOption;
-    int count = 0;
+    Button send, chooseRecipients;
+    TextView chosenRecipients;
 
-    String[] contacts, messageArray;
+    String[] contacts, managementNotifications2, messageArray, locationArray;
     boolean[] checkedContacts;
     ArrayList<Integer> selectedContacts = new ArrayList<>();
 
-    public ManagementDash2Fragment() {
+//    String[] locationsArray = {"Locations", "Baldoyle", "Coolock", "Blanchardstown", "Santry"};
+//    String[] messageArray = {"Choose message", "How long will you be?", "How many deliveries have you left?", "What is your status", "Can you call when you get the chance"};
+
+
+    public ManagementDash1Fragment() {
         // Required empty public constructor
     }
 
@@ -52,67 +53,28 @@ public class ManagementDash2Fragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_management_dash2, container, false);
+        return inflater.inflate(R.layout.fragment_management_dashboard1, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        chooseRecipients1 = (Button) view.findViewById(R.id.chooseRecipients1);
-        chosenRecipients1 = (TextView) view.findViewById(R.id.chosenRecipients1);
+        managementNotifications2 = getResources().getStringArray(R.array.manage_notifications2);
+        chooseRecipients = (Button) view.findViewById(R.id.chooseRecipients);
+        chosenRecipients = (TextView) view.findViewById(R.id.chosenRecipients);
         send = (Button) view.findViewById(R.id.sendButton);
         messageArray = getResources().getStringArray(R.array.message_array);
+        locationArray = getResources().getStringArray(R.array.locations_array);
         contacts = getResources().getStringArray(R.array.recipents);
         checkedContacts = new boolean[contacts.length];
-//        menuOption = (ImageView) view.findViewById(R.id.menuOption);
-//        chooseButton = (Button)getActivity().findViewById(R.id.chooseButton);
 
-
-//        menuOption.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                menuOption.setVisibility(View.INVISIBLE);
-//                if(count == 0){
-//                    Toast.makeText(getActivity(), "Click menu button again to choose new top dashboard", Toast.LENGTH_SHORT).show();
-//                    count++;
-//                }
-//                if(count == 1){
-//                    FragmentManager fragment = getActivity().getSupportFragmentManager();
-//                    Fragment myFrag = fragment.findFragmentById(R.id.chooserFrag);
-//                    fragment.beginTransaction()
-//                            .show(myFrag)
-//                            .commit();
-//
-//                    count = 0;
-//                    FragmentManager fragment2 = getActivity().getSupportFragmentManager();
-//                    Fragment myFrag2 = fragment2.findFragmentById(R.id.manDash1);
-//                    fragment2.beginTransaction()
-//                            .hide(myFrag2)
-//                            .commit();
-//
-//                    FragmentManager fragment3 = getActivity().getSupportFragmentManager();
-//                    Fragment myFrag3 = fragment3.findFragmentById(R.id.manDash2);
-//                    fragment3.beginTransaction()
-//                            .hide(myFrag3)
-//                            .commit();
-//
-////                    Activity act = getActivity();
-////                    Button btn = act.getResources().getLayout(R.id.chooseButton);
-////                    chooseButton.
-//
-//
-//                }
-//            }
-//        });
-
-        chooseRecipients1.setOnClickListener(new View.OnClickListener() {
+        chooseRecipients.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
@@ -140,7 +102,7 @@ public class ManagementDash2Fragment extends Fragment {
                                 item = item + ", ";
                             }
                         }
-                        chosenRecipients1.setText(item);
+                        chosenRecipients.setText(item);
                     }
                 });
                 mBuilder.setNegativeButton(R.string.dismiss_label, new DialogInterface.OnClickListener() {
@@ -155,7 +117,7 @@ public class ManagementDash2Fragment extends Fragment {
                         for(int i = 0; i < checkedContacts.length; i++){
                             checkedContacts[i] = false;
                             selectedContacts.clear();
-                            chosenRecipients1.setText("");
+                            chosenRecipients.setText("");
                         }
                     }
                 });
@@ -166,10 +128,45 @@ public class ManagementDash2Fragment extends Fragment {
 ////////////////////////first dropdown/////////////////////////////////////////////////
         ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, messageArray);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        Spinner spinner  = view.findViewById(R.id.messagesSpinnerMDash2);
+        Spinner spinner  = view.findViewById(R.id.not1);
         spinner.setAdapter(adapter);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+////////////////////////Second dropdown/////////////////////////////////////////////////
+        ArrayAdapter adapter1 = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, managementNotifications2);
+        adapter1.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        Spinner spinner1  = view.findViewById(R.id.not2);
+        spinner1.setAdapter(adapter1);
+
+        spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        ////////////////////////Locations dropdown/////////////////////////////////////////////////
+        ArrayAdapter adapter2 = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, locationArray);
+        adapter2.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        Spinner spinner2  = view.findViewById(R.id.not3);
+        spinner2.setAdapter(adapter2);
+
+        spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 

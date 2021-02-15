@@ -4,36 +4,25 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.appcompat.widget.Toolbar;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class MessagesActivity extends AppCompatActivity {
 
@@ -43,10 +32,7 @@ public class MessagesActivity extends AppCompatActivity {
     private TabsAdaptor myTabsAdaptor;
 
     private FirebaseAuth fAuth;
-//    private FirebaseDatabase dbRef;
     private DatabaseReference RootRef;
-    private FirebaseFirestore fStore;
-    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +40,6 @@ public class MessagesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messages);
 
         fAuth = FirebaseAuth.getInstance();
-        currentUser = fAuth.getCurrentUser();
-        fStore = FirebaseFirestore.getInstance();
-//        dbRef = FirebaseDatabase.getInstance();
         Log.d("TAG", "Database reference created");
         RootRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups");
 
@@ -64,15 +47,14 @@ public class MessagesActivity extends AppCompatActivity {
         setSupportActionBar(messagesToolbar);
         getSupportActionBar().setTitle("DriverX");
 
+        //Add chat fragments to viewpager
         viewPager = (ViewPager) findViewById(R.id.messages_tab_pager);
         myTabsAdaptor = new TabsAdaptor(getSupportFragmentManager());
         viewPager.setAdapter(myTabsAdaptor);
 
+        //Create tab layout for viewpager
         messagesTablayout = (TabLayout) findViewById(R.id.tablayout_messages);
         messagesTablayout.setupWithViewPager(viewPager);
-
-
-
     }
 
     @Override
@@ -119,8 +101,10 @@ public class MessagesActivity extends AppCompatActivity {
         startActivity(settingsIntent);
     }
 
+    //Called when user wants to create new group
     private void RequestNewGroup()
     {
+        //Build group chat creation dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(MessagesActivity.this, R.style.AlertDialog);
         builder.setTitle("Enter Group Name: ");
 
@@ -156,59 +140,16 @@ public class MessagesActivity extends AppCompatActivity {
     {
         Log.d("TAG", "Create new group got called " +groupName);
 
-//            DocumentReference df = fStore.collection("Groups").document();
-//            Map<String, Object> groupInfo = new HashMap<>();
-//            groupInfo.put("Group Name", groupName);
-//            df.set(groupInfo);
-//        FirebaseUser user = currentUser.getUid();
-//        if(currentUser != null) {
-//            String key = RootRef.push().getKey();
             RootRef.child(groupName).setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         Log.d("TAG", "Create new group successful");
                         Toast.makeText(MessagesActivity.this, groupName + " created successfully", Toast.LENGTH_SHORT).show();
-
                     } else {
                         Toast.makeText(MessagesActivity.this, "Failed to create " + groupName, Toast.LENGTH_SHORT).show();
-
                     }
                 }
             });
-//        }
-
-//        RootRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                String value = snapshot.getValue(String.class);
-//                Log.d("TAG", "Value is: " + value);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.w("TAG", "Failed to read value.", error.toException());
-//            }
-//        });
-
-
     }
 }
-
-
-            //            DocumentReference df = fStore.collection("Groups").document();
-//            Map<String, Object> groupInfo = new HashMap<>();
-//            groupInfo.put("Group Name", groupName);
-//            df.set(groupInfo);
-
-//RootRef.child("Groups").child(groupName).setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
-//            @Override
-//            public void onComplete(@NonNull Task<Void> task) {
-//                Log.d("TAG", "onComplete attempting to add group to database");
-//                if(task.isSuccessful())
-//                Log.d("TAG", "Add group to database successful");
-//                {
-//                    Toast.makeText(MessagesActivity.this, groupName+ "group has been created successfully", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });

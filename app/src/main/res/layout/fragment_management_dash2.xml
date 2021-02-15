@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="800px"
     android:background="@drawable/background_colour"
-    tools:context=".ManagementDash2Fragment">
+    tools:context=".fragments.ManagementDash2Fragment">
 
     <TextView
         android:id="@+id/textView12"

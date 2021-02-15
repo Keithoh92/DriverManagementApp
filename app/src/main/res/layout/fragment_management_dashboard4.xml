@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="900px"
+    android:background="@drawable/background_colour"
+    tools:context=".fragments.Management_dashboard4">
+
+    <TextView
+        android:id="@+id/NotifyTextview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="27dp"
+        android:text="Notify Drivers"
+        android:textColor="#e3792d"
+        android:textSize="30sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/ordersTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Orders:"
+        android:textColor="#e3792d"
+        android:textSize="26sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/NotifyTextview" />
+
+    <Spinner
+        android:id="@+id/locations1"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/round_textview"
+        android:elevation="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ordersTextView" />
+
+    <Button
+        android:id="@+id/circleButton3"
+        android:layout_width="120px"
+        android:layout_height="120px"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="22dp"
+        android:background="@drawable/button_corners"
+        android:elevation="10dp"
+        android:text="3"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/circleButton4"
+        app:layout_constraintTop_toBottomOf="@+id/locations1" />
+
+    <Button
+        android:id="@+id/circleButton4"
+        android:layout_width="120px"
+        android:layout_height="120px"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="21dp"
+        android:background="@drawable/button_corners"
+        android:elevation="10dp"
+        android:text="4"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/circleButtonClear"
+        app:layout_constraintTop_toBottomOf="@+id/locations1" />
+
+    <Button
+        android:id="@+id/circleButton2"
+        android:layout_width="120px"
+        android:layout_height="120px"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/button_corners"
+        android:elevation="10dp"
+        android:text="2"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/circleButton3"
+        app:layout_constraintTop_toBottomOf="@+id/locations1" />
+
+    <Button
+        android:id="@+id/circleButton1"
+        android:layout_width="120px"
+        android:layout_height="120px"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="21dp"
+        android:background="@drawable/button_corners"
+        android:elevation="10dp"
+        android:text="1"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/circleButton2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/locations1" />
+
+    <Button
+        android:id="@+id/circleButtonClear"
+        android:layout_width="250px"
+        android:layout_height="120px"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/button_corners"
+        android:elevation="10dp"
+        android:text="Clear"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/locations1" />
+
+    <Button
+        android:id="@+id/chooseRecipients"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="27dp"
+        android:layout_marginEnd="245dp"
+        android:background="@drawable/button_corners"
+        android:elevation="10dp"
+        android:text="Choose recipents"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/ordersTextView"
+        app:layout_constraintTop_toBottomOf="@+id/circleButton2" />
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="17dp"
+        android:layout_marginTop="7dp"
+        android:text="TextView"
+        android:textColor="#ffffff"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chooseRecipients" />
+
+    <Button
+        android:id="@+id/sendButton"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="149dp"
+        android:layout_marginTop="27dp"
+        android:background="@drawable/button_corners"
+        android:text="Send"
+        app:layout_constraintBottom_toBottomOf="@+id/chooseRecipients"
+        app:layout_constraintEnd_toEndOf="@+id/circleButtonClear"
+        app:layout_constraintStart_toEndOf="@+id/chooseRecipients"
+        app:layout_constraintTop_toBottomOf="@+id/circleButtonClear" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

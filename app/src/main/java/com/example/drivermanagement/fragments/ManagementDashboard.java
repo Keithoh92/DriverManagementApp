@@ -1,10 +1,8 @@
-package com.example.drivermanagement;
+package com.example.drivermanagement.fragments;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,8 +11,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.drivermanagement.LoginActivity;
+import com.example.drivermanagement.MessagesActivity;
+import com.example.drivermanagement.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class ManagementDashboard extends AppCompatActivity {
     Toolbar managementToolbar;

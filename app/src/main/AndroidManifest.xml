@@ -22,7 +22,9 @@
         <activity android:name=".DriverDashboard" />
         <activity android:name=".ProfileTypeActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".ManagementDashboard">
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
+        <activity android:name=".fragments.ManagementDashboard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

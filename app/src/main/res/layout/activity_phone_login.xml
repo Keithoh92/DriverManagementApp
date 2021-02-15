@@ -40,7 +40,7 @@
         android:layout_marginEnd="17dp"
         android:layout_marginTop="30dp"
         android:ems="10"
-        android:hint="Enter Phone Number"
+        android:hint="Enter Phone Number - Format +353 857779999"
         android:textSize="15sp"
         android:padding="8dp"
         android:textAlignment="center"

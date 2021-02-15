@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#b5540e"
     android:elevation="10dp"
-    tools:context=".ManagementDashboard">
+    tools:context=".fragments.ManagementDashboard">
 
     <include
         android:id="@+id/management_dashboard_toolbar"
@@ -15,9 +15,9 @@
 
     <fragment
         android:id="@+id/chooserFrag"
-        android:name="com.example.drivermanagement.chooserDashFragmnet"
+        android:name="com.example.drivermanagement.fragments.chooserDashFragmnet"
         android:layout_width="match_parent"
-        android:layout_height="810px"
+        android:layout_height="300dp"
         android:elevation="10dp"
         android:layout_marginTop="3dp"
         android:layout_marginLeft="2dp"
@@ -28,9 +28,9 @@
 
     <fragment
         android:id="@+id/manDashBottom1"
-        android:name="com.example.drivermanagement.managementDash3Fragment"
+        android:name="com.example.drivermanagement.fragments.chooserDashManFragment2"
         android:layout_width="match_parent"
-        android:layout_height="800px"
+        android:layout_height="300dp"
         android:layout_marginLeft="2dp"
         android:layout_marginTop="5dp"
         android:layout_marginRight="2dp"

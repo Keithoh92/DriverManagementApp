@@ -4,33 +4,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import android.app.job.JobInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -43,7 +33,6 @@ public class GroupChatActivity extends AppCompatActivity {
     ScrollView myScrollView;
     Toolbar toolbar;
     TextView groupChatTextDisplay;
-//    LinearLayout myLinearLayout;
     EditText inputGroupMessage;
     ImageButton sendMessage;
 
@@ -51,21 +40,18 @@ public class GroupChatActivity extends AppCompatActivity {
 
     private FirebaseAuth fAuth;
     private DatabaseReference dRef, GroupRef, groupMessageKeyRef;
-    private FirebaseFirestore fStore, groupRef;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_chat);
 
-        currentGroupName = getIntent().getExtras().get("groupName").toString();
+        currentGroupName = getIntent().getExtras().get("groupName").toString(); //get group name that user selected for display at top of group chat activity
         Log.d("TAG", "Retrieved current group name from fragment" +currentGroupName);
 
         fAuth = FirebaseAuth.getInstance();
         currentUser = fAuth.getCurrentUser().getUid();
-        fStore = FirebaseFirestore.getInstance();
+        //Create 2 database references for users and groups
         dRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
         GroupRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups").child(currentGroupName);
 
@@ -80,14 +66,12 @@ public class GroupChatActivity extends AppCompatActivity {
             {
                 SaveMessageToDatabase();
                 inputGroupMessage.setText("");
-                myScrollView.fullScroll(ScrollView.FOCUS_DOWN);
-
+                myScrollView.fullScroll(ScrollView.FOCUS_DOWN); //Ensure last message in chat is always in display
             }
         });
-
-
     }
 
+    //initialise view components
     private void InitialiseFields() {
 
         toolbar = (Toolbar) findViewById(R.id.group_chat_bar_layout);
@@ -119,7 +103,7 @@ public class GroupChatActivity extends AppCompatActivity {
             }
         });
     }
-
+    //Save message info to db - Username/Date/time/message
     private void SaveMessageToDatabase()
     {
         String message = inputGroupMessage.getText().toString();
@@ -193,7 +177,7 @@ public class GroupChatActivity extends AppCompatActivity {
             }
         });
     }
-
+    //Display all messages in group chat
     private void DisplayMessages(DataSnapshot snapshot)
     {
         //Moves line by line in message node in database and returns those messages

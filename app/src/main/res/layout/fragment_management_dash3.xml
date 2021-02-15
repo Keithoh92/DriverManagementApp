@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="800px"
     android:background="@drawable/background_colour"
-    tools:context=".managementDash3Fragment">
+    tools:context=".fragments.managementDash3Fragment">
 
     <TextView
         android:id="@+id/NotifyTextview"

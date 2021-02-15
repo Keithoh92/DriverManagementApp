@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MessagesActivity">
-
-    <include
-        android:id="@+id/messages_toolbar"
-        layout="@layout/toolbar_management">
-    </include>
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.DashboardMessagesViewPager">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tablayout_messages"
@@ -19,8 +14,7 @@
         app:tabTextColor="#e3792d"
         app:tabRippleColor="#3E3D3D"
         app:tabSelectedTextColor="#e3792d"
-        android:background="#3E3D3D"
-        android:layout_below="@+id/messages_toolbar">
+        android:background="#3E3D3D">
 
     </com.google.android.material.tabs.TabLayout>
 

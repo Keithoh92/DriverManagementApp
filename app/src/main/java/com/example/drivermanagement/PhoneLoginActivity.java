@@ -3,7 +3,6 @@ package com.example.drivermanagement;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,12 +14,12 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.drivermanagement.fragments.ManagementDashboard;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
@@ -138,7 +137,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
                                     }
                                 });
                                 try {
-                                    Thread.sleep(8);
+                                    Thread.sleep(100);
                                 }catch(InterruptedException e){
                                     e.printStackTrace();
                                 }
@@ -147,6 +146,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
                         }
                     }).start();
                     PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, verificationCodeReceived);
+                    Log.d("TAG", "Verification code entered and verify buttin clicked" +verificationCodeReceived);
                     signInWithPhoneAuthCredential(credential);
                 }
             }
@@ -203,6 +203,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
         };
     }
     private void signInWithPhoneAuthCredential(final PhoneAuthCredential credential) {
+        Log.d("TAG", "signInWithAuthCredentialsCredential got called" +credential);
         fAuth.getCurrentUser().linkWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -212,12 +213,42 @@ public class PhoneLoginActivity extends AppCompatActivity {
                     FirebaseUser user = fAuth.getCurrentUser();
                     Toast.makeText(PhoneLoginActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
                     checkUserAccessLevel(user.getUid());
+                    Log.d("TAG", "Checking users access level" +credential);
                 } else {
-                    Toast.makeText(PhoneLoginActivity.this, "Login Failed, Please try again", Toast.LENGTH_SHORT).show();
+                    Log.d("TAG", "Login failed" +task.getException());
+                    Toast.makeText(PhoneLoginActivity.this, "Login Failed, Please try again, Your number could already be associated with another account!", Toast.LENGTH_LONG).show();
+//                    final FirebaseUser prevUser = FirebaseAuth.getInstance().getCurrentUser();
+//                    fAuth.signInWithCredential(credential)
+//                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<AuthResult> task) {
+//                                    FirebaseUser currentUser = task.getResult().getUser();
+//                                    Log.d("TAG", "Login Failed, Getting current user for delete");
+//                                    currentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<Void> task) {
+//                                            Log.d("TAG", "Deleting current user to merge new credentials with new user login" +credential);
+//                                            prevUser.linkWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                                                @Override
+//                                                public void onComplete(@NonNull Task<AuthResult> task) {
+//                                                    Log.d("TAG", "Successfully merged accounts email/phone - pass to checkuseraccesslevel method" +credential);
+//                                                    fAuth.signInWithCredential(credential);
+//                                                    FirebaseUser user = fAuth.getCurrentUser();
+//                                                    checkUserAccessLevel(user.getUid());
+//                                                }
+//                                            });
+//                                        }
+//                                    });
+//                                    // Merge prevUser and currentUser accounts and data
+//                                    // ...
+//                                }
+//                            });
                 }
             }
         });
     }
+
+
 //        fAuth.signInWithCredential(credential)
 //                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
 //                    @Override
@@ -236,6 +267,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
 //                });
 //    }
     private void checkUserAccessLevel(String uid) {
+        Log.d("TAG", "Check user access level was called, sign in successful" +uid);
         //extract data from document
         RootRef.child(uid).addValueEventListener(new ValueEventListener() {
             @Override
@@ -243,6 +275,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
 
                 if ((snapshot.exists()) && (snapshot.hasChild("UserType"))) {
                     String retrieveUserType = snapshot.child("UserType").getValue().toString();
+                    Log.d("TAG", "Usertype is: " +retrieveUserType);
                     if (retrieveUserType.equals("Management")) {
                         startActivity(new Intent(PhoneLoginActivity.this, ManagementDashboard.class));
                         finish();

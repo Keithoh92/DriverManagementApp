@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="900px"
     android:background="@drawable/background_colour"
-    tools:context=".ManagementDash1Fragment">
+    tools:context=".fragments.ManagementDash1Fragment">
 
     <!-- TODO: Update blank fragment layout -->
 

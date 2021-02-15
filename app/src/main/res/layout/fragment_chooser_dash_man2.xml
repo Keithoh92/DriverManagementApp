@@ -3,13 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.GroupsFragment">
+    tools:context=".fragments.chooserDashManFragment2"
+    android:background="@drawable/background_colour">
 
-
-    <ListView
-        android:id="@+id/list_view"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/dash_chooser2_tab_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="wrap_content"
+        >
+
+
+    </androidx.viewpager.widget.ViewPager>
 
 </RelativeLayout>

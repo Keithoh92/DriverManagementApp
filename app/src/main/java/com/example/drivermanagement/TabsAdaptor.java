@@ -1,13 +1,14 @@
 package com.example.drivermanagement;
 
-import android.provider.ContactsContract;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+
+import com.example.drivermanagement.fragments.ChatFragment;
+import com.example.drivermanagement.fragments.ContactsFragment;
+import com.example.drivermanagement.fragments.GroupsFragment;
 
 public class TabsAdaptor extends FragmentStatePagerAdapter {
 

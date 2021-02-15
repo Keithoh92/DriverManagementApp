@@ -13,9 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.drivermanagement.fragments.ManagementDashboard;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,8 +24,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
@@ -37,9 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth fAuth;
     private FirebaseDatabase dbRef;
     private DatabaseReference RootRef;
-    private FirebaseFirestore fStore;
 
-    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +47,10 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.editPassword);
 
         fAuth = FirebaseAuth.getInstance();
-        fStore = FirebaseFirestore.getInstance();
         dbRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/");
         RootRef = dbRef.getReference("Users");
 
+        //Go to registration activity when register is clicked
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
+        //If user selects login button validate input and call login method
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-
+        //Allow user to login with phone number
         loginWithPhoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -89,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
-
+    //Authenticate users login details in Firebase
     private void loginUser(String txtEmail, String txtPassword) {
         fAuth.signInWithEmailAndPassword(txtEmail, txtPassword).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
             @Override
@@ -100,9 +96,8 @@ public class LoginActivity extends AppCompatActivity {
                     FirebaseUser user = fAuth.getCurrentUser();
                     Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
 
-//                    updateUI(user);
                     checkUserAccessLevel(user.getUid());
-//                    loadingBar.dismiss();
+
                 } else if (!task.isSuccessful()) {
                     Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
                 }
@@ -110,12 +105,9 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
-
+    //Check users access level i.e. management or driver and go respective dashboard
     private void checkUserAccessLevel(String uid) {
-//        FirebaseUser currentUser = fAuth.getCurrentUser();
-//        DocumentReference df = fStore.collection("Users").document(uid);
 
-        //extract data from document
         RootRef.child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -138,27 +130,6 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-//        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//            @Override
-//            public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                Log.d("TAG", "OnSuccess: " + documentSnapshot.getData());
-//                //Identify the user access
-//
-////                    DocumentSnapshot document = task.getResult();
-//                    String userType = documentSnapshot.getString("UserType");
-//                    if(userType.equals("Management")){
-//                        //user is admin
-//                        startActivity(new Intent(LoginActivity.this, ManagementDashboard.class));
-//                        finish();
-//                    }
-//                    if(userType.equals("Driver")){
-//                        startActivity(new Intent(LoginActivity.this, DriverDashboard.class));
-//                        finish();
-//                    }
-//                }
-//
-//        });
-
     }
 
     @Override
@@ -176,32 +147,3 @@ public class LoginActivity extends AppCompatActivity {
 //        }
     }
 }
-
-
-
-
-
-//            DocumentReference df = fStore.collection("Users").document(fAuth.getUid());
-//            df.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                @Override
-//                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                    if (task.isSuccessful()) {
-//                        checkUserAccessLevel(fAuth.getCurrentUser().getUid());
-//                    }else{
-//                        fAuth.signOut();
-//                        startActivity(new Intent(LoginActivity.this, LoginActivity.class));
-//                        finish();
-//                    }
-//                }
-//            }).addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception e) {
-//                    fAuth.signOut();
-//                    startActivity(new Intent(LoginActivity.this, LoginActivity.class));
-//                    finish();
-//                }
-//            });
-//        }
-//
-//    }
-//}

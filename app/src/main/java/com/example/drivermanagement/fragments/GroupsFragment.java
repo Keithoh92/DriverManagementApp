@@ -1,6 +1,7 @@
-package com.example.drivermanagement;
+package com.example.drivermanagement.fragments;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.drivermanagement.GroupChatActivity;
+import com.example.drivermanagement.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -94,6 +97,7 @@ public class GroupsFragment extends Fragment {
 
     private void InitialiseFields() {
         list_view = (ListView) groupFragmentView.findViewById(R.id.list_view);
+//        list_view.setCacheColorHint(Color.rgb(255, 255, 255));
         arrayAdaptor = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, list_of_groups);
         list_view.setAdapter(arrayAdaptor);
     }

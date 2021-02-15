@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/background_colour"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".chooserDashFragmnet">
+    tools:context=".fragments.chooserDashFragmnet">
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/dash_chooser_tab_pager"

@@ -1,4 +1,4 @@
-package com.example.drivermanagement;
+package com.example.drivermanagement.fragments;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,6 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
+
+import com.example.drivermanagement.R;
 
 
 public class managementDash3Fragment extends Fragment {
