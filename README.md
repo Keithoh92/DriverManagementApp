@@ -1,5 +1,5 @@
 # DriverManagementApp
- ![](images/logo1.png)
+ ![](images/logosky.png)
  
 4th year major project -  Android Java Mobile software application catered towards businesses that operate fleets of drivers as a core business process – Centralised application for all daily operations and communications between drivers and management.
 Technologies:
