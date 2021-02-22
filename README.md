@@ -18,18 +18,31 @@ Firebase backend integration:<br/>
   Database<br/>
   Storage<br/>
   Cloud messaging<br/>
-  Design:
+  <br/>
+  Login/Register
+  ![](readmeimages/login1.png)
+  ![](readmeimages/register1.png)
+  ![](readmeimages/register2.png)
+  ![](readmeimages/phoneverification.png)
+  ![](readmeimages/verify2.png)
+  <br/>
+ 
+  ![](readmeimages/login.png)
+  ![](readmeimages/groups.png)
+  ![](readmeimages/groupchat.png)
+  ![](readmeimages/creategroup.png)
+  ![](readmeimages/groupchatmessage.png)
+  <br/>
+ 
+  ![](images/userprofile.png)
+  <br/>
+ 
+  ![](readmeimages/dash1.png)
+  ![](readmeimages/dash2.png)
+  ![](readmeimages/dash3.png)
+  ![](readmeimages/driverdash.png)
+
+  <br/>
   
   ![](images/design.png)
   
-  ![](images/login.png)
-  ![](images/register.png)
-  ![](images/phoneverification.png)
-  ![](images/dash1.png)
-  ![](images/dash2.png)
-  ![](images/dash3.png)
-  ![](images/groups.png)
-  ![](images/chatfrag.png)
-  ![](images/Screenshot%202021-02-10%20160422.png)
-  ![](images/groupactivity.png)
-  ![](images/userprofile.png)
