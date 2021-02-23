@@ -42,6 +42,8 @@ Firebase backend integration:<br/>
   ![](readmeimages/dash1.png)
   ![](readmeimages/dash2.png)
   ![](readmeimages/dash3.png)
+  ![](readmeimages/routes.png)
+  ![](readmeimages/places.png)
   ![](readmeimages/driverdash.png)
 
   <br/>
