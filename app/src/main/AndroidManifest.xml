@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
 
     <application
@@ -17,7 +18,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RoutesActivity"></activity>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -28,11 +32,12 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="${mapsApiKey}" />
         <activity android:name=".ProfileActivity" />
         <activity
             android:name=".FindDriversActivity"
             android:parentActivityName=".MessagesActivity" />
+        <activity android:name=".LoginActivity"/>
         <activity android:name=".PhoneLoginActivity" />
         <activity android:name=".GroupChatActivity" />
         <activity android:name=".ChooseDashboards" />
@@ -45,14 +50,9 @@
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".fragments.ManagementDashboard">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".LoginActivity">
+        <activity android:name=".fragments.ManagementDashboard"/>
+        <activity android:name=".RoutesActivity"
+            android:parentActivityName=".DriverDashboard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

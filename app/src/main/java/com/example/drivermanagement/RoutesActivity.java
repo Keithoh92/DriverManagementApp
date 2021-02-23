@@ -2,10 +2,16 @@ package com.example.drivermanagement;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.Status;
@@ -38,14 +44,21 @@ public class RoutesActivity extends AppCompatActivity {
     private ArrayList<String> permissionRejected = new ArrayList<>();
     private ArrayList<String> permissions = new ArrayList<>();
     private final static int ALL_PERMISSIONS_RESULT = 101;
+
     List<StoreModel> storeModels;
     ApiInterface apiInterface;
 
     String latlngString;
     LatLng latLng;
     /////////////////
+    RecyclerView recyclerView;
+    RecyclerViewAdapter recyclerViewAdapter;
+
+    List<String> destinationsList;
     private Toolbar toolbar;
-    private TextView destination1, destination2, destination3;
+    private CardView cardView;
+    private TextView ETA;
+    Button startButton;
     AutocompleteSupportFragment autocompleteSupportFragment;
 
 
@@ -54,36 +67,51 @@ public class RoutesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routes);
         toolbar = findViewById(R.id.toolbar_routes);
+        cardView = findViewById(R.id.cardview_layout);
+        ETA = findViewById(R.id.eta_textview);
+        startButton = findViewById(R.id.start_button);
+
+        destinationsList = new ArrayList<>();
+        recyclerView = findViewById(R.id.destination_recycler);
+        recyclerViewAdapter = new RecyclerViewAdapter(destinationsList);
+        recyclerView.setAdapter(recyclerViewAdapter);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+
 
         permissions.add(ACCESS_FINE_LOCATION);
         permissions.add(ACCESS_COARSE_LOCATION);
 
-        permissionsToRequest = findUnAskedPermissions(permissions);
+//        permissionsToRequest = findUnAskedPermissions(permissions);
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-
-            if (permissionsToRequest.size() > 0)
-                requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
-            else {
-                fetchLocation();
-            }
-        } else {
-            fetchLocation();
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//
+//
+//            if (permissionsToRequest.size() > 0)
+//                requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+//            else {
+//                fetchLocation();
+//            }
+//        } else {
+//            fetchLocation();
+//        }
+//
+//
+//        apiService = APIClient.getClient().create(ApiInterface.class);
+        String api_key = getString(R.string.api_key);
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), api_key);
+            PlacesClient placesClient = Places.createClient(this);
         }
-
-
-        apiService = APIClient.getClient().create(ApiInterface.class);
-
-        Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key));
-        PlacesClient placesClient = Places.createClient(this);
 
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Find Drivers");
+        getSupportActionBar().setTitle("Route Finder");
 
         autocompleteSupportFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.places_searchbar_fragment);
         autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
@@ -95,6 +123,7 @@ public class RoutesActivity extends AppCompatActivity {
                 // TODO: Get info about the selected place.
                 String latlngStr = place.getLatLng().toString();
                 Double latlng = Double.parseDouble(latlngStr);
+//                String geo = place.get
 
                 Bundle args = new Bundle();
                 args.putDouble("latlng", latlng);
@@ -120,4 +149,22 @@ public class RoutesActivity extends AppCompatActivity {
 
 
     }
+    //Method to retrieve users current location using SmartLocation Library
+//    private void fetchLocation(){
+//        SmartLocation.with(this).location()
+//                .oneFix()
+//                .start(new OnLocationUpdatedListener() {
+//                    @Override
+//                    public void onLocationUpdated(Location location)
+//                    {
+//                        latlngString = location.getLatitude() + "," +location.getLongitude();
+//                        latLng = new LatLng(location.getLatitude(), location.getLongitude());
+//                    }
+//                });
+//    }
+//
+//    //Method to retrieve distance from current location to destination
+//    private void fetchDistance(){
+//
+//    }
 }
