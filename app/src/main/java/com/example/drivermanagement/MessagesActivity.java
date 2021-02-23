@@ -75,7 +75,7 @@ public class MessagesActivity extends AppCompatActivity {
         }
         if(item.getItemId() == R.id.add_drivers_option)
         {
-
+            SendUSerToFindDriversActivity();
         }
         if(item.getItemId() == R.id.create_group_option)
         {
@@ -99,6 +99,12 @@ public class MessagesActivity extends AppCompatActivity {
     {
         Intent settingsIntent = new Intent(MessagesActivity.this, ChatSettingsActivity.class);
         startActivity(settingsIntent);
+    }
+
+    private void SendUSerToFindDriversActivity()
+    {
+        Intent findDriversIntent = new Intent(MessagesActivity.this, FindDriversActivity.class);
+        startActivity(findDriversIntent);
     }
 
     //Called when user wants to create new group

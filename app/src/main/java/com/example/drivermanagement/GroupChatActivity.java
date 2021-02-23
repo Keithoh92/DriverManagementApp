@@ -93,7 +93,7 @@ public class GroupChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists())
                 {
-                    currentUsername = snapshot.child("Username").getValue().toString();
+                    currentUsername = snapshot.child("username").getValue().toString();
                 }
             }
 
@@ -128,7 +128,7 @@ public class GroupChatActivity extends AppCompatActivity {
             groupMessageKeyRef = GroupRef.child(messageKey);
 
             HashMap<String, Object> infoMap = new HashMap<>();
-            infoMap.put("Username", currentUsername);
+            infoMap.put("username", currentUsername);
             infoMap.put("message", message);
             infoMap.put("date", currentDate);
             infoMap.put("time", currentTime);

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RoutesActivity"
+    android:background="@drawable/background_colour_no_radius">
+
+    <include
+        android:id="@+id/toolbar_routes"
+        layout="@layout/toolbar_management"
+        >
+    </include>
+
+    <SearchView
+        android:id="@+id/add_stop_search_view"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/toolbar_routes"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/blue_background">
+
+        <fragment
+            android:id="@+id/places_searchbar_fragment"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment">
+        </fragment>
+    </SearchView>
+
+    <LinearLayout
+        android:id="@+id/destination1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:layout_below="@id/add_stop_search_view"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/blue_background">
+        <TextView
+            android:id="@+id/dest_texview1"
+            android:layout_width="310dp"
+            android:layout_height="30dp"
+            android:text="Destination"
+            android:textSize="20sp"
+            android:textColor="#666564"
+            android:layout_marginVertical="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="10dp"/>
+            <ImageView
+                android:id="@+id/drag_icon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginVertical="10dp"
+                android:src="@drawable/drag" />
+
+    </LinearLayout>
+
+    <LinearLayout
+    android:id="@+id/destination2"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:orientation="horizontal"
+    android:layout_below="@id/destination1"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/blue_background">
+    <TextView
+        android:id="@+id/dest_textview2"
+        android:layout_width="310dp"
+        android:layout_height="30dp"
+        android:text="Destination"
+        android:textSize="20sp"
+        android:textColor="#666564"
+        android:layout_marginVertical="10dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="10dp"/>
+    <ImageView
+        android:id="@+id/drag_icon1"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginVertical="10dp"
+        android:src="@drawable/drag" />
+
+</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/destination3"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:layout_below="@id/destination2"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/blue_background">
+        <TextView
+            android:id="@+id/dest_textview3"
+            android:layout_width="310dp"
+            android:layout_height="30dp"
+            android:text="Destination"
+            android:textSize="20sp"
+            android:textColor="#666564"
+            android:layout_marginVertical="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="10dp"/>
+        <ImageView
+            android:id="@+id/drag_icon2"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginVertical="10dp"
+            android:src="@drawable/drag" />
+
+    </LinearLayout>
+
+    <fragment
+        android:id="@+id/maps_fragment_routes_activity"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_below="@id/destination3"
+        android:layout_marginTop="20dp">
+    </fragment>
+
+    <LinearLayout
+        android:id="@+id/eta_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/maps_fragment_routes_activity"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/blue_background">
+        <TextView
+            android:layout_width="272dp"
+            android:layout_height="wrap_content"
+            android:text="ETA: "
+            android:textColor="#2463d6"
+            android:textSize="20sp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginVertical="2dp"
+            android:textAlignment="textStart"/>
+        <Button
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:text="Start"
+            android:layout_marginRight="0dp"
+            android:background="@drawable/button_corners"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

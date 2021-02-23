@@ -98,12 +98,12 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
 //                    DocumentReference df = fStore.collection("Users").document(user.getUid());
                     Map<String, Object> userInfo = new HashMap<>();
-                    userInfo.put("Company Name", companyName.getText().toString());
+                    userInfo.put("companyName", companyName.getText().toString());
                     userInfo.put("uid", currentUserId);
-                    userInfo.put("Email", emailRegister.getText().toString());
-                    userInfo.put("Username", username.getText().toString());
-                    userInfo.put("UserType", userType);
-                    userInfo.put("Profile Picture", "");
+                    userInfo.put("email", emailRegister.getText().toString());
+                    userInfo.put("username", username.getText().toString());
+                    userInfo.put("userType", userType);
+                    userInfo.put("image", "");
                     RootRef.child(currentUserId).setValue(userInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

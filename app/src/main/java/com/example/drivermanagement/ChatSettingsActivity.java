@@ -136,8 +136,9 @@ public class ChatSettingsActivity extends AppCompatActivity {
                                     //Store firebase storage image reference in database for use in retrieval of image
                                     Uri downloadUri = uri;
                                     Map<String, Object> profilePicMap = new HashMap<String, Object>();
-                                    profilePicMap.put("Profile Picture", downloadUri.toString());
+                                    profilePicMap.put("image", downloadUri.toString());
                                     RootRef.child(currentUserID.getUid()).updateChildren(profilePicMap);
+                                    RetrieveProfilePhoto();
                                 }
                             });
 
@@ -163,7 +164,7 @@ public class ChatSettingsActivity extends AppCompatActivity {
         FirebaseUser currentUserID = fAuth.getCurrentUser();
 
         HashMap<String, Object> usernameMap = new HashMap<String, Object>();
-        usernameMap.put("Username", setUserName);
+        usernameMap.put("username", setUserName);
         RootRef.child(currentUserID.getUid()).updateChildren(usernameMap);
 
     }
@@ -176,7 +177,7 @@ public class ChatSettingsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot)
             {
-                String username = snapshot.child("Username").getValue().toString();
+                String username = snapshot.child("username").getValue().toString();
                 userName.setText(username);
             }
 
@@ -194,9 +195,9 @@ public class ChatSettingsActivity extends AppCompatActivity {
         RootRef.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if ((!snapshot.child("Profile Picture").getValue().toString().equals(""))) {
-                    Log.d("TAG", "OnSuccess profile image reference exists" +snapshot.child("Profile Picture").getValue().toString());
-                    String imageUri = snapshot.child("Profile Picture").getValue().toString();
+                if ((!snapshot.child("image").getValue().toString().equals(""))) {
+                    Log.d("TAG", "OnSuccess profile image reference exists" +snapshot.child("image").getValue().toString());
+                    String imageUri = snapshot.child("image").getValue().toString();
                     Picasso.get().load(imageUri).into(userprofileImage);//library to load image from firebase storage into circleimageview
                 } else {
                     Toast.makeText(ChatSettingsActivity.this, "You don't seem to have a profile picture yet, Please upload new image!", Toast.LENGTH_SHORT).show();

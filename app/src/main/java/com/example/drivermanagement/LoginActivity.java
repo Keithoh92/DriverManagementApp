@@ -112,8 +112,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                if ((snapshot.exists()) && (snapshot.hasChild("UserType"))) {
-                    String retrieveUserType = snapshot.child("UserType").getValue().toString();
+                if ((snapshot.exists()) && (snapshot.hasChild("userType"))) {
+                    String retrieveUserType = snapshot.child("userType").getValue().toString();
                     if (retrieveUserType.equals("Management")) {
                         startActivity(new Intent(LoginActivity.this, ManagementDashboard.class));
                         finish();
