@@ -12,6 +12,7 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -142,9 +143,10 @@ public class RoutesActivity extends AppCompatActivity {
 //
 //
 //        apiService = APIClient.getClient().create(ApiInterface.class);
-        String api_key = getString(R.string.api_key);
+//        String api_key = getString(R.string.api_key);
+        final String GOOGLE_PLACE_API_KEY1 = Resources.getSystem().getString(R.string.api_key);
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), api_key);
+            Places.initialize(getApplicationContext(), GOOGLE_PLACE_API_KEY1);
             PlacesClient placesClient = Places.createClient(this);
         }
 
