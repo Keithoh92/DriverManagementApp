@@ -1,5 +1,7 @@
 package com.example.drivermanagement;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,21 +13,33 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback, GoogleMap.OnMarkerClickListener{
+public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap map;
+//    Activity listener;
 
 
 //    public MapsFragment() {
 //        // Required empty public constructor
+//    }
+
+
+//    @Override
+//    public void onAttach(@NonNull Context context) {
+//        super.onAttach(context);
+//        if(context instanceof RoutesActivity){
+//            this.listener = (RoutesActivity) context; //MainActivity listener
+//        }
 //    }
 
     @Override
@@ -54,35 +68,63 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+
     }
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.map = googleMap;
-        LatLng dublin = new LatLng(-6.266155, 53.3498);
-        googleMap.addMarker(new MarkerOptions()
-                .position(dublin)
-                .title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(dublin));
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.setOnMapLoadedCallback(this);
     }
 
     @Override
     public void onMapLoaded() {
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            //String cityName1 = getArguments().getString("cityname");
-            String cityName = "Dublin";
-            double lat1 = getArguments().getDouble("lat", 53.3498);
-            double lon1 = getArguments().getDouble("lon", -6.266155);
-//            Log.d("testing", "received from fragment" + lon1 + ", " + lat1 + ", " + cityName1);
-            LatLng newLocation1 = new LatLng(lat1, lon1);
+//        Bundle bundle = this.getArguments();
+//        if (bundle != null) {
+//            //String cityName1 = getArguments().getString("cityname");
+//            String cityName = "Dublin";
+////            String latlng = getArguments().getString("latlng");
+//
+//            double lat1 = getArguments().getDouble("myLat", 53.3498);
+//            double lon1 = getArguments().getDouble("myLon", -6.266155);
+//            Log.d("testing", "received from fragment" + lon1 + ", " + lat1);
+
+        //Receive latlng from userslocation
+        Bundle usersLocation = this.getArguments();
+        if (usersLocation != null) {
+            String cityName = "My Location";
+            double lat1 = getArguments().getDouble("usersLat", 53.3498);
+            double lon1 = getArguments().getDouble("usersLon", -6.266155);
+            Log.d("testing", "received users location" + lon1 + ", " + lat1);
+            LatLng usersLatLon = new LatLng(lat1, lon1);
+//            LatLng newLocation1 = new LatLng(lat1, lon1);
             map.addMarker(new MarkerOptions()
-                    .position(newLocation1)
+                    .position(usersLatLon)
                     .title(cityName));
-            map.moveCamera(CameraUpdateFactory.newLatLng(newLocation1));
+            CameraPosition cameraPosition = new CameraPosition.Builder().target(usersLatLon).zoom(14.0f).build();
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+            map.moveCamera(cameraUpdate);
+        }else {
+            //Receive latlng from places autocomplete selection
+            Bundle bundle = this.getArguments();
+            if (bundle != null) {
+                String cityName = "Dublin";
+                double lat1 = getArguments().getDouble("myLat", 53.3498);
+                double lon1 = getArguments().getDouble("myLon", -6.266155);
+                Log.d("testing", "received from fragment" + lon1 + ", " + lat1);
+//            LatLng newLocation1 = new LatLng(lat1, lon1);
+
+                LatLng newLocation1 = new LatLng(lat1, lon1);
+                map.addMarker(new MarkerOptions()
+                        .position(newLocation1)
+                        .title(cityName));
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(newLocation1).zoom(14.0f).build();
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+                map.moveCamera(cameraUpdate);
+            }
         }
     }
 

@@ -36,6 +36,7 @@
             android:layout_height="140dp"
             android:layout_marginTop="60dp"
             android:layout_marginLeft="5dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             >
         </androidx.recyclerview.widget.RecyclerView>
 

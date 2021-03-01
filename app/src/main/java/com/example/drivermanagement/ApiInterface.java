@@ -9,4 +9,5 @@ public interface ApiInterface {
     @GET("distancematrix/json")
     Call<ResultDistanceMatrix> getDistance(@Query("key") String key,
                                            @Query("origins") String origins, @Query("destinations") String destinations);
+
 }
