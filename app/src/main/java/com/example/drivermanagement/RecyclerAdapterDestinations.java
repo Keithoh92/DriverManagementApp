@@ -49,7 +49,7 @@ public class RecyclerAdapterDestinations extends RecyclerView.Adapter<RecyclerAd
         public ViewHolder(View itemView) {
             super(itemView);
 
-            imageView = itemView.findViewById(R.id.rv_imageview);
+//            imageView = itemView.findViewById(R.id.rv_imageview);
             dest_textview = itemView.findViewById(R.id.textview_dest);
             itemView.setOnClickListener(this);
 

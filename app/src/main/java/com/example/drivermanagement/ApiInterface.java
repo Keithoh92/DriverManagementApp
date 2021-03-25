@@ -10,4 +10,5 @@ public interface ApiInterface {
     Call<ResultDistanceMatrix> getDistance(@Query("key") String key,
                                            @Query("origins") String origins, @Query("destinations") String destinations);
 
+//    @GET(place/autocomplete)
 }

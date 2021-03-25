@@ -11,7 +11,9 @@
     <include
         android:id="@+id/management_dashboard_toolbar"
         layout="@layout/toolbar_management"
-        android:elevation="10dp"></include>
+        android:elevation="10dp">
+
+    </include>
 
     <fragment
         android:id="@+id/chooserFrag"

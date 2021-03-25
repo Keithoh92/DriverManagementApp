@@ -17,7 +17,8 @@ public class APIClient {
     private static Retrofit retrofit = null;
 
 //    String api_key = Resources.getSystem().getString(R.string.api_key);
-    public static final String GOOGLE_PLACE_API_KEY = Resources.getSystem().getString(R.string.api_key);
+    //REMOVE API KEY FROM HERE WHEN USING VERSION CONTROL
+
 
     public static String base_url = "https://maps.googleapis.com/maps/api/";
 

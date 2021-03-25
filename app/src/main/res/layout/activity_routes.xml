@@ -48,7 +48,7 @@
         android:id="@+id/maps_fragment_routes_activity"
         android:name="com.example.drivermanagement.MapsFragment"
         android:layout_width="match_parent"
-        android:layout_height="340dp"
+        android:layout_height="330dp"
         android:layout_below="@id/cardview_layout"
         android:layout_marginTop="20dp">
     </fragment>
@@ -60,25 +60,29 @@
         android:layout_below="@id/maps_fragment_routes_activity"
         android:orientation="horizontal"
         android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         >
         <TextView
             android:id="@+id/eta_textview"
             android:layout_width="270dp"
-            android:layout_height="50dp"
-            android:text="Dist: 10km | Duration: 20mins"
-            android:textColor="#2463d6"
+            android:layout_height="40dp"
+            android:text="Dist: 0km | Duration: 0mins"
+            android:textColor="#e3792d"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
             android:textAlignment="gravity"
-            android:gravity="center"
-            android:background="@drawable/blue_background"/>
+            android:gravity="left"
+            android:paddingLeft="5dp"
+            />
 
         <Button
             android:id="@+id/start_button"
-            android:layout_width="100dp"
-            android:layout_height="48dp"
-            android:layout_marginLeft="10dp"
+            android:layout_width="80dp"
+            android:layout_height="35dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
             android:text="Start"
             android:background="@drawable/button_corners_blue_border"
             />

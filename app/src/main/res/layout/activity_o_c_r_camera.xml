@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OCRCameraActivity">
+
+    <include
+        android:id="@+id/toolbar_ocr"
+        layout="@layout/toolbar_management"
+        >
+    </include>
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/camera_prev"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_ocr"
+        />
+
+    <Button
+        android:id="@+id/camera_take_pic"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/camera_button"
+        android:alpha="0.25"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="20dp"/>
+
+</RelativeLayout>

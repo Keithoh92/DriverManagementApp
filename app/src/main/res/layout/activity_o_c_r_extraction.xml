@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/extraction_main_layout"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OCRExtractionActivity">
+
+    <include
+        android:id="@+id/toolbar_extract"
+        layout="@layout/toolbar_management"
+        >
+    </include>
+    
+    <ImageView
+        android:id="@+id/camera_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_extract"
+        android:layout_above="@+id/bottom_nav_extract"/>
+    
+    <fragment
+        android:id="@+id/edit_text_fragment"
+        android:name="com.example.drivermanagement.EditTextFragment"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_centerVertical="true"
+        android:layout_margin="10dp"
+        />
+
+    
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav_extract"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#b5540e"
+    android:elevation="10dp"
+    tools:context=".DriversDashboardActivity">
+
+        <include
+            android:id="@+id/drivers_dashboard_toolbar"
+            layout="@layout/toolbar_management"
+            android:elevation="10dp">
+
+        </include>
+
+        <fragment
+            android:id="@+id/driver_top_frag"
+            android:name="com.example.drivermanagement.fragments.chooserDashFragmnet"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:elevation="10dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_below="@id/drivers_dashboard_toolbar"
+            />
+
+        <fragment
+            android:id="@+id/driver_bottom_frag"
+            android:name="com.example.drivermanagement.fragments.chooserDashManFragment2"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginBottom="5dp"
+            android:elevation="10dp"
+            android:layout_below="@id/driver_top_frag"
+            android:layout_above="@id/bottom_nav_drivers"/>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_nav_drivers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:menu="@menu/bottom_nav_menu"
+            app:itemIconSize="@dimen/places_autocomplete_prediction_primary_text"
+            app:itemTextColor="@android:color/white"
+            app:itemIconTint="#b5540e"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/toolbar_background"/>
+
+    </RelativeLayout>

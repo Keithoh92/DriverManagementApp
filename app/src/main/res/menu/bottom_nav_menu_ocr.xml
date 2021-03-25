@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/messages_menu_button"
+        android:enabled="true"
+        android:title="MESSAGES"
+        android:icon="@drawable/mess_icon3"
+        />
+
+    <item
+        android:id="@+id/ocr_menu_button"
+        android:title="SCAN"
+        android:enabled="true"
+        android:icon="@drawable/ocr_icon3"
+        />
+</menu>

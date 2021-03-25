@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/background_colour"
+    tools:context=".EditTextFragment">
+
+    <EditText
+        android:id="@+id/edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="15dp"
+        android:textColorHint="#000000"
+        android:gravity="clip_horizontal"
+        android:background="@drawable/round_textview"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:textSize="20sp"
+        android:elevation="10dp"
+        android:textColor="#000000" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@id/edit_text"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_centerVertical="true"
+        >
+
+
+    <Button
+        android:id="@+id/correct_button"
+        android:layout_width="150dp"
+        android:layout_height="45dp"
+        android:text="Correct"
+        android:paddingStart="10dp"
+        android:background="@drawable/button_corners_blue_border"
+        android:drawableEnd="@drawable/checkmark_icon"
+        />
+
+        <Button
+            android:id="@+id/retry_button"
+            android:layout_width="150dp"
+            android:layout_height="45dp"
+            android:text="Retry"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/button_corners_blue_border"
+            android:drawableEnd="@drawable/cancel_icon"
+            android:paddingRight="-5dp"
+            />
+
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

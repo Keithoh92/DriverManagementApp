@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/messages_menu_button"
+        android:enabled="true"
+        android:title="Redo textbox scaling?"
+        />
+
+    <item
+        android:id="@+id/ocr_menu_button"
+        android:title="Retake Picture"
+        android:enabled="true"
+        />
+</menu>
