@@ -1,6 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
+
+
+// ...
+// Set the properties within `local.properties` into a `Properties` class so that values
+// within `local.properties` (e.g. Maps API key) are accessible in this file.
+
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
@@ -12,16 +19,14 @@ android {
         versionCode 1
         versionName "1.0"
 
-        // ...
-        // Set the properties within `local.properties` into a `Properties` class so that values
-        // within `local.properties` (e.g. Maps API key) are accessible in this file.
+
         Properties properties = new Properties()
         if (rootProject.file("local.properties").exists()) {
             properties.load(rootProject.file("local.properties").newDataInputStream())
-        }
 
+        }
         // Inject the Maps API key into the manifest
-        manifestPlaceholders = [ mapsApiKey : properties.getProperty("MAPS_API_KEY", "") ]
+//        manifestPlaceholders = [ mapsApiKey : properties.getProperty("MAPS_API_KEY", "") ]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -42,6 +47,7 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
+    implementation 'com.android.support:support-v4:28.0.0'
     def camerax_version = "1.0.0-rc03"
 // CameraX core library using camera2 implementation
     implementation "androidx.camera:camera-core:${camerax_version}"

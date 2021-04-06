@@ -29,6 +29,13 @@
         android:layout_margin="10dp"
         />
 
+    <fragment
+        android:id="@+id/scanned_orders_frag"
+        android:name="com.example.drivermanagement.ScannedOrdersFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
     
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

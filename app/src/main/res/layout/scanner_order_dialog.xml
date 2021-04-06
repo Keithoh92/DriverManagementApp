@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/editAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Address"/>
+
+    <EditText
+        android:id="@+id/order_no_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editAddress"
+        android:hint="Enter Order Number"/>
+
+    <EditText
+        android:id="@+id/order_price_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/order_no_edit"
+        android:hint="Enter Price"/>
+
+    <EditText
+        android:id="@+id/order_notes_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/order_price_edit"
+        android:height="100dp"
+        android:hint="Enter Order Notes"/>
+
+</RelativeLayout>

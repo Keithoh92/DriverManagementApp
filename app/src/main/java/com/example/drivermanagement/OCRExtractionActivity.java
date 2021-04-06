@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -41,6 +42,7 @@ import android.text.Layout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -57,11 +59,16 @@ public class OCRExtractionActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
     private ImageView cameraImage;
+    private ActivityToFragment mCallback;
     View myView, fragmentsView;
     Bitmap bitmap;
     FragmentManager fm = getSupportFragmentManager();
-    Fragment myFrag;
+    Fragment myFrag, scannedFrag;
+    public EditTextFragment etf;
+    public ScannedOrdersFragment sof;
+    EditText editText;
 
+    String textRecognitionresult;
     StringBuilder sb = new StringBuilder();
     String seperator = "";
 
@@ -77,13 +84,22 @@ public class OCRExtractionActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Text Extraction");
+        etf = new EditTextFragment();
+
 
 
         myFrag = fm.findFragmentById(R.id.edit_text_fragment);
+        scannedFrag = fm.findFragmentById(R.id.scanned_orders_frag);
+
+
         assert myFrag != null;
         fm.beginTransaction()
                 .hide(myFrag)
+                .hide(scannedFrag)
                 .commit();
+
+//        editText = fm.getView().findViewById(R.id.edit_text);
+
 
         if(hasCameraPermission()) {
             captureImageIntent();
@@ -146,21 +162,31 @@ public class OCRExtractionActivity extends AppCompatActivity {
                                         seperator = ", ";
                                     }
                                 }
-                                String textRecognitionresult = sb.toString();
+//                                sendData(sb.toString());
+
+                                textRecognitionresult = sb.toString();
                                 Log.d("testing", "StringBuilder result: "+sb.toString());
+                                Log.d("testing", "Sending data through interface");
+
                                 Bundle extras = new Bundle();
                                 extras.putString("textRecognitionResult", textRecognitionresult);
 
-                                EditTextFragment etf = new EditTextFragment();
+
                                 assert  etf != null;
                                 etf.setArguments(extras);
 
-                                getSupportFragmentManager()
-                                        .beginTransaction()
-                                        .replace(R.id.edit_text_fragment, etf)
+
+//                                getSupportFragmentManager().setFragmentResult()
+                                fm.beginTransaction()
                                         .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
+                                        .replace(R.id.edit_text_fragment, etf)
                                         .show(myFrag)
                                         .commit();
+
+//                                sendData(textRecognitionresult);
+
+//                                etf.textRecognitionResultFragment = textRecognitionresult;
+//                                editText.setText(textRecognitionresult);
                                 Log.d("testing", "Sending text extraction to edit_text fragment");
 //                                cameraImage.setAlpha((float) 0.5);
 
@@ -201,6 +227,18 @@ public class OCRExtractionActivity extends AppCompatActivity {
             //Need a fragment that appears with the text extracted and a textarea
         }
     }
+
+//    @Override
+//    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        if(newConfig.orientation==Configuration.ORIENTATION_PORTRAIT)
+//        {
+//
+//        }else if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE)
+//        {
+//
+//        }
+//    }
 
     public Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -280,4 +318,22 @@ public class OCRExtractionActivity extends AppCompatActivity {
                 .create()
                 .show();
     }
+
+//    @Override
+//    public String getExtractedText() {
+//        return textRecognitionresult;
+//    }
+//
+    public interface ActivityToFragment{
+        public void communicate(String textRecog);
+    }
+    private void sendData(String textRecog){
+        mCallback.communicate(textRecog);
+    }
+//
+//    @Override
+//    protected void onStop() {
+//        mCallback = null;
+//        super.onStop();
+//    }
 }

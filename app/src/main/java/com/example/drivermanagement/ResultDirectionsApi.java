@@ -27,7 +27,7 @@ public class ResultDirectionsApi {
 //    String api_key = getString(R.string.api_key);
     private static String BASE_URL= "https://maps.googleapis.com/maps/api/directions/";
     //REMOVE API KEY FROM HERE WHEN USING VERSION CONTROL
-    private static String APPID = "";
+    private static String APPID = "AIzaSyDhxtD_YBCkj5eZ4Uu4v7UJW8nsNvRIdoM";
 
 
 

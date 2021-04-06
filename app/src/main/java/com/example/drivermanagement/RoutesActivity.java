@@ -69,7 +69,7 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
     private static String BASE_URL= "https://maps.googleapis.com/maps/api/directions/";
 
     //REMOVE API KEY FROM HERE WHEN USING VERSION CONTROL
-//    private static String APPID = ;
+    private static String APPID = "AIzaSyDhxtD_YBCkj5eZ4Uu4v7UJW8nsNvRIdoM";
 
     List<StoreModel> storeModels;
     ApiInterface apiInterface;
@@ -154,9 +154,11 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
         final Location usersLocation = SmartLocation.with(RoutesActivity.this).location().getLastLocation();
 //        final LatLng usersLatLng = new LatLng(usersLocation.getLatitude(), usersLocation.getLatitude());
 //        if (usersLocation != null) {
-            myLat = usersLocation.getLatitude();
+            myLat = 53.3498;
+                    //usersLocation.getLatitude();
             //53.3498;
-            myLon = usersLocation.getLongitude();
+            myLon = -6.266155;
+                    //usersLocation.getLongitude();
             //-6.266155;
 //        }
         Log.d("testing", "Users Location: " + myLat + "," + myLon);

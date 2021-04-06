@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/messages_menu_button"
+        android:id="@+id/add_more_menu_item"
         android:enabled="true"
-        android:title="EXTRACT"
+        android:title="Add More"
 
         />
 
     <item
-        android:id="@+id/ocr_menu_button"
-        android:title="DISCARD"
+        android:id="@+id/go_to_maps_menu_item"
+        android:title="Go To Maps"
         android:enabled="true"
         />
 </menu>
