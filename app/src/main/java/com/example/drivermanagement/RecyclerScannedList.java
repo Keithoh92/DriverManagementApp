@@ -11,12 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class RecyclerScannedList extends RecyclerView.Adapter<RecyclerScannedList.ViewHolder>{
+
     private List<String> scannedList;
 
-    private RecyclerViewAdapter.ItemClickListener mClickListener;
+    private ItemClickListener mClickListener;
 
     public RecyclerScannedList(List<String> scannedList){
         this.scannedList = scannedList;
+//        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -27,10 +29,13 @@ public class RecyclerScannedList extends RecyclerView.Adapter<RecyclerScannedLis
 
             scanned_textview = v.findViewById(R.id.textview_scanned);
             v.setOnClickListener(this);
+//            getItemCount();
         }
 
         @Override
         public void onClick(View v) {
+            if(mClickListener != null) mClickListener.onItemClick(v, getAdapterPosition());
+//            String fds = scannedList.get(getAdapterPosition());
             Toast.makeText(v.getContext(), scannedList.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
         }
     }
@@ -65,7 +70,7 @@ public class RecyclerScannedList extends RecyclerView.Adapter<RecyclerScannedLis
 //    }
 
     // allows clicks events to be caught
-    void setClickListener(RecyclerViewAdapter.ItemClickListener itemClickListener) {
+    void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 
@@ -73,4 +78,5 @@ public class RecyclerScannedList extends RecyclerView.Adapter<RecyclerScannedLis
     public interface ItemClickListener {
         void onItemClick(View view, int position);
     }
+
 }

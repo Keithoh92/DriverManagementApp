@@ -2,35 +2,30 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="330dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ScannedOrdersFragment"
     android:background="@drawable/background_colour">
 
-    <include
-        android:id="@+id/toolbar_scanned"
-        layout="@layout/toolbar_management"
-        >
-    </include>
+
     <TextView
         android:id="@+id/scanned_heading"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:textSize="24sp"
-        android:textStyle="bold"
+        android:textSize="18sp"
         android:fontFamily="sans-serif-black"
-        android:text="Scanned Orders"
+        android:text="Click item to add order details"
         android:textColor="@android:color/white"
         android:textAlignment="center"
-        android:layout_marginTop="30dp"
-        android:layout_below="@id/toolbar_scanned"/>
+        android:layout_marginTop="10dp"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycleScannedOrdersList"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="180dp"
         android:layout_below="@id/scanned_heading"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:paddingTop="10dp"
@@ -43,24 +38,15 @@
     <Button
         android:id="@+id/add_to_orders_button"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="40dp"
         android:layout_below="@id/recycleScannedOrdersList"
         android:layout_marginTop="10dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:text="Add to Todays Orders"
         android:textStyle="bold"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:background="@drawable/button_corners_blue_border"
         />
-
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_nav_scanned"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:menu="@menu/bottom_nav_extract"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/toolbar_background"/>
 
 </RelativeLayout>

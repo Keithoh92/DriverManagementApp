@@ -36,6 +36,7 @@ public class EditTextFragment extends Fragment{
     String textRecognitionResultFragment = "";
     String address = "";
     StringBuilder bs = new StringBuilder();
+    private FragmentTActivity2 listener2;
 
 
 
@@ -48,6 +49,11 @@ public class EditTextFragment extends Fragment{
         super.onAttach(context);
         if(context instanceof OCRExtractionActivity){
             this.listener = (OCRExtractionActivity) context;
+        }
+        try{
+            listener2 = (EditTextFragment.FragmentTActivity2) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + "must implement DialogListener");
         }
     }
 
@@ -135,23 +141,16 @@ public class EditTextFragment extends Fragment{
             public void onClick(View v) {
                 FragmentManager fragManager = getActivity().getSupportFragmentManager();
                 editTextFragment = fragManager.findFragmentById(R.id.edit_text_fragment);
-                scannedOrdersFragment = fragManager.findFragmentById(R.id.scanned_orders_frag);
+//                scannedOrdersFragment = fragManager.findFragmentById(R.id.scanned_orders_frag);
 
 //                String addressChosen = editText.getText().toString();
-                Bundle chosenAddress = new Bundle();
+//                Bundle chosenAddress = new Bundle();
 
-                chosenAddress.putString("ChosenAddress", address);                                Log.d("testing", "Sending data through interface");
+//                chosenAddress.putString("ChosenAddress", address);
+                Log.d("testing", "Sending data through interface");
                 Log.d("testing", "Sending address to orders scanned fragment" +address);
 
-                assert sof != null;
-                sof.setArguments(chosenAddress);
-
-                fragManager.beginTransaction()
-                        .hide(editTextFragment)
-                        .replace(R.id.scanned_orders_frag, sof)
-                        .addToBackStack(null)
-                        .show(scannedOrdersFragment)
-                        .commit();
+                listener2.passData(address);
                 editText.clearComposingText();
             }
         });
@@ -167,6 +166,12 @@ public class EditTextFragment extends Fragment{
         });
 
     }
+
+    public interface FragmentTActivity2{
+        void passData(String chosenAddress);
+    }
+
+
 //    @Override
 //    public void communicate(String textRecog) {
 //        Log.d("testing", "Received from interface: "+textRecog);
@@ -174,8 +179,10 @@ public class EditTextFragment extends Fragment{
 ////        editText.setText(textRecog);
 //    }
 
+
     @Override
     public void onDetach() {
         super.onDetach();
     }
 }
+

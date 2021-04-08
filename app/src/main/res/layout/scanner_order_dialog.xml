@@ -12,10 +12,24 @@
         android:hint="Enter Address"/>
 
     <EditText
-        android:id="@+id/order_no_edit"
+        android:id="@+id/editName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/editAddress"
+        android:hint="Enter Name of Recipient"/>
+
+    <EditText
+        android:id="@+id/editCompanyName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editName"
+        android:hint="Enter Company Name"/>
+
+    <EditText
+        android:id="@+id/order_no_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editCompanyName"
         android:hint="Enter Order Number"/>
 
     <EditText
@@ -26,10 +40,17 @@
         android:hint="Enter Price"/>
 
     <EditText
-        android:id="@+id/order_notes_edit"
+        android:id="@+id/order_delivery_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/order_price_edit"
+        android:hint="Enter Delivery Charge"/>
+
+    <EditText
+        android:id="@+id/order_notes_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/order_delivery_edit"
         android:height="100dp"
         android:hint="Enter Order Notes"/>
 

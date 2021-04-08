@@ -9,12 +9,22 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentViewHolder;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
@@ -42,17 +52,26 @@ import android.text.Layout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
 
-public class OCRExtractionActivity extends AppCompatActivity {
+public class OCRExtractionActivity extends AppCompatActivity implements OrderDialog.DialogListener, EditTextFragment.FragmentTActivity2 {
 
     private static final int PERMISSION_REQUEST_CODE = 200;
 
@@ -67,10 +86,28 @@ public class OCRExtractionActivity extends AppCompatActivity {
     public EditTextFragment etf;
     public ScannedOrdersFragment sof;
     EditText editText;
-
-    String textRecognitionresult;
+    TextView ocrTextview;
+    Button addToOrders;
+    String textRecognitionresult, userClickedAddress, chosenAddress;
     StringBuilder sb = new StringBuilder();
     String seperator = "";
+
+    RecyclerView recyclerView;
+    RecyclerScannedList recyclerScannedViewAdapter;
+    List<String> scannedList;
+
+
+
+
+    //Order Database
+    private FirebaseAuth fAuth;
+    private DatabaseReference OrderRef;
+    HashMap<String, HashMap<String, String>> myHashMaps = new HashMap<String, HashMap<String, String>>();
+    long noOFOrders = 0;
+    int noOFOrdersToAdd;
+    String currentDate, currentTime;
+    int listPosition;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +116,9 @@ public class OCRExtractionActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottom_nav_extract);
         toolbar = findViewById(R.id.toolbar_extract);
         cameraImage = findViewById(R.id.camera_image_view);
+        ocrTextview = findViewById(R.id.ocr_textview);
+        addToOrders = findViewById(R.id.add_to_orders_button);
+        scannedList = new ArrayList<>();
         myView = (RelativeLayout) findViewById(R.id.extraction_main_layout);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -86,19 +126,80 @@ public class OCRExtractionActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Text Extraction");
         etf = new EditTextFragment();
 
+        recyclerView = findViewById(R.id.ocr_recyclerview);
+        recyclerScannedViewAdapter = new RecyclerScannedList(scannedList);
+        recyclerView.setAdapter(recyclerScannedViewAdapter);
 
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(OCRExtractionActivity.this, DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+
+        recyclerScannedViewAdapter.setClickListener(new RecyclerScannedList.ItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                listPosition = position;
+                Log.d("TAG", "User clicked on item at position: "+listPosition);
+                userClickedAddress = scannedList.get(listPosition);
+                Log.d("testing", "Address at item position "+listPosition+": " +userClickedAddress);
+                openDialog();
+                Log.d("testing", "Item position from method in on createview: " +listPosition);
+            }
+        });
+
+            final Animation animTranslate = AnimationUtils.loadAnimation(OCRExtractionActivity.this, R.anim.translate);
+
+            addToOrders.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.startAnimation(animTranslate);
+
+                int numberOfOrdersToAdd = recyclerScannedViewAdapter.getItemCount();
+                //fill in addresses of maps
+                for(int i = 0; i < numberOfOrdersToAdd; i++) {
+                    String listAddress = scannedList.get(i);
+                    if((myHashMaps.get(String.valueOf(i)).get("Address")) == null) {
+                        myHashMaps.get(String.valueOf(i)).put("Address", listAddress);
+                    }
+                }
+
+
+
+                Log.d("testing", "Scanned list size: "+numberOfOrdersToAdd);
+
+                CreateNewOrder(numberOfOrdersToAdd);
+                Log.d("testing", "User selected add to orders button, calling createNewOrder in OCR activity");
+//                }else{
+//                    Toast.makeText(getContext(), "There is no items in the list to add to orders, Scan some orders first", Toast.LENGTH_SHORT).show();
+//                }
+//                openDialog();
+//                CreateNewOrder();
+            }
+        });
+
+        fAuth = FirebaseAuth.getInstance();
+        OrderRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
+        HashMap<String, String> map0 = new HashMap<>();
+        HashMap<String, String> map1 = new HashMap<>();
+        HashMap<String, String> map2 = new HashMap<>();
+        HashMap<String, String> map3 = new HashMap<>();
+        HashMap<String, String> map4 = new HashMap<>();
+        myHashMaps.put("0", map0);
+        myHashMaps.put("1", map1);
+        myHashMaps.put("2", map2);
+        myHashMaps.put("3", map3);
+        myHashMaps.put("4", map4);
 
         myFrag = fm.findFragmentById(R.id.edit_text_fragment);
-        scannedFrag = fm.findFragmentById(R.id.scanned_orders_frag);
-
 
         assert myFrag != null;
         fm.beginTransaction()
                 .hide(myFrag)
-                .hide(scannedFrag)
                 .commit();
-
-//        editText = fm.getView().findViewById(R.id.edit_text);
 
 
         if(hasCameraPermission()) {
@@ -108,17 +209,7 @@ public class OCRExtractionActivity extends AppCompatActivity {
             requestPermission();
         }
 
-//        Intent intent = getIntent();
-//        Bitmap bmp = (Bitmap) intent.getParcelableExtra("image");
-////        cameraImage.setImageBitmap(bmp);
-//            Uri imageUri = getImageUri(OCRExtractionActivity.this, bmp);
-//            CropImage.activity(imageUri)
-//                    .setAspectRatio(1, 1)
-//                    .start(this);
-
     }
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -143,26 +234,15 @@ public class OCRExtractionActivity extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<Text>() {
                             @Override
                             public void onSuccess(Text text) {
-//                                String textRecognitionresult = text.getText();
                                 Log.d("testing", "Received from image text extraction: "+text.getText());
-//                                BufferedReader bf = new BufferedReader(new StringReader(text.getText()));
-
-//                                    String lineReader = bf.readLine();
-//                                    while(lineReader != null) {
-//                                        sb.append(seperator + lineReader + ", ");
-//                                        seperator = ",";
-//                                    }
 
                                 for(Text.TextBlock block : text.getTextBlocks()){
-//                                    String blockText = block.getText();
-//                                    Point[] blockCornerpoints = block.getCornerPoints();
-//                                    Rect blockFrame = block.getBoundingBox();
+
                                     for(Text.Line line : block.getLines()){
                                         sb.append(seperator + line.getText());
                                         seperator = ", ";
                                     }
                                 }
-//                                sendData(sb.toString());
 
                                 textRecognitionresult = sb.toString();
                                 Log.d("testing", "StringBuilder result: "+sb.toString());
@@ -183,19 +263,7 @@ public class OCRExtractionActivity extends AppCompatActivity {
                                         .show(myFrag)
                                         .commit();
 
-//                                sendData(textRecognitionresult);
-
-//                                etf.textRecognitionResultFragment = textRecognitionresult;
-//                                editText.setText(textRecognitionresult);
                                 Log.d("testing", "Sending text extraction to edit_text fragment");
-//                                cameraImage.setAlpha((float) 0.5);
-
-
-
-//                                getSupportFragmentManager().beginTransaction()
-//                                        .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-//                                        .show(myFrag)
-//                                        .commit();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -228,17 +296,15 @@ public class OCRExtractionActivity extends AppCompatActivity {
         }
     }
 
-//    @Override
-//    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//        if(newConfig.orientation==Configuration.ORIENTATION_PORTRAIT)
-//        {
-//
-//        }else if(newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE)
-//        {
-//
-//        }
-//    }
+    private void openDialog() {
+        OrderDialog orderDialog = new OrderDialog();
+        Bundle dialogBundle = new Bundle();
+        dialogBundle.putString("Dialog Address", userClickedAddress);
+        dialogBundle.putInt("List position", listPosition);
+        orderDialog.setArguments(dialogBundle);
+        Log.d("TAG", "Setting dialog address field to the address selected by user: "+userClickedAddress);
+        orderDialog.show(getSupportFragmentManager(), "Order Dialog");
+    }
 
     public Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -319,17 +385,112 @@ public class OCRExtractionActivity extends AppCompatActivity {
                 .show();
     }
 
-//    @Override
-//    public String getExtractedText() {
-//        return textRecognitionresult;
-//    }
-//
+    @Override
+    public void applyTexts(int listPosition3, String address, String orderNo, String price, String notes, String deliveryCharge, String name, String companyName) {
+        Log.d("TAG", "Received data from order dialog");
+        String position = String.valueOf(listPosition3);
+        myHashMaps.get(position).put("Address", address);
+        myHashMaps.get(position).put("Recipients Name", name);
+        myHashMaps.get(position).put("Order Number", orderNo);
+        myHashMaps.get(position).put("Price", price);
+        myHashMaps.get(position).put("Delivery Charge", deliveryCharge);
+        myHashMaps.get(position).put("Company Name", companyName);
+        myHashMaps.get(position).put("Order Notes", notes);
+        myHashMaps.get(position).put("Time Entered", currentTime);
+        Log.d("TAG", "Updating Hashmap at position: "+position);
+    }
+
+
+    @Override
+    public void passData(String chosenAddress) {
+        scannedList.add(chosenAddress);
+        recyclerScannedViewAdapter.notifyDataSetChanged();
+//        int scannedListSize = scannedList.size();
+
+//        recyclerView.
+    }
+
     public interface ActivityToFragment{
         public void communicate(String textRecog);
     }
     private void sendData(String textRecog){
         mCallback.communicate(textRecog);
     }
+
+    public void CreateNewOrder(int noOFOrdersToAdd)
+    {
+
+        Log.d("TAG", "Create New Order called: " + noOFOrdersToAdd);
+        for(int i = 0; i < noOFOrdersToAdd; i++) {
+            CreateNewOrderDBEntry(myHashMaps.get(String.valueOf(i)));
+            Log.d("TAG", "Processing order " + i+ ", passing to CreateNewEntryInDB");
+
+        }
+    }
+
+    public void CreateNewOrderDBEntry(HashMap map) {
+
+            Log.d("TAG", "Create new order got called");
+
+//        String orderKey = OrderRef.push().getKey();
+            Calendar calForDate = Calendar.getInstance();
+            SimpleDateFormat currentDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+            currentDate = currentDateFormat.format(calForDate.getTime());
+
+            Calendar calForTime = Calendar.getInstance();
+            SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh-mm a");
+            currentTime = currentTimeFormat.format(calForTime.getTime());
+
+            String currentUserId = fAuth.getCurrentUser().getUid();
+
+            //Database nodes - users{ date { order info
+//            DatabaseReference newOrder = OrderRef.child(currentUserId).child("Orders").child(currentDate);
+
+                OrderRef.child(currentUserId).child("Orders").child(currentDate).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        noOFOrders = snapshot.getChildrenCount();
+                        Log.d("testing", "Number of orders currently in database: " + noOFOrders);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+
+            int noOfOrdersInt = (int) noOFOrders;
+            noOfOrdersInt = noOfOrdersInt + 1;
+
+                OrderRef.child(currentUserId).child("Orders").child(currentDate).child(String.valueOf(noOFOrders+1)).setValue(map).addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(OCRExtractionActivity.this, "Successfully uploaded order details to Order Database", Toast.LENGTH_SHORT).show();
+                        Log.d("testing", "Successfully added orders to DB");
+
+                    }
+                }
+            });
+    }
+    //swipe to delete
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            int position = viewHolder.getAdapterPosition();
+            scannedList.remove(position);
+            recyclerView.getAdapter().notifyItemRemoved(position);
+            Log.d("TAG", "User Removed Item From List");
+        }
+    };
 //
 //    @Override
 //    protected void onStop() {
