@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -12,8 +11,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.adapter.FragmentViewHolder;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,23 +33,23 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.DrawableContainer;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.text.Layout;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -61,43 +60,40 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-public class OCRExtractionActivity extends AppCompatActivity implements OrderDialog.DialogListener, EditTextFragment.FragmentTActivity2 {
+public class OCRExtractionActivity extends AppCompatActivity implements OrderDialog.DialogListener {
 
     private static final int PERMISSION_REQUEST_CODE = 200;
+    //Recycler View save statekey
+    private final String KEY_RECYCLER_STATE = "recycler_state";
+    private static Bundle mBundleRecyclerViewState;
 
+    //define the navigation
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
+
     private ImageView cameraImage;
-    private ActivityToFragment mCallback;
-    View myView, fragmentsView;
+    View myView;
     Bitmap bitmap;
-    FragmentManager fm = getSupportFragmentManager();
-    Fragment myFrag, scannedFrag;
-    public EditTextFragment etf;
-    public ScannedOrdersFragment sof;
     EditText editText;
     TextView ocrTextview;
-    Button addToOrders;
-    String textRecognitionresult, userClickedAddress, chosenAddress;
+    Button addToOrders, correct, retry;
+    String textRecognitionresult, userClickedAddress;
     StringBuilder sb = new StringBuilder();
     String seperator = "";
 
     RecyclerView recyclerView;
     RecyclerScannedList recyclerScannedViewAdapter;
     List<String> scannedList;
-
-
-
+    ArrayList<String> routeList;
 
     //Order Database
     private FirebaseAuth fAuth;
@@ -118,23 +114,31 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
         cameraImage = findViewById(R.id.camera_image_view);
         ocrTextview = findViewById(R.id.ocr_textview);
         addToOrders = findViewById(R.id.add_to_orders_button);
+        editText = findViewById(R.id.ocr_top_cardview_edit_text);
+        correct = findViewById(R.id.correct_button);
+        retry = findViewById(R.id.retry_button);
         scannedList = new ArrayList<>();
+        routeList = new ArrayList<>();
         myView = (RelativeLayout) findViewById(R.id.extraction_main_layout);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Text Extraction");
-        etf = new EditTextFragment();
 
         recyclerView = findViewById(R.id.ocr_recyclerview);
         recyclerScannedViewAdapter = new RecyclerScannedList(scannedList);
         recyclerView.setAdapter(recyclerScannedViewAdapter);
 
+        if (mBundleRecyclerViewState != null) {
+            Parcelable listState= mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
+            recyclerView.getLayoutManager().onRestoreInstanceState(listState);
+        }
+
+        //Recycler view line divider
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(OCRExtractionActivity.this, DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-
-
+        //Recycler view list touch event listener
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
@@ -150,7 +154,7 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
                 Log.d("testing", "Item position from method in on createview: " +listPosition);
             }
         });
-
+            //Animation for add to orders button
             final Animation animTranslate = AnimationUtils.loadAnimation(OCRExtractionActivity.this, R.anim.translate);
 
             addToOrders.setOnClickListener(new View.OnClickListener() {
@@ -158,87 +162,172 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
             public void onClick(View v) {
                 v.startAnimation(animTranslate);
 
+                //get size of list to loop through and add addresses to hashmaps
                 int numberOfOrdersToAdd = recyclerScannedViewAdapter.getItemCount();
-                //fill in addresses of maps
+
+                //fill in addresses of maps if user has not filled in order details
                 for(int i = 0; i < numberOfOrdersToAdd; i++) {
                     String listAddress = scannedList.get(i);
                     if((myHashMaps.get(String.valueOf(i)).get("Address")) == null) {
                         myHashMaps.get(String.valueOf(i)).put("Address", listAddress);
                     }
                 }
-
-
-
                 Log.d("testing", "Scanned list size: "+numberOfOrdersToAdd);
 
+                //Call method to create new order in firebase database
                 CreateNewOrder(numberOfOrdersToAdd);
                 Log.d("testing", "User selected add to orders button, calling createNewOrder in OCR activity");
-//                }else{
-//                    Toast.makeText(getContext(), "There is no items in the list to add to orders, Scan some orders first", Toast.LENGTH_SHORT).show();
-//                }
-//                openDialog();
-//                CreateNewOrder();
             }
         });
-
+        //Firebase database initialisation
         fAuth = FirebaseAuth.getInstance();
         OrderRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
+        //Order details hashmaps for firebase
         HashMap<String, String> map0 = new HashMap<>();
         HashMap<String, String> map1 = new HashMap<>();
         HashMap<String, String> map2 = new HashMap<>();
         HashMap<String, String> map3 = new HashMap<>();
         HashMap<String, String> map4 = new HashMap<>();
+        //parent hashmap that stores reference to hashmaps
+        //that correspond to the position of the address in the Scanned list
         myHashMaps.put("0", map0);
         myHashMaps.put("1", map1);
         myHashMaps.put("2", map2);
         myHashMaps.put("3", map3);
         myHashMaps.put("4", map4);
 
-        myFrag = fm.findFragmentById(R.id.edit_text_fragment);
-
-        assert myFrag != null;
-        fm.beginTransaction()
-                .hide(myFrag)
-                .commit();
-
-
+        //on activity created check for camera permissions
         if(hasCameraPermission()) {
             captureImageIntent();
-            Toast.makeText(OCRExtractionActivity.this, "Capture image of invoice address area", Toast.LENGTH_LONG).show();
         }else{
             requestPermission();
         }
 
+        //navigation bar click event listeners
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch(item.getItemId()){
+                    case R.id.add_more_menu_item:
+                        ReopenCamera();
+                        break;
+                    case R.id.go_to_maps_menu_item:
+                        GoToMaps();
+                        break;
+                }
+                return true;
+            }
+        });
+
+        correct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //add address scanned to scanned lists and update recycler view
+                scannedList.add(editText.getText().toString());
+                recyclerScannedViewAdapter.notifyDataSetChanged();
+                //clear the text in the edit text
+                editText.setText("");
+            }
+        });
+
+        retry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ReopenCamera();
+                editText.setText("");
+            }
+        });
+
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        //Save state of list of addresses
+        mBundleRecyclerViewState = new Bundle();
+        Parcelable listState = recyclerView.getLayoutManager().onSaveInstanceState();
+        mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //restore recycler view state of list of addresses
+        if (mBundleRecyclerViewState != null) {
+            Parcelable listState= mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
+            recyclerView.getLayoutManager().onRestoreInstanceState(listState);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //save state of list
+        mBundleRecyclerViewState = new Bundle();
+        Parcelable listState = recyclerView.getLayoutManager().onSaveInstanceState();
+        mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+    }
+
+    private void GoToMaps() {
+        //get latlng of addresses
+        Log.d("testing", "Go To Maps clicked");
+        if(scannedList.size() != 0) {
+            Log.d("testing", "Staring Async task to get geo locations of each address");
+                //Call Async task to download latlngs from geocoder on separate UI thread
+                GetLatLngs task = new GetLatLngs();
+                task.execute();
+        }else{
+            Toast.makeText(OCRExtractionActivity.this, "There is no addresses in list, please scan addresses or go to route finder to manually find add routes", Toast.LENGTH_SHORT).show();
+        }
+    }
+    //method to open camera
+    private void ReopenCamera() {
+        editText.setText("");
+        captureImageIntent();
+    }
+
+    //Gets the image taken from camera
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        //get saved state of list on resume from camera intent
+        if (mBundleRecyclerViewState != null) {
+            Parcelable listState= mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
+            recyclerView.getLayoutManager().onRestoreInstanceState(listState);
+        }
+        //Ensure result is an image from the crop image feature
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             Log.d("testing", "Received cropped image from camera check 1");
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Log.d("testing", "Received cropped image from camera check 2");
-                Uri resultUri = result.getUri();
+                Uri resultUri = result.getUri();//get uri of image returned
                 Log.d("testing", "Attempting to convert uri to bitmap");
+                //Set hidden image to cropped image returned
                 cameraImage.setImageURI(resultUri);
+                //Convert image uri to bitmap
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), resultUri);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                //Convert bitmap to Image
                 InputImage image = InputImage.fromBitmap(bitmap, (int) cameraImage.getRotation());
 
+                //Passing image to firebase ML to extract text
                 TextRecognizer recognizer = TextRecognition.getClient();
                 Task<Text> resultML = recognizer.process(image)
                         .addOnSuccessListener(new OnSuccessListener<Text>() {
                             @Override
                             public void onSuccess(Text text) {
                                 Log.d("testing", "Received from image text extraction: "+text.getText());
-
+                                //get each block of text returned
+                                sb.delete(0, sb.length());
+                                seperator="";
                                 for(Text.TextBlock block : text.getTextBlocks()){
 
                                     for(Text.Line line : block.getLines()){
+                                        //Form String of full address scanned
                                         sb.append(seperator + line.getText());
                                         seperator = ", ";
                                     }
@@ -247,22 +336,8 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
                                 textRecognitionresult = sb.toString();
                                 Log.d("testing", "StringBuilder result: "+sb.toString());
                                 Log.d("testing", "Sending data through interface");
-
-                                Bundle extras = new Bundle();
-                                extras.putString("textRecognitionResult", textRecognitionresult);
-
-
-                                assert  etf != null;
-                                etf.setArguments(extras);
-
-
-//                                getSupportFragmentManager().setFragmentResult()
-                                fm.beginTransaction()
-                                        .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-                                        .replace(R.id.edit_text_fragment, etf)
-                                        .show(myFrag)
-                                        .commit();
-
+                                //Set text in Cardview for user to validate
+                                editText.setText(textRecognitionresult);
                                 Log.d("testing", "Sending text extraction to edit_text fragment");
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -278,24 +353,27 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
                 Log.d("testing", "Failed to get cropped image");
             }
         }
-
+        //Result returned from camera
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
             Log.d("testing", "Received image from camera");
             Bundle extras = data.getExtras();
             assert extras != null;
             Bitmap bmp = (Bitmap) extras.get("data");
             assert bmp != null;
+            //Convert bitmap to URI
             Uri imageUri = getImageUri(OCRExtractionActivity.this, bmp);
+            //pass converted camera image uri to cropped image activity where user can crop out the area of address
             CropImage.activity(imageUri)
                     .setRequestedSize(480, 640)
                     .setGuidelines(CropImageView.Guidelines.ON)
                     .start(this);
             Toast.makeText(OCRExtractionActivity.this, "Move box over Address only", Toast.LENGTH_LONG).show();
-            //Here we need to process the text in the bounding box and extract the result
-            //Need a fragment that appears with the text extracted and a textarea
+
         }
     }
 
+    //Order form dialog user can fill in when they click on item in list of addresses that will be used to fill in the
+    //respective addresses hashmap to be uploaded to users orders firebase database
     private void openDialog() {
         OrderDialog orderDialog = new OrderDialog();
         Bundle dialogBundle = new Bundle();
@@ -315,8 +393,12 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
 
     static final int REQUEST_IMAGE_CAPTURE = 222;
     private void captureImageIntent(){
+        mBundleRecyclerViewState = new Bundle();
+        Parcelable listState = recyclerView.getLayoutManager().onSaveInstanceState();
+        mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
         Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(takePicture, REQUEST_IMAGE_CAPTURE);
+        Toast.makeText(OCRExtractionActivity.this, "Capture image of invoice address area", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -385,9 +467,12 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
                 .show();
     }
 
+    //Receiving back order details from order dialog interface
     @Override
     public void applyTexts(int listPosition3, String address, String orderNo, String price, String notes, String deliveryCharge, String name, String companyName) {
         Log.d("TAG", "Received data from order dialog");
+        //position is the item number in list user clicked on
+        // used to identify the correct address and hashmap to insert values into
         String position = String.valueOf(listPosition3);
         myHashMaps.get(position).put("Address", address);
         myHashMaps.get(position).put("Recipients Name", name);
@@ -400,28 +485,13 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
         Log.d("TAG", "Updating Hashmap at position: "+position);
     }
 
-
-    @Override
-    public void passData(String chosenAddress) {
-        scannedList.add(chosenAddress);
-        recyclerScannedViewAdapter.notifyDataSetChanged();
-//        int scannedListSize = scannedList.size();
-
-//        recyclerView.
-    }
-
-    public interface ActivityToFragment{
-        public void communicate(String textRecog);
-    }
-    private void sendData(String textRecog){
-        mCallback.communicate(textRecog);
-    }
-
     public void CreateNewOrder(int noOFOrdersToAdd)
     {
 
         Log.d("TAG", "Create New Order called: " + noOFOrdersToAdd);
         for(int i = 0; i < noOFOrdersToAdd; i++) {
+            //Get number of orders to process and the respective hashmap with the order details
+            //and pass to firebase method
             CreateNewOrderDBEntry(myHashMaps.get(String.valueOf(i)));
             Log.d("TAG", "Processing order " + i+ ", passing to CreateNewEntryInDB");
 
@@ -432,24 +502,23 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
 
             Log.d("TAG", "Create new order got called");
 
-//        String orderKey = OrderRef.push().getKey();
+            //Get Current Date
             Calendar calForDate = Calendar.getInstance();
             SimpleDateFormat currentDateFormat = new SimpleDateFormat("dd-MM-yyyy");
             currentDate = currentDateFormat.format(calForDate.getTime());
 
+            //Get current time
             Calendar calForTime = Calendar.getInstance();
             SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh-mm a");
             currentTime = currentTimeFormat.format(calForTime.getTime());
 
             String currentUserId = fAuth.getCurrentUser().getUid();
 
-            //Database nodes - users{ date { order info
-//            DatabaseReference newOrder = OrderRef.child(currentUserId).child("Orders").child(currentDate);
-
                 OrderRef.child(currentUserId).child("Orders").child(currentDate).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
+                        //We will use this to increment the order number in the DB
                         noOFOrders = snapshot.getChildrenCount();
                         Log.d("testing", "Number of orders currently in database: " + noOFOrders);
                     }
@@ -460,10 +529,6 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
 
                 }
             });
-
-
-            int noOfOrdersInt = (int) noOFOrders;
-            noOfOrdersInt = noOfOrdersInt + 1;
 
                 OrderRef.child(currentUserId).child("Orders").child(currentDate).child(String.valueOf(noOFOrders+1)).setValue(map).addOnCompleteListener(new OnCompleteListener() {
                 @Override
@@ -476,7 +541,7 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
                 }
             });
     }
-    //swipe to delete
+    //swipe list item to delete
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -489,12 +554,77 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
             scannedList.remove(position);
             recyclerView.getAdapter().notifyItemRemoved(position);
             Log.d("TAG", "User Removed Item From List");
+            Log.d("TAG", "Size of list after deletion scannedList in ocr activity: "+scannedList.size());
         }
     };
-//
-//    @Override
-//    protected void onStop() {
-//        mCallback = null;
-//        super.onStop();
-//    }
+
+    //Async task method to get latlngs of eazch address in list
+    private class GetLatLngs extends AsyncTask<Void, Void, ArrayList<String>>{
+    ProgressDialog dialog;
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        dialog = new ProgressDialog(OCRExtractionActivity.this);
+        dialog.setTitle("Calculating routes");
+        dialog.setMessage("please wait...");
+        dialog.setIndeterminate(true);
+        dialog.show();
+    }
+
+    @Override
+    protected ArrayList doInBackground(Void... addresses) {
+        Log.d("testing", "GETLATLNGS called - processing request");
+        LatLng returnedLatLng = new LatLng(53.3498, -6.266155);
+
+        try{
+            Log.d("testing", "Attempting to connect to geo API");
+            for(int i = 0; i < scannedList.size(); i++){
+                String addr = scannedList.get(i);
+                Log.d("testing", "Address to process: "+addr);
+                returnedLatLng = getAddressLatLngs(addr);
+                Log.d("testing", "LatLng returned for address at postion "+i+" in Scanned List is "+returnedLatLng);
+                Log.d("testing", "Adding " +addr+ " and its Lat(" +returnedLatLng.latitude+ ") and its Lng("+returnedLatLng.longitude+") to routes list");
+                routeList.add(scannedList.get(i) + "," +returnedLatLng.latitude + "," + returnedLatLng.longitude);
+                //Now we have list with address and latlngs
+            }
+        } catch (Exception e) {
+            Log.d("Background Task", e.toString());
+        }
+        return routeList;
+    }
+
+    @Override
+    protected void onPostExecute(ArrayList routes) {
+        super.onPostExecute(routes);
+        Intent routesIntent = new Intent(OCRExtractionActivity.this, RoutesActivity.class);
+        Bundle args = new Bundle();
+        args.putSerializable("listOfAddress", (Serializable) routes);
+        routesIntent.putExtra("BUNDLE", args);
+        startActivity(routesIntent);
+        dialog.dismiss();
+        routeList.clear();
+    }
+}
+
+    private LatLng getAddressLatLngs(String strAddress){
+        Log.d("testing", "Geocoder called - processing API request"+strAddress);
+        Geocoder geocoder = new Geocoder(this);
+        List<Address> address;
+        try{
+            address = geocoder.getFromLocationName(strAddress, 1);
+            Log.d("testing", "Returned from geocoder: "+address.get(0));
+            if(address == null && address.size() > 0){
+                Toast.makeText(OCRExtractionActivity.this, "No coordinates returned for "+strAddress+", please add address manually in route finder to add to your route", Toast.LENGTH_SHORT).show();
+                Log.d("testing", "No address found for "+strAddress);
+                return new LatLng(53.3498, -6.266155);
+            }
+            Address location = address.get(0);
+            return new com.google.android.gms.maps.model.LatLng(location.getLatitude(), location.getLongitude());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new LatLng(53.3498, -6.266155);
+        }
+    }
+
+
 }

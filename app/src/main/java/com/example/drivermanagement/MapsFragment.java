@@ -120,6 +120,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         //Get Users location from routes activity
         DataPasser myDataPasser = (DataPasser) getActivity();
         if (myDataPasser != null) {
+            Log.d("testing", "Maps Fragment: Getting Users location");
             double usersLatitude = myDataPasser.getLat();
             double usersLongitude = myDataPasser.getLon();
             usersLatLng = new LatLng(usersLatitude, usersLongitude);
@@ -131,6 +132,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(usersLatLng).zoom(14.0f).build();
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
                 map.moveCamera(cameraUpdate);
+                Log.d("testing", "Maps Fragment: Retrieved users latlng: "+usersLatLng);
             } else {
                 //If nno users location received, Set default latlng to dublin
                 usersLatitude = 53.3498;
@@ -156,7 +158,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 Log.d("testing", "Bundle waypoints url retrieved: " +url);
                 map.clear();
 
-                //Retrieve New Destination
+                //Retrieve New Destination - last address in list
                 String placeName = getArguments().getString("newDestinationPlaceName");
                 double sLat = getArguments().getDouble("newDestinationLat", 53.3498);
                 double sLon = getArguments().getDouble("newDestinationLng", -6.266155);
@@ -171,6 +173,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 //                        .position(usersLatLng)
 //                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.mapicon))
 //                        .title("MyLocation"));
+//###########################################################################################
+//###########################################################################################
+//###########################################################################################
+//############################    FIX THIS PART!!!!!!!!!!!!!#################################
+//###########################################################################################
+//###########################################################################################
+
 
                 List<String> receivedDestinationsList = myDataPasser.getList();
                 for(int i = 0; i < receivedDestinationsList.size()-1; i++) {

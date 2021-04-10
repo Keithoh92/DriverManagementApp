@@ -4,51 +4,37 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NavUtils;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
+import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.database.annotations.NotNull;
-
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
-import okhttp3.Route;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -71,12 +57,8 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
     //REMOVE API KEY FROM HERE WHEN USING VERSION CONTROL
     private static String APPID = "AIzaSyDhxtD_YBCkj5eZ4Uu4v7UJW8nsNvRIdoM";
 
-    List<StoreModel> storeModels;
-    ApiInterface apiInterface;
-
     //    ConnectionReceiver receiver;
     IntentFilter intentFilter;
-
 
     String latlngString;
     LatLng latLng;
@@ -110,12 +92,13 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
         ETA = findViewById(R.id.eta_textview);
         startButton = findViewById(R.id.start_button);
 
+        //Estimated time of arrival textview
         ETA.setText(distanceStr);
 
 
-        destinationsList = new ArrayList<>();
+        destinationsList = new ArrayList<>(); //Stores destinations
         listOfDestinations = new ArrayList<>();
-//        destinationsList.add("Destination 1");
+        //Initialise Recycler view and add destinations list
         recyclerView = findViewById(R.id.destination_recycler);
         recyclerViewAdapter = new RecyclerAdapterDestinations(destinationsList);
         recyclerView.setAdapter(recyclerViewAdapter);
@@ -139,8 +122,6 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-
             if (permissionsToRequest.size() > 0)
                 requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
             else {
@@ -149,28 +130,38 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
         } else {
             fetchLocation();
         }
-
-
         final Location usersLocation = SmartLocation.with(RoutesActivity.this).location().getLastLocation();
 //        final LatLng usersLatLng = new LatLng(usersLocation.getLatitude(), usersLocation.getLatitude());
-//        if (usersLocation != null) {
-            myLat = 53.3498;
-                    //usersLocation.getLatitude();
-            //53.3498;
-            myLon = -6.266155;
-                    //usersLocation.getLongitude();
-            //-6.266155;
-//        }
+        if (usersLocation != null) {
+        myLat = 53.3498;
+        //usersLocation.getLatitude();
+        //53.3498;
+        myLon = -6.266155;
+        //usersLocation.getLongitude();
+        //-6.266155;
+        }
         Log.d("testing", "Users Location: " + myLat + "," + myLon);
 
-//        apiService = APIClient.getClient().create(ApiInterface.class);
+        //Intent from OCR activity - receives extracted addresses scanned from invoices and adds to destinations list
+        Intent ocrIntent = getIntent();
+        Bundle args =ocrIntent.getBundleExtra("BUNDLE");
+        ArrayList<String> ocrList = (ArrayList<String>) args.getSerializable("listOfAddress");
+        for(int i = 0; i < ocrList.size(); i++){
+            destinationsList.add((String) ocrList.get(i));
+        }
+        //Call method to calculate the route and distance from users location to destinations in destinations list
+        RecalculateDestination();
+
         String api_key = getString(R.string.api_key);
 //        final String GOOGLE_PLACE_API_KEY1 = Resources.getSystem().getString(R.string.api_key);
+
+        //Initilaise the Google places API fragment
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), api_key);
             PlacesClient placesClient = Places.createClient(this);
         }
 
+        //When user has finished choosing addresses - onStart go to Google maps and add route for turn by turn directions
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -178,18 +169,22 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
                 Intent mapsIntent = new Intent(Intent.ACTION_VIEW, mapsUri);
                 mapsIntent.setPackage("com.google.android.apps.maps");
                 startActivity(mapsIntent);
+                destinationsList.clear();
             }
         });
 
-
+        //Initialise the Action Toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Route Finder");
 
+
         autocompleteSupportFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.places_searchbar_fragment);
 
         autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS));
+
+        //Logic to only allow places returned from Google places API to be within 250KM of users location
 //        double radius = 250.00;
 //        double[] boundsFromLatLng = getBoundsFromLatLng(radius, usersLocation.getLatitude(), usersLocation.getLongitude());
 //        autocompleteSupportFragment.setLocationRestriction(RectangularBounds.newInstance(
@@ -200,7 +195,7 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
         autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NotNull final Place place) {
-                // TODO: Get info about the selected place.
+                // Get info about the selected place.
                 placeName = place.getName();
                 LatLng selectedPlaceLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
                 selectedLat = selectedPlaceLatLng.latitude;
@@ -213,28 +208,8 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
                 }
                 recyclerView.getAdapter().notifyDataSetChanged();
 
-                if (destinationsList.size() == 1) {
-                    Bundle addLocation = new Bundle();
-                    addLocation.putString("placeName", placeName);
-                    addLocation.putDouble("selectedLat", selectedLat);
-                    addLocation.putDouble("selectedLon", selectedLon);
+                RecalculateDestination();
 
-                    url = "https://www.google.co.in/maps/dir/";
-                    url = url +myLat+","+myLon+"/"+selectedLat+","+selectedLon;
-
-                    MapsFragment mf = new MapsFragment();
-                    assert mf != null;
-                    mf.setArguments(addLocation);
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.maps_fragment_routes_activity, mf)
-                            .commit();
-                    Log.d("testing", "Sending 1st destination to maps: " + placeName + "LatLng: " + selectedLat + "," + selectedLon);
-                } else {
-                    //If user selects another desination call processRoutes and pass new destination
-                    Log.d("testing", "processRoutes called");
-                    processRoutes(placeName, selectedLat, selectedLon);
-                }
                 /////////Directions Code//////////////////////
 //                ResultDirectionsApi directionsApiClient = new ResultDirectionsApi();
 //                String url = directionsApiClient.ResultDirectionsApi(usersLatLng, selectedPlaceLatLng); //pass origin and destination to Directions client to return url
@@ -287,7 +262,40 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
                     }
                 });
     }
+    //////////////////// END OF ONCREATE /////////////////////////////
 
+    //Toolbar back button clicked, clear list and go back
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.homeAsUp:
+                NavUtils.navigateUpFromSameTask(this);
+                destinationsList.clear();
+                recyclerView.getAdapter().notifyDataSetChanged();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+//        return super.onOptionsItemSelected(item);
+    }
+    //On phone back button pressed clear list and go back
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            onBackPressed();
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        recyclerViewAdapter.destinationsList.clear();
+        recyclerView.getAdapter().notifyDataSetChanged();
+        super.onBackPressed();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////// PERMISSIONS FROM USER LOGIC FOR USER LOCATION ////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private ArrayList<String> findUnAskedPermissions(ArrayList<String> wanted) {
         ArrayList<String> result = new ArrayList<>();
@@ -356,7 +364,8 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
                 .show();
     }
 
-    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
+    ///USER REORDERING OF DESTINATIONS LOGIC - ON LONG TOUCH AND DRAG OF ITEM
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
 
@@ -365,21 +374,50 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
             Collections.swap(destinationsList, fromPosition, toPosition);
             recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
             Log.d("testing", "User reordered destinations");
-            String newDest = destinationsList.get(destinationsList.size()-1);
-            String[] arr = newDest.split(",");
-            String newPlaceName = arr[0];
-            double newDestLat = Double.parseDouble(arr[arr.length-2]);
-            double newDestLng = Double.parseDouble(arr[arr.length-1]);
-            Log.d("testing", "New destination upon destination reordering by user= "+newPlaceName+ "," +newDestLat+ "," +newDestLng);
-            processRoutes(newPlaceName, newDestLat, newDestLng);
-            Log.d("testing", "Sent new ordering to process routes");
+            //wHEN DRAGGED AND DROPPED RECALCULATE THE ROUTE
+            RecalculateDestination();
             return false;
         }
 
+        //ON USER SWIPE OF LIST ITEM - DELETE FROM LIST AND RECALCULATE THE ROUTE
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            int position = viewHolder.getAdapterPosition();
+            destinationsList.remove(position);
+            recyclerView.getAdapter().notifyItemRemoved(position);
+            Log.d("TAG", "User Removed Item From List");
+            Log.d("TAG", "Size of list after deletion destinationsList in routes activity: "+destinationsList.size());
+            RecalculateDestination();
         }
     };
+
+    //METHOD TO RECALCULATE THE ROUTE
+    //THIS ALWAYS USES THE LAST DESTINATION IN THE LIST AS THE DESTINATION AND THE USERS LOCATION WILL BE USED AS THE ORIGIN
+    //IN THE PROCESS ROUTES METHODS BELOW
+    private void RecalculateDestination() {
+        Log.d("testing", "Recalculate order of destinations and process new route");
+        String newDest = destinationsList.get(destinationsList.size() - 1);
+        Log.d("testing", "Size of List is: "+destinationsList.size());
+        Log.d("testing", "New destination to process: "+newDest);
+        String[] arr = newDest.split(",");
+        Log.d("testing", "Splitting list item into tokens for further processing");
+        String newPlaceName = arr[0];
+        Log.d("testing", "Getting placename of new destination address: "+placeName);
+        double newDestLat = Double.parseDouble(arr[arr.length - 2]);
+        double newDestLng = Double.parseDouble(arr[arr.length - 1]);
+        Log.d("testing", "New destination upon destination reordering by user= (" + newPlaceName + ", Lat: " + newDestLat + ", Lng: " + newDestLng+")");
+        if (destinationsList.size() > 1) {
+            processRoutes(newPlaceName, newDestLat, newDestLng);
+            Log.d("testing", "List Size is greater than one, Sent new ordering to process routes");
+        }
+        if(destinationsList.size() == 1){
+            processRoutesOneDestination(newPlaceName, newDestLat, newDestLng);
+            Log.d("testing", "List Size is equal to one, Sent new ordering to process routes for one destination");
+        }
+        if(destinationsList.size() == 0){
+            Toast.makeText(RoutesActivity.this, "Enter new address", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     @Override
     public Double getLat() {
@@ -394,6 +432,25 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
     @Override
     public List getList() {
         return destinationsList;
+    }
+
+    private void processRoutesOneDestination(String placeName, double lat, double lng){
+        Bundle addLocation = new Bundle();
+        addLocation.putString("placeName", placeName);
+        addLocation.putDouble("selectedLat", lat);
+        addLocation.putDouble("selectedLon", lng);
+
+        url = "https://www.google.co.in/maps/dir/";
+        url = url +myLat+","+myLon+"/"+lat+","+lng;
+
+        MapsFragment mf = new MapsFragment();
+        assert mf != null;
+        mf.setArguments(addLocation);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.maps_fragment_routes_activity, mf)
+                .commit();
+        Log.d("testing", "Sending 1 destination to maps: " + placeName + "LatLng: " + lat + "," + lng);
     }
 
 
@@ -422,11 +479,14 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
             for (int i = 0; i < destinationsList.size()-1; i++) {
                 //Get the list item at i
                 String destinations = destinationsList.get(i);
+                //split the list item into tokens
                 String[] arr = destinations.split(",");
+                //latitiude is always the token 2 from last
+                //longitude is always the token 1 from last
                 Double waypointLat = Double.parseDouble(arr[arr.length - 2]);
-                Log.d("testing", "Getting Waypoint latitude" + i + " from list: " + waypointLat);
+                Log.d("testing", "Getting Waypoint latitude at " + i + " from list: " + waypointLat);
                 Double waypointLng = Double.parseDouble(arr[arr.length - 1]);
-                Log.d("testing", "Getting Waypoint longitude" + i + " from list: " + waypointLng);
+                Log.d("testing", "Getting Waypoint longitude at " + i + " from list: " + waypointLng);
 
                 sb.append(barSeperator + waypointLat + "," + waypointLng);
                 barSeperator = "|";
