@@ -2,16 +2,17 @@ package com.example.drivermanagement;
 
 public class Contacts {
 
-    public String username, image;
+    public String username, image, email;
 
     public Contacts()
     {
 
     }
 
-    public Contacts(String username, String image) {
+    public Contacts(String username, String image, String email) {
         this.username = username;
         this.image = image;
+        this.email = email;
     }
 
     public String getUsername() {

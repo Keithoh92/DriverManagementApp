@@ -2,8 +2,10 @@ package com.example.drivermanagement;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +25,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private String receiverUserId;
 
+    private Toolbar toolbar;
     private TextView userUsername, userEmail, userPhone;
     private CircleImageView usersProfilePicture;
 
@@ -32,6 +35,14 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        toolbar = findViewById(R.id.toolbar_profile);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Driver");
+
+
 
         usersRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
 
@@ -41,6 +52,9 @@ public class ProfileActivity extends AppCompatActivity {
         userUsername = findViewById(R.id.user_profile_name1);
         userEmail = findViewById(R.id.users_email);
         usersProfilePicture = findViewById(R.id.users_profile_image1);
+        userPhone = findViewById(R.id.users_phone_number);
+
+        RetrieveUsersInfo();
 
         userEmail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,17 +70,30 @@ public class ProfileActivity extends AppCompatActivity {
                 }
                 }
         });
+
+        userPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String usersPhoneNumber = userPhone.getText().toString();
+                Intent phoneIntent = new Intent(Intent.ACTION_DIAL);
+                phoneIntent.setData(Uri.parse(usersPhoneNumber));
+                if(phoneIntent.resolveActivity(getPackageManager()) != null){
+                    startActivity(phoneIntent);
+                }else if(phoneIntent.resolveActivity(getPackageManager()) == null){
+                    Toast.makeText(ProfileActivity.this, "Cant start phone call on this device.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
         
-        RetrieveUSersInfo();
     }
 
-    private void RetrieveUSersInfo()
+    private void RetrieveUsersInfo()
     {
         usersRef.child(receiverUserId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot)
             {
-                String username = snapshot.child("Username").getValue().toString();
+                String username = snapshot.child("username").getValue().toString();
                 userUsername.setText(username);
 
                 if((!snapshot.child("image").getValue().toString().equals("")))
@@ -74,10 +101,11 @@ public class ProfileActivity extends AppCompatActivity {
                     Log.d("TAG", "Profile image reference exists for this user" +snapshot.child("image").getValue().toString());
                     String imageUri = snapshot.child("image").getValue().toString();
                     Picasso.get().load(imageUri).placeholder(R.drawable.profile_image).into(usersProfilePicture);//library to load image from firebase storage into circleimageview
-                }else {
-                    Toast.makeText(ProfileActivity.this, "You don't seem to have a profile picture yet, Please upload new image!", Toast.LENGTH_SHORT).show();
-                    }
                 }
+
+                String usersEmail = snapshot.child("email").getValue().toString();
+                userEmail.setText(usersEmail);
+            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

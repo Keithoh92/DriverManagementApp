@@ -139,10 +139,10 @@
                 android:layout_width="260dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="james@hotmail.com"
+                android:text="kohare1992@gmail.com"
                 android:layout_marginLeft="30dp"
                 android:textColor="#0d98d4"
-                android:textSize="24sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView

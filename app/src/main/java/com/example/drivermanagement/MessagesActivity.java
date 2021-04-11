@@ -3,6 +3,8 @@ package com.example.drivermanagement;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,10 +36,18 @@ public class MessagesActivity extends AppCompatActivity {
     private FirebaseAuth fAuth;
     private DatabaseReference RootRef;
 
+    Fragment addDrivers = new Fragment();
+    FragmentManager fm = getSupportFragmentManager();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
+        addDrivers = fm.findFragmentById(R.id.add_drivers_fragment);
+
+        fm.beginTransaction()
+                .hide(addDrivers)
+                .commit();
 
         fAuth = FirebaseAuth.getInstance();
         Log.d("TAG", "Database reference created");

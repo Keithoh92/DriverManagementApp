@@ -24,6 +24,15 @@
 
     </com.google.android.material.tabs.TabLayout>
 
+    <fragment
+        android:id="@+id/add_drivers_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/messages_toolbar"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        />
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/messages_tab_pager"
         android:layout_width="match_parent"
