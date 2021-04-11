@@ -1,6 +1,7 @@
 package com.example.drivermanagement;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -146,42 +147,28 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 map.moveCamera(cameraUpdate);
             }
         }
-        ////////////////Get User Selected destination//////////////////////
+        ////////////////Get destination//////////////////////
         Bundle selectedLocation = this.getArguments();
         if (selectedLocation != null) {
 
-            if (selectedLocation.containsKey("waypointsUrl")) {
-                //Retrieve Waypoint
-                Log.d("testing", "Bundle has waypoint url");
-                url = getArguments().getString("waypointsUrl");
+            String placeName = getArguments().getString("newDestinationPlaceName");
+            double sLat = getArguments().getDouble("newDestinationLat", 53.3498);
+            double sLon = getArguments().getDouble("newDestinationLng", -6.266155);
+            destinationLatLng = new LatLng(sLat, sLon);//DESTINATION
 
-                Log.d("testing", "Bundle waypoints url retrieved: " +url);
+            LatLng bound1 = new LatLng(usersLatLng.latitude, usersLatLng.longitude);
+            LatLng bound2 = new LatLng(destinationLatLng.latitude, destinationLatLng.longitude);
+            float bear = getBearing(bound1, bound2);
+
+
+            List<String> receivedDestinationsList = myDataPasser.getList();
+            if(receivedDestinationsList.size() > 1){
+                //Retrieve Waypoint
+                Log.d("testing", "Multiple Destinations");
+
                 map.clear();
 
-                //Retrieve New Destination - last address in list
-                String placeName = getArguments().getString("newDestinationPlaceName");
-                double sLat = getArguments().getDouble("newDestinationLat", 53.3498);
-                double sLon = getArguments().getDouble("newDestinationLng", -6.266155);
-                destinationLatLng = new LatLng(sLat, sLon);//DESTINATION
-
-
-                LatLng bound1 = new LatLng(usersLatLng.latitude, usersLatLng.longitude);
-                LatLng bound2 = new LatLng(destinationLatLng.latitude, destinationLatLng.longitude);
-                float bear = getBearing(bound1, bound2);
-
-//                map.addMarker(new MarkerOptions()
-//                        .position(usersLatLng)
-//                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.mapicon))
-//                        .title("MyLocation"));
-//###########################################################################################
-//###########################################################################################
-//###########################################################################################
-//############################    FIX THIS PART!!!!!!!!!!!!!#################################
-//###########################################################################################
-//###########################################################################################
-
-
-                List<String> receivedDestinationsList = myDataPasser.getList();
+//                List<String> receivedDestinationsList = myDataPasser.getList();
                 for(int i = 0; i < receivedDestinationsList.size()-1; i++) {
                    String destinations = receivedDestinationsList.get(i);
                    String[] arr = destinations.split(",");
@@ -219,7 +206,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                         .build();                   // Creates a CameraPosition from the builder
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-
+                url = resultDirectionsApi.ConstructAPIMultipleDestinations(usersLatLng, destinationLatLng, receivedDestinationsList);
                 DownloadTask downloadTask = new DownloadTask();
                 downloadTask.execute(url);
 //                sendUrl(url);
@@ -236,33 +223,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 //                map.moveCamera(cameraUpdate);
 
             } else {
-                String placeName = getArguments().getString("placeName");
-                double sLat = getArguments().getDouble("selectedLat", 53.3498);
-                double sLon = getArguments().getDouble("selectedLon", -6.266155);
-                destinationLatLng = new LatLng(sLat, sLon);
                 Log.d("testing", "received selected Location LatLng" + sLat + ", " + sLon);
 
-                url = resultDirectionsApi.ResultDirectionsApi(usersLatLng, destinationLatLng); //pass origin and destination to Directions client to return url
+                url = resultDirectionsApi.ConstructAPISingleDestination(usersLatLng, destinationLatLng); //pass origin and destination to Directions client to return url
                 DownloadTask downloadTask = new DownloadTask();
                 downloadTask.execute(url);
 //                sendUrl(url);
                 map.clear();
-//                Drawable circleDrawable = ContextCompat.getDrawable(getContext(), R.drawable.maparrow);
-
-
-                LatLng bound1 = new LatLng(usersLatLng.latitude, usersLatLng.longitude);
-                LatLng bound2 = new LatLng(destinationLatLng.latitude, destinationLatLng.longitude);
-                float bear = getBearing(bound1, bound2);
-//                map.addMarker(new MarkerOptions()
-//                        .position(usersLatLng)
-//                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.mapicon))
-//                        .title("MyLocation"));
-
-
                 map.addMarker(new MarkerOptions()
                         .position(destinationLatLng)
                         .title(placeName));
-
 
                 LatLngBounds bounds = new LatLngBounds.Builder()
                         .include(bound1)
@@ -273,7 +243,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
 
                 //Get bearing fro camera orientation
-
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(bound1 )      // Sets the center of the map to Mountain View
                         .zoom(15)                   // Sets the zoom
@@ -281,11 +250,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                         .tilt(30)                   // Sets the tilt of the camera to 30 degrees
                         .build();                   // Creates a CameraPosition from the builder
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
             }
         }
-//        Bundle routes = this.getArguments();
-//        if(routes)
     }
 
     @Override
@@ -302,6 +268,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     }
 
     private class DownloadTask extends AsyncTask<String, Void, String>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
 
         @Override
         protected String doInBackground(String... url) {
@@ -328,6 +300,18 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     }
 
     private class ParserResponse extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(getContext());
+            progressDialog.setTitle("Calculating routes");
+            progressDialog.setMessage("please wait...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.show();
+        }
 
         @Override
         protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
@@ -359,6 +343,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+            progressDialog.dismiss();
             ArrayList points = null;
 //            PolylineOptions lineOptions;
             MarkerOptions markerOptions = new MarkerOptions();

@@ -25,18 +25,18 @@ import java.util.List;
 public class ResultDirectionsApi {
     //API Call
 //    String api_key = getString(R.string.api_key);
-    private static String BASE_URL= "https://maps.googleapis.com/maps/api/directions/";
+    private static String BASE_URL;
+//            = "https://maps.googleapis.com/maps/api/directions/";
     //REMOVE API KEY FROM HERE WHEN USING VERSION CONTROL
     private static String APPID = "AIzaSyDhxtD_YBCkj5eZ4Uu4v7UJW8nsNvRIdoM";
 
 
-
-    String downloadUrl(String strUrl) throws IOException{
+    String downloadUrl(String strUrl) throws IOException {
         String data = "";
         InputStream iStream = null;
         HttpURLConnection urlConnection = null;
 
-        try{
+        try {
             URL url = new URL(strUrl);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.connect();
@@ -47,26 +47,26 @@ public class ResultDirectionsApi {
             StringBuffer stringBuffer = new StringBuffer();
 
             String line = "";
-            while((line = br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
                 stringBuffer.append(line);
             }
             data = stringBuffer.toString();
             br.close();
-        }catch(Exception e){
-            Log.d("TAG", "Exception" +e.toString());
-        }finally{
+        } catch (Exception e) {
+            Log.d("TAG", "Exception" + e.toString());
+        } finally {
             iStream.close();
             urlConnection.disconnect();
         }
         return data;
     }
 
-    public String ResultDirectionsApi (LatLng origin, LatLng destination) {
+    public String ConstructAPISingleDestination(LatLng origin, LatLng destination) {
         String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
         String str_destination = "destination=" + destination.latitude + "," + destination.longitude;
         String mode = "mode=driving";
 
-        String parameters = str_origin + "&" +str_destination;
+        String parameters = str_origin + "&" + str_destination;
 
 //        StringBuilder sb = new StringBuilder(parameters+"&waypoints=via:");
 //        if(waypoints.length != 0){
@@ -84,10 +84,50 @@ public class ResultDirectionsApi {
 //            Log.d("testing", "new base url with waypoints: " +BASE_URL);
 //        }
 //        else{
-            BASE_URL = BASE_URL + output+ "?" + parameters + "&key="+APPID;
+        BASE_URL= "https://maps.googleapis.com/maps/api/directions/";
+        Log.d("testing", "Reset base url: " +BASE_URL);
+        BASE_URL = BASE_URL + output + "?" + parameters + "&key=" + APPID;
 //        }
         return BASE_URL;
     }
+
+
+    public String ConstructAPIMultipleDestinations(LatLng origin, LatLng destination, List<String> destinationsList) {
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        String str_destination = "destination=" + destination.latitude + "," + destination.longitude;
+
+        String parameters = str_origin + "&" + str_destination;//origin and destination part of url
+        String output = "json?";
+
+        StringBuilder sb = new StringBuilder(parameters + "&waypoints=");
+        String barSeperator = "";
+
+        //Get new waypoints
+        for (int i = 0; i < destinationsList.size()-1; i++) {
+            //Get the list item at i
+            String destinations = destinationsList.get(i);
+            //split the list item into tokens
+            String[] arr = destinations.split(",");
+            //latitiude is always the token 2 from last
+            //longitude is always the token 1 from last
+            Double waypointLat = Double.parseDouble(arr[arr.length - 2]);
+            Log.d("testing", "Getting Waypoint latitude at " + i + " from list: " + waypointLat);
+            Double waypointLng = Double.parseDouble(arr[arr.length - 1]);
+            Log.d("testing", "Getting Waypoint longitude at " + i + " from list: " + waypointLng);
+
+            sb.append(barSeperator + waypointLat + "," + waypointLng);
+            barSeperator = "|";
+
+        }
+
+        BASE_URL= "https://maps.googleapis.com/maps/api/directions/";
+        Log.d("testing", "Reset base url: " +BASE_URL);
+        BASE_URL = BASE_URL + output + sb + "&key=" + APPID;
+        Log.d("testing", "New url with waypoints: " + BASE_URL);
+
+        return BASE_URL;
+    }
+}
 
 //    public String ResultDirectionsApiWaypoint (LatLng origin, LatLng destination, LatLng... waypoints) {
 //        Log.d("testing", "Waypoint directions method called");
@@ -111,7 +151,7 @@ public class ResultDirectionsApi {
 //            BASE_URL = BASE_URL + output+ "?" + sb + "&key="+APPID;
 //        return BASE_URL;
 //    }
-}
+
 
 //
 //        DirectionsResult result = DirectionsApi.newRequest(context)

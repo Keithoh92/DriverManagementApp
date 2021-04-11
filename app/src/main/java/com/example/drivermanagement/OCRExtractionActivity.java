@@ -578,14 +578,18 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
 
         try{
             Log.d("testing", "Attempting to connect to geo API");
-            for(int i = 0; i < scannedList.size(); i++){
+            for(int i = 0; i < scannedList.size(); i++) {
                 String addr = scannedList.get(i);
-                Log.d("testing", "Address to process: "+addr);
+                Log.d("testing", "Address to process: " + addr);
                 returnedLatLng = getAddressLatLngs(addr);
-                Log.d("testing", "LatLng returned for address at postion "+i+" in Scanned List is "+returnedLatLng);
-                Log.d("testing", "Adding " +addr+ " and its Lat(" +returnedLatLng.latitude+ ") and its Lng("+returnedLatLng.longitude+") to routes list");
-                routeList.add(scannedList.get(i) + "," +returnedLatLng.latitude + "," + returnedLatLng.longitude);
-                //Now we have list with address and latlngs
+                if (returnedLatLng.latitude == 53.3498 && returnedLatLng.longitude == -6.266155) {
+                    Toast.makeText(OCRExtractionActivity.this, "Could not find coordinates for address: " + addr + ", Please enter manually in route finder", Toast.LENGTH_LONG).show();
+                } else {
+                    Log.d("testing", "LatLng returned for address at postion " + i + " in Scanned List is " + returnedLatLng);
+                    Log.d("testing", "Adding " + addr + " and its Lat(" + returnedLatLng.latitude + ") and its Lng(" + returnedLatLng.longitude + ") to routes list");
+                    routeList.add(scannedList.get(i) + "," + returnedLatLng.latitude + "," + returnedLatLng.longitude);
+                    //Now we have list with address and latlngs
+                }
             }
         } catch (Exception e) {
             Log.d("Background Task", e.toString());
