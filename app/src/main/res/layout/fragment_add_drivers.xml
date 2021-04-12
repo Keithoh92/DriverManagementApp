@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search_frag"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:background="@drawable/background_colour"
+    tools:context=".AddDriversFragment">
+
+
+
+    <TextView
+        android:id="@+id/search_driver_textview"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="Enter username of Driver"
+        android:textSize="18sp"
+        android:textColor="#b5540e"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:layout_marginTop="20dp"/>
+
+    <LinearLayout
+        android:id="@+id/search_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:gravity="center_vertical"
+        android:layout_below="@id/search_driver_textview">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/search_icon"
+            android:layout_gravity="center_vertical"/>
+    <EditText
+            android:id="@+id/driver_search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:inputType="text"
+            android:clickable="true"
+            android:enabled="true"
+            android:paddingStart="5dp"
+            android:textColor="#ffffff"
+            android:hint="Username"
+            android:textColorHint="#ffffff"
+            android:gravity="center_vertical"
+            />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/cancel_button"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/search_layout"
+        android:text="Cancel"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="35dp"
+        android:background="@drawable/button_corners"
+        android:layout_alignParentStart="true"/>
+
+    <Button
+        android:id="@+id/find_drivers_button"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:text="Find"
+        android:layout_below="@id/search_layout"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="35dp"
+        android:background="@drawable/button_corners"
+        android:layout_alignParentEnd="true"/>
+
+
+</RelativeLayout>

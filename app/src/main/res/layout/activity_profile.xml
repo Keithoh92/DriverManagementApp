@@ -157,4 +157,17 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/add_to_drivers_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="Add To Drivers"
+        android:textSize="18sp"
+        android:background="@drawable/button_corners"
+        android:layout_below="@id/child1_linear_layout"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp"
+        android:visibility="invisible"/>
+
 </RelativeLayout>

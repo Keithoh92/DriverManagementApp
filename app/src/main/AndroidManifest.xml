@@ -52,9 +52,7 @@
             android:value="ocr" />
 
         <activity android:name=".ProfileActivity" />
-        <activity
-            android:name=".FindDriversActivity"
-            android:parentActivityName=".MessagesActivity" />
+
         <activity
             android:name=".RoutesActivity"
             android:parentActivityName=".DriverDashboard" />
@@ -67,12 +65,14 @@
         <activity android:name=".DriverDashboard" />
         <activity android:name=".ProfileTypeActivity" />
         <activity android:name=".RegisterActivity" />
+        <activity android:name=".DriversDashboardActivity"
+            android:parentActivityName=".DriverDashboard"/>
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name=".fragments.ManagementDashboard" />
-        <activity android:name=".DriversDashboardActivity"
-            android:parentActivityName=".DriverDashboard">
+        <activity android:name=".FindDriversActivity"
+            android:parentActivityName=".MessagesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
