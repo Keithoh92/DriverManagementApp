@@ -227,7 +227,7 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
         FirebaseUser currentUser = fAuth.getCurrentUser();
         String currentUserID = currentUser.getUid();
 
-        DriversRef.child(currentUserID).child(userNameReceived).setValue(myDrivers).addOnCompleteListener(new OnCompleteListener<Void>() {
+        DriversRef.child(currentUserID).child(userIDReceived).setValue(myDrivers).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
@@ -252,7 +252,7 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
             findDriversIntent.putExtra("driversID", foundDriversID);
             startActivity(findDriversIntent);
 
-            Log.d("testing", "Sent user ID and opened found drivers fragment");
+            Log.d("testing", "Sent user ID and opened Profile activity");
         }
     }
 

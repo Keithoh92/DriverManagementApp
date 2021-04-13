@@ -2,17 +2,25 @@ package com.example.drivermanagement;
 
 public class Contacts {
 
-    public String username, image, email;
+    public String username, image, email, driverid;
 
     public Contacts()
     {
 
     }
 
-    public Contacts(String username, String image, String email) {
+    public Contacts(String username, String image, String email, String driverid) {
         this.username = username;
         this.image = image;
         this.email = email;
+        this.driverid = driverid;
+    }
+    public String getDriverid() {
+        return driverid;
+    }
+
+    public void setDriverid(String driverid) {
+        this.driverid = driverid;
     }
 
     public String getUsername() {
