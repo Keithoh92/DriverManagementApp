@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -38,6 +39,7 @@ import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
 
+
     ScrollView myScrollview;
     Toolbar toolbar;
     TextView chatTextDisplay;
@@ -63,12 +65,12 @@ public class ChatActivity extends AppCompatActivity {
         sendMessage = findViewById(R.id.send_message_button);
         inputMessage = findViewById(R.id.input_chat_message);
 
-
         messageAdapter = new MessageAdapter(messagesList);
         userMessagesList = findViewById(R.id.list_of_messages);
         linearLayoutManager = new LinearLayoutManager(this);
         userMessagesList.setLayoutManager(linearLayoutManager);
         userMessagesList.setAdapter(messageAdapter);
+
 
         fAuth = FirebaseAuth.getInstance();
         currentUser = fAuth.getCurrentUser();
@@ -79,9 +81,17 @@ public class ChatActivity extends AppCompatActivity {
         usersRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 //        dRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-
-        receiverUserID = getIntent().getExtras().get("visit_user_id").toString();
+//        chatIntent.putExtra("UserID", receiverUserId);
+//        chatIntent.putExtra("Username", username);
+        if(getIntent().getExtras().containsKey("UserID")){
+            receiverUserID = getIntent().getExtras().get("UserID").toString();
+            receiverUsername = getIntent().getExtras().get("Username").toString();
+        }else if(getIntent().getExtras().containsKey("visit_user_id")){
+            receiverUserID = getIntent().getExtras().get("visit_user_id").toString();
+            receiverUsername = getIntent().getExtras().get("visit_user_name").toString();
+        }
         Log.d("ChatActivity", "receiver ID received: "+receiverUserID);
+
         getReceiverInfo();
         getUserInfo();
 
@@ -95,14 +105,8 @@ public class ChatActivity extends AppCompatActivity {
 
 //        receiverUsername = getIntent().getExtras().get("Username").toString();
 
-        sendMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SendMessage();
-                Log.d("testing","Called send message method" );
 
-            }
-        });
+
     }
 
     private void SendMessage() {
@@ -144,15 +148,19 @@ public class ChatActivity extends AppCompatActivity {
 //
 //    }
 
+
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d("Chat activity", "OnStart called");
         usersRef.child("Messages").child(userID).child(receiverUserID).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Messages messages = snapshot.getValue(Messages.class);
                 messagesList.add(messages);
                 messageAdapter.notifyDataSetChanged();
+
+                userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
             }
 
             @Override
@@ -175,11 +183,46 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+
+        sendMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("testing","Called send message method" );
+                SendMessage();
+                inputMessage.setText("");
+                try  {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                } catch (Exception e) {
+
+                }
+            }
+        });
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("Chat activity", "OnPause called");
+        messagesList.clear();
+        messageAdapter.notifyDataSetChanged();
+
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("Chat activity", "OnResume called");
+
+
     }
 
     //current user info
     private void getUserInfo() {
-        Log.d("TAG", "Retrieving user information from firestore");
+        Log.d("TAG", "Retrieving user information from firebase");
         usersRef.child("Users").child(userID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -197,7 +240,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getReceiverInfo() {
-        Log.d("TAG", "Retrieving user information from firestore");
+        Log.d("TAG", "Retrieving user information from firebase");
         usersRef.child("Users").child(receiverUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

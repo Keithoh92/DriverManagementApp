@@ -36,8 +36,7 @@ public class AddDriversFragment extends Fragment {
    EditText findDriversSearchbar;
    Button findDriversButton, cancel;
    String foundDriver;
-   Fragment foundDriversFragment, addDriversFragment;
-   public FoundDriversFragment fdf;
+   Fragment addDriversFragment;
    FragmentManager fm;
    String inputSearch;
 
@@ -75,7 +74,6 @@ public class AddDriversFragment extends Fragment {
         Log.d("AddDriversFrag", "onStart Add drivers called");
 //        findDriversSearchbar.callOnClick();
         findDriversSearchbar = getView().findViewById(R.id.driver_search_bar);
-        foundDriversFragment = fm.findFragmentById(R.id.found_driver_result);
 
 
         findDriversSearchbar.addTextChangedListener(new TextWatcher() {
@@ -156,8 +154,8 @@ public class AddDriversFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 fm.beginTransaction()
-                        .hide(foundDriversFragment)
-                        .remove(foundDriversFragment)
+                        .hide(addDriversFragment)
+                        .remove(addDriversFragment)
                         .commit();
                 Log.d("testing", "User cancelled search for driver, removing found drivers fragment");
             }
@@ -196,7 +194,6 @@ public class AddDriversFragment extends Fragment {
         fm = getChildFragmentManager();
         findDriversButton = view.findViewById(R.id.find_drivers_button);
         findDriversSearchbar = view.findViewById(R.id.driver_search_bar);
-        fdf = new FoundDriversFragment();
 //        findDriversSearchbar.setBackgroundColor();
 
 //        foundDriversFragment = fm.findFragmentById(R.id.found_driver_result);

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ProfileActivity"
-    android:background="@drawable/background_colour">
+    android:background="@drawable/background_colour_no_radius">
 
     <include
         android:id="@+id/toolbar_profile"
@@ -195,5 +195,32 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="15dp"
         android:visibility="invisible"/>
+
+    <fragment
+        android:id="@+id/maps_fragment_profile_activity"
+        android:name="com.example.drivermanagement.MapsFragment2"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/remove_driver_button"
+        android:layout_marginTop="10dp"
+        >
+    </fragment>
+
+    <Button
+        android:id="@+id/request_location_update_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Request Location Update"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/button_corners"
+        />
+
+    <Button
+        android:id="@+id/send_location"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Send Location"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/button_corners"/>
 
 </RelativeLayout>

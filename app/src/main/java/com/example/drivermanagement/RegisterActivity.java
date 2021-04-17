@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,8 +21,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -34,6 +39,8 @@ public class RegisterActivity extends AppCompatActivity {
     private Button registerButton;
     String[] registerCreds;
     String userType = "";
+    String deviceToken;
+    private boolean usernameExists;
 
     private FirebaseAuth auth;
     FirebaseUser currentUser;
@@ -75,12 +82,28 @@ public class RegisterActivity extends AppCompatActivity {
                 String txtCompanyName = companyName.getText().toString();
                 String txtUsername = username.getText().toString();
 
+                RootRef.orderByChild("username").equalTo(txtUsername).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.exists()){
+                            usernameExists = true;
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
 
                 if(TextUtils.isEmpty(txtEmail) || TextUtils.isEmpty(txtPassword) || TextUtils.isEmpty(txtCompanyName) || TextUtils.isEmpty(txtCompanyName) || TextUtils.isEmpty(txtUsername)){
                     Toast.makeText(RegisterActivity.this, "Empty Credentials, Please fill in all fields!", Toast.LENGTH_SHORT).show();
                 }else if(txtPassword.length() < 6){
                     Toast.makeText(RegisterActivity.this, "Password too short!", Toast.LENGTH_SHORT).show();
-                }else{
+                }else if(usernameExists){
+                    Toast.makeText(RegisterActivity.this, "Username is taken, Please choose another", Toast.LENGTH_SHORT).show();
+                }
+                else{
                     registerUser(txtEmail, txtPassword);
                 }
             }
@@ -93,8 +116,24 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
+
+                    currentUser = auth.getCurrentUser();
+                    currentUser.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<GetTokenResult> task) {
+                            if(task.isSuccessful()){
+                                deviceToken = task.getResult().getToken();
+                                Log.d("RegisterActivity", "Device token received");
+                            }else{
+                                deviceToken = "";
+                                Log.d("RegisterActivity", "Device token not received");
+                            }
+                        }
+                    });
                     String currentUserId = auth.getCurrentUser().getUid();
                     RootRef.child(currentUserId).setValue("");
+
+
                     Toast.makeText(RegisterActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
 //                    DocumentReference df = fStore.collection("Users").document(user.getUid());
                     Map<String, Object> userInfo = new HashMap<>();
@@ -104,6 +143,7 @@ public class RegisterActivity extends AppCompatActivity {
                     userInfo.put("username", username.getText().toString());
                     userInfo.put("userType", userType);
                     userInfo.put("image", "");
+                    userInfo.put("device_token", deviceToken);
                     RootRef.child(currentUserId).setValue(userInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

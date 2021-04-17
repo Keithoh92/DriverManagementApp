@@ -102,9 +102,12 @@ public class ContactsFragment extends Fragment {
         anyDriversRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(!snapshot.exists() || (snapshot.exists() && !snapshot.child(userID).exists())){
+                //if theres no drivers in the DB
+                if(!snapshot.exists()){
+                    //AND if the user is normal driver display this message
                     if(isNormalUser) {
                         Toast.makeText(getContext(), "Your manager has not added other contacts yet or you are not yet in your managements system", Toast.LENGTH_LONG).show();
+                        //ELSE if its management user display this message
                     }else{
                         Toast.makeText(getContext(), "You have not yet added any Drivers to the system, please go to add drivers in menu", Toast.LENGTH_LONG).show();
                     }
@@ -243,33 +246,5 @@ public class ContactsFragment extends Fragment {
 
             }
         });
-//        UsersRef.child(uid).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                if ((snapshot.exists()) && (snapshot.hasChild("userType"))) {
-//                    String retrieveUserType = snapshot.child("userType").getValue().toString();
-//                    if (retrieveUserType.equals("Management")) {
-//                        Log.d("Contacts", "User is Management user");
-//                        DriverRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers").child(userID);
-//
-//                    }
-//                    if (retrieveUserType.equals("Driver")) {
-//                        Log.d("Contacts", "User is normal user");
-//                        String managementID = snapshot.child("myManagersID").getValue().toString();
-//                        normalUserUsername = snapshot.child("username").getValue().toString();
-//                        DriverRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers").child(managementID);
-//                        isNormalUser = true;
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
     }
-
-
 }

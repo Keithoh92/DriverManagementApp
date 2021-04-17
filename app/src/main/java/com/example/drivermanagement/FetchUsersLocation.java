@@ -3,6 +3,7 @@ package com.example.drivermanagement;
 import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -17,6 +18,7 @@ public class FetchUsersLocation extends AsyncTask<Void, Void, LatLng> {
     public FetchUsersLocation(RoutesActivity _context){
         context = _context;
     }
+
 
     @Override
     protected LatLng doInBackground(Void... voids) {
@@ -42,4 +44,5 @@ public class FetchUsersLocation extends AsyncTask<Void, Void, LatLng> {
         context.myLat = usersLatLng.latitude;
         context.myLon = usersLatLng.longitude;
     }
+
 }

@@ -100,7 +100,7 @@ public class ChatFragment extends Fragment {
         anyDriversRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(!snapshot.exists() || (snapshot.exists() && !snapshot.child(userID).exists())){
+                if(!snapshot.exists()){
                     if(isNormalUser) {
                         Toast.makeText(getContext(), "Your manager has not added other contacts yet or you are not yet in your managements system", Toast.LENGTH_LONG).show();
                     }else{
@@ -170,8 +170,10 @@ public class ChatFragment extends Fragment {
                                         public void onClick(View v) {
                                             //Get user id when user selects user
                                             String visit_user_id = getRef(position).getKey();
+                                            String userNameR = getItem(position).username;
                                             Intent chatIntent = new Intent(getContext(), ChatActivity.class);
                                             chatIntent.putExtra("visit_user_id", visit_user_id);
+                                            chatIntent.putExtra("visit_user_name", userNameR);
                                             startActivity(chatIntent);
                                         }
                                     });

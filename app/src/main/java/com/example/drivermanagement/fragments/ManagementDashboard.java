@@ -14,12 +14,13 @@ import android.widget.Button;
 import com.example.drivermanagement.LoginActivity;
 import com.example.drivermanagement.MessagesActivity;
 import com.example.drivermanagement.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class ManagementDashboard extends AppCompatActivity {
     Toolbar managementToolbar;
-    Button messagesButton, driversButton;
-    public Button myButton;
+    BottomNavigationView bottomNavigationView;
+    Button sendLocation;
 
     FirebaseAuth fAuth;
 
@@ -28,8 +29,7 @@ public class ManagementDashboard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_management_dashboard);
         managementToolbar = (Toolbar) findViewById(R.id.management_dashboard_toolbar);
-        messagesButton = (Button) findViewById(R.id.messagesButton);
-        driversButton = (Button) findViewById(R.id.driverButton);
+//        sendLocation = findViewById(R.id.accept_location_request);
 
         fAuth = FirebaseAuth.getInstance();
 
@@ -38,16 +38,24 @@ public class ManagementDashboard extends AppCompatActivity {
         setSupportActionBar(managementToolbar);
         getSupportActionBar().setTitle("DriverX");
 
-        messagesButton.setOnClickListener(new View.OnClickListener() {
+        bottomNavigationView = findViewById(R.id.management_dash_bottom_nav);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                Intent messagesIntent = new Intent(ManagementDashboard.this, MessagesActivity.class);
-                messagesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(messagesIntent);
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch(item.getItemId()){
+                    case R.id.messages_menu_button:
+                        SendUserToMessagesActivity();
+                        break;
+                    case R.id.ocr_menu_button:
+                        SendUserToCreateOrderActivity();
+                        break;
+                }
+                return true;
             }
         });
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -86,6 +94,16 @@ public class ManagementDashboard extends AppCompatActivity {
         startActivity(loginIntent);
     }
 
+    private void SendUserToCreateOrderActivity()
+    {
+
+    }
+    private void SendUserToMessagesActivity(){
+        Intent messagesIntent = new Intent(ManagementDashboard.this, MessagesActivity.class);
+        messagesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(messagesIntent);
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -106,4 +124,5 @@ public class ManagementDashboard extends AppCompatActivity {
 
 //        if(fragment.isH)
     }
+
 }

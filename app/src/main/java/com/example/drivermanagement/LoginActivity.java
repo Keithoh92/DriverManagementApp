@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -93,10 +94,32 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d("TAG", "Login is succesful" + task.getResult() + task.getException());
                 if (task.isSuccessful()) {
                     Log.d("TAG", "Login is succesful");
+                    Log.d("TAG", "Attempting to retrieve device token");
                     FirebaseUser user = fAuth.getCurrentUser();
-                    Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                    String userID = user.getUid();
+                    user.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<GetTokenResult> task) {
+                            if(task.isSuccessful()){
+                                String deviceToken = task.getResult().getToken();
+                                Log.d("TAG", "Successfully retrieved device token: "+deviceToken);
+                                Log.d("TAG", "Adding device token to users info in DB");
+                                RootRef.child(userID).child("device_token").setValue(deviceToken).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful()){
+                                            Log.d("TAG", "Successfully added device token to users info DB");
+                                            Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
 
-                    checkUserAccessLevel(user.getUid());
+                                            checkUserAccessLevel(user.getUid());
+                                        }
+                                    }
+                                });
+                            }else{
+                                Log.d("Login", "Failed to retrieve token: "+task.getException().toString());
+                            }
+                        }
+                    });
 
                 } else if (!task.isSuccessful()) {
                     Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
@@ -119,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                         finish();
                     }
                     if (retrieveUserType.equals("Driver")) {
-                        startActivity(new Intent(LoginActivity.this, DriverDashboard.class));
+                        startActivity(new Intent(LoginActivity.this, DriversDashboardActivity.class));
                         finish();
                     }
                 }

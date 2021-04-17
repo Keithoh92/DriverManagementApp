@@ -33,6 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 
 public class MessagesActivity extends AppCompatActivity implements AddDriversFragment.AddDriversFragmentToActivity {
@@ -43,8 +44,10 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
     private TabsAdaptor myTabsAdaptor;
 
     private FirebaseAuth fAuth;
-    private DatabaseReference RootRef, DriversRef;
-    public String userIDReceived, userNameReceived;
+    private FirebaseUser currentUser;
+    private DatabaseReference RootRef, DriversRef, usersRef;
+    public String currentUserID;
+    private boolean isNormalUser;
 
     private ActivityToFragment sCallback;
 
@@ -60,9 +63,14 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
 //        foundDrivers = new Fragment();
 
         fAuth = FirebaseAuth.getInstance();
+        currentUser = fAuth.getCurrentUser();
+        assert currentUser != null;
+        currentUserID = currentUser.getUid();
+
         Log.d("TAG", "Database reference created");
         RootRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups");
         DriversRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers");
+        usersRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
 
         messagesToolbar = (Toolbar) findViewById(R.id.messages_toolbar);
         setSupportActionBar(messagesToolbar);
@@ -81,13 +89,10 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
 
 
         addDrivers = fm.findFragmentById(R.id.add_drivers_fragment);
-        foundDrivers = fm.findFragmentById(R.id.found_driver_result);
 
 
         fm.beginTransaction()
                 .hide(addDrivers)
-                .hide(foundDrivers)
-                .detach(foundDrivers)
                 .commit();
 
 //        foundDrivers.onDestroy();
@@ -110,16 +115,16 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
             fAuth.signOut();
             SendUserToLoginActivity();
         }
-        if(item.getItemId() == R.id.add_drivers_option)
-        {
-            OpenFindDriversFragment();
-//            fm.beginTransaction()
-//                    .show(addDrivers)
-//                    .commit();
-        }
-        if(item.getItemId() == R.id.create_group_option)
-        {
-            RequestNewGroup();
+        if(isNormalUser){
+            Log.d("testing", "Not showing add rivers option, user is not user does not have access");
+        }else {
+            if (item.getItemId() == R.id.add_drivers_option) {
+                OpenFindDriversFragment();
+            }
+
+            if (item.getItemId() == R.id.create_group_option) {
+                RequestNewGroup();
+            }
         }
         if(item.getItemId() == R.id.settings_option)
         {
@@ -207,43 +212,6 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
             });
     }
 
-//    @Override
-//    public void communicate(String userID, String userName) {
-//        userIDReceived = userID;
-//        userNameReceived = userName;
-//        if(userIDReceived != null && userNameReceived != null){
-//            Log.d("MessagesActivity", "Found drivers fragment returned user id: "+userIDReceived+", and username: "+userNameReceived);
-//            Log.d("MessagesActivity", "Calling method create new driver");
-//            CreateNewDriver(userIDReceived, userNameReceived);
-//        }
-//    }
-
-    private void CreateNewDriver(final String userIDReceived, final String userNameReceived){
-        Log.d("MessagesActivity", "Create new driver called, received: "+userIDReceived+", "+userNameReceived);
-        HashMap<String, String> myDrivers = new HashMap<>();
-        myDrivers.put("DriverUsername", userNameReceived);
-        myDrivers.put("DriverID", userIDReceived);
-
-        FirebaseUser currentUser = fAuth.getCurrentUser();
-        String currentUserID = currentUser.getUid();
-
-        DriversRef.child(currentUserID).child(userIDReceived).setValue(myDrivers).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    Toast.makeText(MessagesActivity.this, "Successfully added new driver to your contacts", Toast.LENGTH_SHORT).show();
-                    Log.d("testing", "Successfully added new Driver to DB");
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(MessagesActivity.this, "Something went wrong, not able to add new driver to your contacts", Toast.LENGTH_SHORT).show();
-                Log.d("DataBaseInsertFailed:", e.toString());
-            }
-        });
-    }
-
     @Override
     public void comm(String foundDriversID) {
         if(foundDriversID != null){
@@ -259,25 +227,31 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
     public interface ActivityToFragment{
         public void sendToFrag(String id);
     }
-//    private void send(String id){sCallback.sendToFrag(id);}
-//    private void CheckIfUserExistsInContacts(String userID){
-//        FirebaseUser currentUser = fAuth.getCurrentUser();
-//        String currentUserID = currentUser.getUid();
-//
-//        DriversRef.child(currentUserID).orderByChild("userid").equalTo(userID).addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if(snapshot.exists()){
-//                    Toast.makeText(MessagesActivity.this, "User is already in your contacts", Toast.LENGTH_SHORT).show();
-//                }else{
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
+
+    private void checkUserAccessLevel() {
+        Log.d("Contacts", "Checking access level - ID passed: "+currentUserID);
+        usersRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if ((snapshot.exists()) && (snapshot.hasChild("userType"))) {
+                    String retrieveUserType = Objects.requireNonNull(snapshot.child("userType").getValue()).toString();
+                    if (retrieveUserType.equals("Management")) {
+                        Log.d("ProfileActivity", "User is Management user");
+
+                    }
+                    if (retrieveUserType.equals("Driver")) {
+                        Log.d("ProfileActivity", "User is normal user");
+                        isNormalUser = true;
+                    }
+                }else{
+                    Log.d("ProfileActivity", "No usertype found");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 }

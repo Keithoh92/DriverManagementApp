@@ -35,15 +35,6 @@
         android:layout_marginEnd="10dp"
         />
 
-    <fragment
-        android:id="@+id/found_driver_result"
-        android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:name="com.example.drivermanagement.FoundDriversFragment"
-        android:layout_below="@id/add_drivers_fragment"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"/>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/messages_tab_pager"
