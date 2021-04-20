@@ -47,6 +47,7 @@ public class ContactsFragment extends Fragment {
     String userID, normalUserUsername;
     String managementID;
     boolean isNormalUser = false;
+//    private
 
 
     public ContactsFragment() {
@@ -177,6 +178,7 @@ public class ContactsFragment extends Fragment {
                                             String visit_user_id = getRef(position).getKey();
                                             Intent profileIntent = new Intent(getContext(), ProfileActivity.class);
                                             profileIntent.putExtra("visit_user_id", visit_user_id);
+                                            profileIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                             startActivity(profileIntent);
                                         }
                                     });
@@ -219,7 +221,7 @@ public class ContactsFragment extends Fragment {
 
     private void checkUserAccessLevel() {
         Log.d("Contacts", "Checking access level - ID passed: "+userID);
-        UsersRef.child(userID).addValueEventListener(new ValueEventListener() {
+        UsersRef.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if ((snapshot.exists()) && (snapshot.hasChild("userType"))) {

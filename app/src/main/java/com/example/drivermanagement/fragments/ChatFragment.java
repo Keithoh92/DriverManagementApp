@@ -91,8 +91,8 @@ public class ChatFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        Log.d("Contacts", "OnStart called");
-        Log.d("Contacts", "Calling check user access level");
+        Log.d("ChatFrag", "OnStart called");
+        Log.d("ChatFrag", "Calling check user access level");
         checkUserAccessLevel();
 
 
@@ -217,18 +217,18 @@ public class ChatFragment extends Fragment {
 
     private void checkUserAccessLevel() {
         Log.d("Contacts", "Checking access level - ID passed: "+userID);
-        UsersRef.child(userID).addValueEventListener(new ValueEventListener() {
+        UsersRef.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if ((snapshot.exists()) && (snapshot.hasChild("userType"))) {
                     String retrieveUserType = Objects.requireNonNull(snapshot.child("userType").getValue()).toString();
                     if (retrieveUserType.equals("Management")) {
-                        Log.d("Contacts", "User is Management user");
+                        Log.d("ChatFrag", "User is Management user");
                         DriverRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers").child(userID);
 
                     }
                     if (retrieveUserType.equals("Driver")) {
-                        Log.d("Contacts", "User is normal user");
+                        Log.d("ChatFrag", "User is normal user");
                         managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
                         normalUserUsername = Objects.requireNonNull(snapshot.child("username").getValue()).toString();
                         DriverRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers").child(managementID);

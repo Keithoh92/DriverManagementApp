@@ -31,8 +31,8 @@ public class TabsAdaptor2 extends FragmentStatePagerAdapter {
                 return manDash2Fragment;
 
             case 1:
-                DashboardMessagesViewPager messagesViewPager = new DashboardMessagesViewPager();
-                return messagesViewPager;
+                ManagementDash1Fragment manDash1Fragment = new ManagementDash1Fragment();
+                return manDash1Fragment;
 
             default:
                 return null;

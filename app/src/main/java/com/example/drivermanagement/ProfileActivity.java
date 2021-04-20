@@ -1,6 +1,7 @@
 package com.example.drivermanagement;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -11,6 +12,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +26,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,17 +54,23 @@ public class ProfileActivity extends AppCompatActivity {
     private boolean isNormalUser;
     Fragment mapsFragment;
     FragmentManager fm = getSupportFragmentManager();
+    private ValueEventListener listener;
+    private ValueEventListener listener2;
+    private ValueEventListener listener3;
+
 
 
     private FirebaseAuth fAuth;
-    private DatabaseReference usersRef, DriversRef, LocationRequestsRef, LocationsRef;
+    private DatabaseReference usersRef, DriversRef, LocationRequestsRef, LocationsRef, NotificationRef;
 
     //User to add info
     String imageUri, usersEmail, username;
     //Management users info
     String manImageUri, manEmail, manUsername;
-    String currentDate, currentTime;
-    Double usersLat, usersLng;
+    String currentDate, currentTime, time;
+    Double getLat, getLng;
+
+    UsersLocation usersLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +112,8 @@ public class ProfileActivity extends AppCompatActivity {
         usersRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
         DriversRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers");
         LocationRequestsRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("LocationRequests");
-        LocationsRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(currentUserID).child("locations").child(currentDate);
+        LocationsRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("DriversLocations");
+        NotificationRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Notifications");
 
         mapsFragment = fm.findFragmentById(R.id.maps_fragment_profile_activity);
 
@@ -112,12 +122,12 @@ public class ProfileActivity extends AppCompatActivity {
         //which will get the users location and upload it to their users/locations/currentDate DB
         //if there is no locations there, we hide the maps fragment, if there is we get the latlng pass it in a bundle to the maps fragment and show the
         //maps fragment
-//        fm.beginTransaction()
-//                .hide(mapsFragment)
-//                .commit();
 
 
-        checkUserAccessLevel();
+
+
+        checkUserAccessLevel1();
+
 
         if(getIntent().getExtras().containsKey("driversID")){
             receiverUserId = getIntent().getExtras().get("driversID").toString();
@@ -134,7 +144,6 @@ public class ProfileActivity extends AppCompatActivity {
                 removeDriver.setVisibility(View.VISIBLE);
             }
         }
-
 
 
         RetrieveUsersInfo();
@@ -191,7 +200,37 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             }
         });
-        
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("ProfileActivity", "OnStart called Current state = "+current_state);
+//        ManageLocationRequests();
+//        CheckForLocationUpdates();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("ProfileActivity", "OnResume called Current state = "+current_state);
+        if(!isNormalUser){
+            CheckForLocationUpdates();
+            Log.d("ProfileActivity", "Current state = "+current_state);
+        }
+        ManageLocationRequests();
+
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("ProfileActivity", "OnPause called Current state = "+current_state);
+        LocationsRef.child(currentUserID).child(currentDate).child(receiverUserId).orderByKey().limitToLast(1).removeEventListener(listener);
+        LocationRequestsRef.child(currentUserID).removeEventListener(listener2);
+        usersRef.child(currentUserID).removeEventListener(listener3);
     }
 
     private void RemoveDriver() {
@@ -235,7 +274,8 @@ public class ProfileActivity extends AppCompatActivity {
                 usersEmail = snapshot.child("email").getValue().toString();
                 userEmail.setText(usersEmail);
 
-                ManageLocationRequests();
+
+
             }
 
             @Override
@@ -350,16 +390,16 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void checkUserAccessLevel() {
+    private void checkUserAccessLevel1() {
         Log.d("Contacts", "Checking access level - ID passed: "+currentUserID);
-        usersRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
+        listener3 = new ValueEventListener(){
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if ((snapshot.exists()) && (snapshot.hasChild("userType"))) {
                     String retrieveUserType = Objects.requireNonNull(snapshot.child("userType").getValue()).toString();
                     if (retrieveUserType.equals("Management")) {
                         Log.d("ProfileActivity", "User is Management user");
-                        CheckForLocationUpdates();
+//                        CheckForLocationUpdates();
 
                     }
                     if (retrieveUserType.equals("Driver")) {
@@ -368,6 +408,7 @@ public class ProfileActivity extends AppCompatActivity {
                         removeDriver.setVisibility(View.INVISIBLE);
                         requestLocation.setVisibility(View.INVISIBLE);
                         isNormalUser = true;
+//                        GetUsersLocation();
                     }
                 }else{
                     Log.d("ProfileActivity", "No usertype found");
@@ -378,68 +419,63 @@ public class ProfileActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        };
+        usersRef.child(currentUserID).addValueEventListener(listener3);
     }
-//for (DataSnapshot ds : snapshot.getChildren()) {
-//        double getLat = ds.child("lat").getValue(Double.class);
-//        double getLng = ds.child("lng").getValue(Double.class);
-//        String time = ds.child("time").getValue().toString();
+
+//    private void CheckForLocationUpdates() {
+//        //LOCATIONSREF = USERS -> MANAGERSID -> LOCATIONS
 //
-//        Bundle sendTheLocation = new Bundle();
-//        sendTheLocation.putDouble("usersLat", getLat);
-//        sendTheLocation.putDouble("usersLng", getLng);
-//        sendTheLocation.putString("time", time);
-//        MapsFragment2 mf = new MapsFragment2();
-//        assert mf != null;
-//        mf.setArguments(sendTheLocation);
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.maps_fragment_profile_activity, mf)
-//                .show(mf)
-//                .commit();
 //    }
-    private void CheckForLocationUpdates()
-    {
-        //LOCATIONSREF = USERS -> MANAGERSID -> LOCATIONS
-        LocationsRef.addValueEventListener(new ValueEventListener() {
+
+    private void CallFragment() {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                Bundle sendTheLocation = new Bundle();
+                sendTheLocation.putDouble("usersLat", usersLocation.getLat());
+                sendTheLocation.putDouble("usersLng", usersLocation.getLng());
+                sendTheLocation.putString("time", usersLocation.getTime());
+                Log.d("ProfileActivity", "Preparing to replace Maps Fragment");
+                MapsFragment2 mf = new MapsFragment2();
+                assert mf != null;
+                mf.setArguments(sendTheLocation);
+                fm.beginTransaction()
+                        .replace(R.id.maps_fragment_profile_activity, mf)
+                        .commitAllowingStateLoss();
+            }
+        });
+        current_state = "new";
+        requestLocation.setText("Request Location Update");
+    }
+
+
+    public void CheckForLocationUpdates() {
+        Log.d("ProfileActivity", "Checking for Updates called");
+
+        listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists() && snapshot.hasChild(receiverUserId)){
-                    LocationsRef.child(receiverUserId).orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for (DataSnapshot ds : snapshot.getChildren()) {
-                                    double getLat = ds.child("lat").getValue(Double.class);
-                                    double getLng = ds.child("lng").getValue(Double.class);
-                                    String time = ds.child("time").getValue().toString();
-
-                                    Bundle sendTheLocation = new Bundle();
-                                    sendTheLocation.putDouble("usersLat", getLat);
-                                    sendTheLocation.putDouble("usersLng", getLng);
-                                    sendTheLocation.putString("time", time);
-                                    MapsFragment2 mf = new MapsFragment2();
-                                    assert mf != null;
-                                    mf.setArguments(sendTheLocation);
-                                    getSupportFragmentManager().beginTransaction()
-                                            .replace(R.id.maps_fragment_profile_activity, mf)
-                                            .commit();
-                                }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.d("ProfileActivity", error.getMessage());
-                        }
-                    });
+                if (snapshot.exists()) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        usersLocation = ds.getValue(UsersLocation.class);
+                        Log.d("ProfileActivity", "Retrieved location for user: " + receiverUserId + ", location: " + usersLocation.getLat() + ", " + usersLocation.getLng() + ", " + usersLocation.getTime());
+//
+                        CallFragment();
+//                        requestLocation.setText("Received Users Location");
+                    }
+                } else {
+                    Log.d("profileActivity", "Couldnt find any locations for this user");
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("ProfileActivity", error.getMessage());
+                Log.d("profileActivity", error.getMessage());
             }
-        });
+        };
+        LocationsRef.child(currentUserID).child(currentDate).child(receiverUserId).orderByKey().limitToLast(1).addValueEventListener(listener);
     }
-
     //This method is called in the retrieve users info method
     //which will check what the current state of the location requests are in the DB
 
@@ -454,52 +490,51 @@ public class ProfileActivity extends AppCompatActivity {
     //latlng for that user will be fetched from the DB and the maps fragment will be loaded with that location
     private void ManageLocationRequests()
     {
-        LocationRequestsRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
+        Log.d("ProfileActivity", "ManageLocationResuests called Current state = "+current_state);
+        listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot)
             {
-                //Here we are checking to see if weve already sent a location request
-                if(snapshot.hasChild(receiverUserId))
-                {
-                    String request_type = snapshot.child(receiverUserId).child("request_type").getValue().toString();
-
-                    //will never fire for driver user
-                    if(request_type.equals("sent"))
-                    {
-                        current_state = "request_sent";
-                        requestLocation.setText("Cancel Request");
-                    }
-
-                    //Will never be fired for management
-                    if(request_type.equals("received"))
-                    {
-                        current_state = "request_received";
-                        if(isNormalUser){
-                            sendLocation.setEnabled(true);
-                            sendLocation.setVisibility(View.VISIBLE);
-                        }
-
-                    }
-//                    else if(request_type.equals("location_received"))
-//                    {
-//                        current_state = "request_received";
-//                        if(isNormalUser){
-//                            sendLocation.setVisibility(View.VISIBLE);
-//                        }
-//
-//                    }
-                }else{
+                if(!snapshot.exists()) {
                     current_state = "new";
                     requestLocation.setText("Request Location Update");
+                    Log.d("ProfileActivity", "ManageLocationResuests no requests found Current state = " + current_state);
+                }
+
+                if(snapshot.exists()) {
+                    //Here we are checking to see if weve already sent a location request
+                    Log.d("ProfileActivity", "ManageLocationResuests request found Current state = " + current_state);
+                    if (snapshot.hasChild(receiverUserId)) {
+                        String request_type = snapshot.child(receiverUserId).child("request_type").getValue().toString();
+
+                        //will never fire for driver user
+                        if (request_type.equals("sent")) {
+                            current_state = "request_sent";
+                            requestLocation.setText("Cancel Request");
+                            Log.d("ProfileActivity", "ManageLocationResuests method Current state = "+current_state);
+                        }
+
+                        //Will never be fired for management
+                        if (request_type.equals("received")) {
+                            current_state = "request_received";
+                            Log.d("ProfileActivity", "ManageLocationResuests method Current state = "+current_state);
+                            if (isNormalUser) {
+                                sendLocation.setEnabled(true);
+                                sendLocation.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }
+
                 }
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d("ProfileActivity", "Database error: "+error.getMessage());
             }
-        });
+        };
+        LocationRequestsRef.child(currentUserID).addValueEventListener(listener2);
         requestLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -512,6 +547,9 @@ public class ProfileActivity extends AppCompatActivity {
                 {
                     CancelLocationRequest();
                 }
+//                if(current_state.equals("location_received")){
+//                    CallFragment();
+//                }
             }
         });
         sendLocation.setOnClickListener(new View.OnClickListener() {
@@ -528,34 +566,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
-//    private void RetrieveLocation() {
-//        usersRef.child(currentUserID).child("locations_received").child(receiverUserId).child(currentDate).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if(snapshot.exists()){
-//                    double getLat = (double) snapshot.child("lat").getValue();
-//                    double getLng = (double) snapshot.child("lng").getValue();
-//
-//                    Bundle sendTheLocation = new Bundle();
-//                    sendTheLocation.putDouble("usersLat", getLat);
-//                    sendTheLocation.putDouble("usersLng", getLng);
-//                    MapsFragment2 mf = new MapsFragment2();
-//                    assert mf != null;
-//                    mf.setArguments(sendTheLocation);
-//                    getSupportFragmentManager().beginTransaction()
-//                            .replace(R.id.maps_fragment_profile_activity, mf)
-//                            .show(mf)
-//                            .commit();
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
-
     //accept location request
     private void AcceptLocationRequest()
     {
@@ -568,15 +578,17 @@ public class ProfileActivity extends AppCompatActivity {
                 {
                     LocationRequestsRef.child(receiverUserId).child(currentUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
-                        public void onComplete(@NonNull Task<Void> task)
-                        {
-                            GetUsersLocation();
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                GetUsersLocation();
 //                            requestLocation.setEnabled(true);
-                            current_state = "new";
+//                            current_state = "new";
 //                            requestLocation.setText("Request Location Update");
-                            sendLocation.setEnabled(false);
-                            //receiverID will be the managers ID, use this to access the location received DB of the manager
-                            //and add a under the mangers id -> usersid -> and current date the latlng of the user
+                                sendLocation.setEnabled(false);
+                                sendLocation.setVisibility(View.INVISIBLE);
+                                //receiverID will be the managers ID, use this to access the location received DB of the manager
+                                //and add a under the mangers id -> usersid -> and current date the latlng of the user
+                            }
                         }
                     });
                 }
@@ -618,6 +630,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void SendLocationRequest()
     {
+        Log.d("ProfileActivity", "Send Location Requests called");
+
 //        requestLocation.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -633,9 +647,21 @@ public class ProfileActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(task.isSuccessful())
                                     {
-                                        requestLocation.setEnabled(true);
-                                        requestLocation.setText("Cancel Request");
-                                        current_state = "request_sent";
+                                        HashMap<String, String> locationNotification = new HashMap<>();
+                                        locationNotification.put("from", currentUserID);
+                                        locationNotification.put("type", "request");
+
+                                        NotificationRef.child(receiverUserId).push().setValue(locationNotification).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if(task.isSuccessful())
+                                                {
+                                                    requestLocation.setEnabled(true);
+                                                    requestLocation.setText("Cancel Request");
+                                                    current_state = "request_sent";
+                                                }
+                                            }
+                                        });
                                     }
                                 }
                             });
@@ -673,32 +699,51 @@ public class ProfileActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(LatLng latLng) {
             super.onPostExecute(latLng);
-            HashMap<String, Object> usersLatLng = new HashMap<>();
 
-            usersLatLng.put("lat", latLng.latitude);
-            usersLatLng.put("lng", latLng.longitude);
-            usersLatLng.put("time", currentTime);
+            Calendar calForTime = Calendar.getInstance();
+            SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh-mm a");
+            currentTime = currentTimeFormat.format(calForTime.getTime());
 
-            String locationKey = usersRef.child(receiverUserId).child("locations").child(currentDate).child(currentUserID).push().getKey();
 
-            //REceiverId here is the manager that sent the request, we save the latlng under the managers user account under locations received DB ->
-            //current_date-> userID
-            //We will send a notification to the manager on reveive of the latlng from user which will then open that users profile
-            //and set the map to that latlng stored in the DB
-            usersRef.child(receiverUserId).child("locations").child(currentDate).child(currentUserID).child(locationKey).setValue(usersLatLng).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful())
-                    {
-                        Toast.makeText(ProfileActivity.this, "Sent location update to management successfully", Toast.LENGTH_SHORT).show();
+                Bundle sendTheLocation = new Bundle();
+                sendTheLocation.putDouble("usersLat", latLng.latitude);
+                sendTheLocation.putDouble("usersLng", latLng.longitude);
+                sendTheLocation.putString("time", currentTime);
 
+                MapsFragment2 mf = new MapsFragment2();
+                assert mf != null;
+                mf.setArguments(sendTheLocation);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.maps_fragment_profile_activity, mf)
+                        .commit();
+
+                HashMap<String, Object> usersLatLng = new HashMap<>();
+
+
+                usersLatLng.put("lat", latLng.latitude);
+                usersLatLng.put("lng", latLng.longitude);
+                usersLatLng.put("time", currentTime);
+
+                DatabaseReference locationKeyRef = LocationsRef.child(receiverUserId).child(currentDate).child(currentUserID).push();
+                String locationKey = locationKeyRef.getKey();
+
+                //REceiverId here is the manager that sent the request, we save the latlng under the managers user account under locations received DB ->
+                //current_date-> userID
+                //We will send a notification to the manager on reveive of the latlng from user which will then open that users profile
+                //and set the map to that latlng stored in the DB
+                LocationsRef.child(receiverUserId).child(currentDate).child(currentUserID).child(locationKey).setValue(usersLatLng).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(ProfileActivity.this, "Sent location update to management successfully", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            Toast.makeText(ProfileActivity.this, "Failed to send your location to management", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                    else{
-                        Toast.makeText(ProfileActivity.this, "Failed to send your location to management", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+                });
         }
     }
+
 
 }

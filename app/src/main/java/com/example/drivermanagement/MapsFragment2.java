@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +25,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsFragment2 extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback, GoogleMap.OnMarkerClickListener{
 
     private GoogleMap map;
+//    Activity listener;
+    double lat1 = 53.3498;
+    double lon1 = -6.266155;
+    String lastTimeUploaded;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+//        if(context instanceof ProfileActivity){
+//            this.listener = (ProfileActivity) context; //MainActivity listener
+//        }
+    }
 
     @Nullable
     @Override
@@ -35,12 +49,14 @@ public class MapsFragment2 extends Fragment implements OnMapReadyCallback, Googl
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        SupportMapFragment mapFragment =
+        SupportMapFragment mapFragment2 =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map2);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
+        if (mapFragment2 != null) {
+            mapFragment2.getMapAsync(this);
         }
     }
+
+
 
     @Override
     public void onMapLoaded() {
@@ -72,4 +88,11 @@ public class MapsFragment2 extends Fragment implements OnMapReadyCallback, Googl
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.setOnMapLoadedCallback(this);
     }
+
+//    @Override
+//    public void comm(double lat, double lng, String time) {
+//        lat1 = lat;
+//        lon1 = lng;
+//        lastTimeUploaded = time;
+//    }
 }

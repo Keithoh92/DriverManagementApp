@@ -173,7 +173,7 @@
     <Button
         android:id="@+id/send_message_profile"
         android:layout_width="180dp"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:text="Send Message"
         android:textSize="18sp"
         android:background="@drawable/button_corners"
@@ -186,7 +186,7 @@
     <Button
         android:id="@+id/remove_driver_button"
         android:layout_width="180dp"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:text="Remove Driver"
         android:textSize="18sp"
         android:background="@drawable/button_corners"
@@ -210,6 +210,7 @@
         android:id="@+id/request_location_update_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginBottom="5dp"
         android:text="Request Location Update"
         android:layout_alignParentBottom="true"
         android:background="@drawable/button_corners"
@@ -220,6 +221,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="Send Location"
+        android:layout_marginBottom="5dp"
         android:layout_alignParentBottom="true"
         android:background="@drawable/button_corners"/>
 

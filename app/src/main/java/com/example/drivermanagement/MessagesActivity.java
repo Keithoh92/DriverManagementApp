@@ -236,15 +236,15 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
                 if ((snapshot.exists()) && (snapshot.hasChild("userType"))) {
                     String retrieveUserType = Objects.requireNonNull(snapshot.child("userType").getValue()).toString();
                     if (retrieveUserType.equals("Management")) {
-                        Log.d("ProfileActivity", "User is Management user");
+                        Log.d("MessagesActivity", "User is Management user");
 
                     }
                     if (retrieveUserType.equals("Driver")) {
-                        Log.d("ProfileActivity", "User is normal user");
+                        Log.d("MessagesActivity", "User is normal user");
                         isNormalUser = true;
                     }
                 }else{
-                    Log.d("ProfileActivity", "No usertype found");
+                    Log.d("Messages", "No usertype found");
                 }
             }
 
