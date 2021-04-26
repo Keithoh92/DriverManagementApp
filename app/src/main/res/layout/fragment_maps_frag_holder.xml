@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="280dp"
+    android:background="@drawable/background_colour"
+    tools:context=".DriversFragments.MapsFragHolder">
+
+    <TextView
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="2dp"
+        android:text="Your Location"
+        android:textColor="#b5540e"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        />
+    <fragment
+        android:id="@+id/maps_fragment_drivers_dash"
+        android:name="com.example.drivermanagement.MapsFragment3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="30dp"
+        android:layout_marginTop="10dp"
+        >
+    </fragment>
+
+</RelativeLayout>

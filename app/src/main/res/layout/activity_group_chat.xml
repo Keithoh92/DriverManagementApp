@@ -12,32 +12,14 @@
         >
     </include>
 
-    <ScrollView
-        android:id="@+id/my_scroll_view"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_of_group_messages"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/group_chat_bar_layout">
+        android:layout_height="match_parent"
+        android:layout_below="@id/group_chat_bar_layout"
+        android:layout_above="@id/myLinearLayout"
+        />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
-
-            <TextView
-                android:id="@+id/group_chat_text_display"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:textAllCaps="false"
-                android:textSize="20sp"
-                android:textColor="#000000"
-                android:layout_marginStart="2dp"
-                android:layout_marginEnd="2dp"
-                android:layout_marginBottom="60dp"
-                />
-        </LinearLayout>
-    </ScrollView>
     <LinearLayout
         android:id="@+id/myLinearLayout"
         android:layout_width="match_parent"
@@ -48,7 +30,7 @@
         
         <EditText
             android:id="@+id/input_group_message"
-            android:layout_width="350dp"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:hint="Write message"
             android:padding="17dp"

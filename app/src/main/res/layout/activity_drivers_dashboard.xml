@@ -17,9 +17,9 @@
 
         <fragment
             android:id="@+id/driver_top_frag"
-            android:name="com.example.drivermanagement.fragments.chooserDashFragmnet"
+            android:name="com.example.drivermanagement.DriversFragments.ChooserDriversFragment"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="280dp"
             android:elevation="10dp"
             android:layout_marginTop="3dp"
             android:layout_marginLeft="2dp"
@@ -29,9 +29,9 @@
 
         <fragment
             android:id="@+id/driver_bottom_frag"
-            android:name="com.example.drivermanagement.fragments.chooserDashManFragment2"
+            android:name="com.example.drivermanagement.DriversFragments.ChooserDriversFragment2"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="280dp"
             android:layout_marginLeft="2dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="2dp"
@@ -43,7 +43,7 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_nav_drivers"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="55dp"
             app:menu="@menu/bottom_nav_menu"
             app:itemIconSize="@dimen/places_autocomplete_prediction_primary_text"
             app:itemTextColor="@android:color/white"

@@ -42,7 +42,7 @@
         android:id="@+id/management_dash_bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:menu="@menu/bottom_nav_menu"
+        app:menu="@menu/bottom_nav_menu_management"
         app:itemIconSize="@dimen/places_autocomplete_prediction_primary_text"
         app:itemTextColor="@android:color/white"
         app:itemIconTint="#b5540e"

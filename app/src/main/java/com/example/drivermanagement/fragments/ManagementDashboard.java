@@ -11,13 +11,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.drivermanagement.CustomMessagesDialog;
 import com.example.drivermanagement.LoginActivity;
 import com.example.drivermanagement.MessagesActivity;
 import com.example.drivermanagement.R;
+import com.example.drivermanagement.TinyDB;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class ManagementDashboard extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class ManagementDashboard extends AppCompatActivity implements CustomMessagesDialog.DialogListener {
     Toolbar managementToolbar;
     BottomNavigationView bottomNavigationView;
     Button sendLocation;
@@ -46,9 +50,6 @@ public class ManagementDashboard extends AppCompatActivity {
                     case R.id.messages_menu_button:
                         SendUserToMessagesActivity();
                         break;
-                    case R.id.ocr_menu_button:
-                        SendUserToCreateOrderActivity();
-                        break;
                 }
                 return true;
             }
@@ -59,7 +60,7 @@ public class ManagementDashboard extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.options_menu, menu);
+        getMenuInflater().inflate(R.menu.options_menu_management_dashboard, menu);
         return true;
     }
 
@@ -72,14 +73,7 @@ public class ManagementDashboard extends AppCompatActivity {
             fAuth.signOut();
             SendUserToLoginActivity();
         }
-        if(item.getItemId() == R.id.add_drivers_option)
-        {
 
-        }
-        if(item.getItemId() == R.id.create_group_option)
-        {
-//            RequestNewGroup();
-        }
         if(item.getItemId() == R.id.settings_option)
         {
 //            SendUserToChatSettingsActivity();
@@ -125,4 +119,19 @@ public class ManagementDashboard extends AppCompatActivity {
 //        if(fragment.isH)
     }
 
+    @Override
+    public void applyMessages(String messageA, String messageB, String messageC, String messageD, String messageE) {
+        ArrayList<String> messageArray = new ArrayList<>();
+        if (messageA != null) {
+            messageArray.clear();
+            messageArray.add(messageA);
+            messageArray.add(messageB);
+            messageArray.add(messageC);
+            messageArray.add(messageD);
+            messageArray.add(messageE);
+            TinyDB tinyDB = new TinyDB(getApplicationContext());
+            tinyDB.putListString("MessagesList", messageArray);
+
+        }
+    }
 }

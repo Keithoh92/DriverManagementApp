@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="800px"
+    android:layout_height="280dp"
     android:background="@drawable/background_colour"
     tools:context=".fragments.ManagementDash2Fragment">
 
@@ -12,13 +12,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:text="Messages"
         android:textColor="#e3792d"
         android:elevation="10dp"
         android:textSize="30sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+         />
 
     <TextView
         android:id="@+id/textView13"
@@ -27,50 +26,54 @@
         android:layout_marginStart="25dp"
         android:layout_marginTop="13dp"
         android:text="To:"
+        android:layout_below="@id/textView12"
         android:textColor="#e3792d"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+        />
 
     <Spinner
         android:id="@+id/messagesSpinnerMDash2"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="18dp"
         android:layout_marginRight="10dp"
+        android:layout_below="@id/chooseRecipients1"
         android:background="@drawable/round_textview"
         android:elevation="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.842"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chooseRecipients1" />
+        />
 
     <EditText
         android:id="@+id/editTextTextPersonName2"
-        android:layout_width="280dp"
-        android:layout_height="115dp"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="13dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/messagesSpinnerMDash2"
         android:ems="10"
+        android:textAlignment="gravity"
+        android:gravity="left"
+        android:padding="10dp"
         android:hint="Custom Message"
         android:inputType="textPersonName"
+        android:background="@android:color/white"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:textColorHint="#e3792d"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/messagesSpinnerMDash2" />
+         />
 
     <Button
         android:id="@+id/sendButton"
         android:layout_width="80dp"
         android:layout_height="30dp"
-        android:layout_marginTop="82dp"
+        android:layout_marginBottom="30dp"
         android:layout_marginEnd="16dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:elevation="10dp"
         android:background="@drawable/button_corners"
         android:text="Send"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/messagesSpinnerMDash2" />
+         />
 
     <Button
         android:id="@+id/chooseRecipients1"
@@ -78,38 +81,48 @@
         android:layout_height="30dp"
         android:layout_marginStart="27dp"
         android:layout_marginTop="7dp"
+        android:layout_below="@id/textView12"
         android:elevation="10dp"
         android:background="@drawable/button_corners"
         android:text="Choose recipents"
         android:textSize="12sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/textView13"
-        app:layout_constraintStart_toEndOf="@+id/textView13"
-        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+         />
+    <Button
+        android:id="@+id/choose_groups"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="27dp"
+        android:layout_marginTop="7dp"
+        android:layout_below="@id/textView12"
+        android:layout_alignParentEnd="true"
+        android:elevation="10dp"
+        android:background="@drawable/button_corners"
+        android:text="Choose Groups"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        />
 
     <TextView
         android:id="@+id/chosenRecipients1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="27dp"
-        android:layout_marginTop="1dp"
-        android:text=""
+        android:layout_marginStart="30dp"
+        android:layout_marginBottom="5dp"
+        android:layout_below="@id/editTextTextPersonName2"
         android:textColor="#ffffff"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView13" />
+         />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/menuOption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="189dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="27dp"
-        android:layout_marginBottom="69dp"
+        android:layout_alignParentEnd="true"
         android:src="@android:drawable/ic_menu_sort_by_size"
-        app:layout_constraintBottom_toTopOf="@+id/messagesSpinnerMDash2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView12"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:background="@drawable/background_colour"
+        />
+</RelativeLayout>
 

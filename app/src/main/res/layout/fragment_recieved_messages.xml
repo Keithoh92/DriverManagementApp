@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="280dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/background_colour"
+    tools:context=".DriversFragments.RecievedMessagesFragment">
+
+    <TextView
+        android:id="@+id/received_messages_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        android:text="Recent Messages"
+        android:textColor="#e3792d"
+        android:elevation="10dp"
+        android:textSize="30sp"
+        />
+
+    <ImageButton
+        android:id="@+id/menu_received_messages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="189dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="27dp"
+        android:layout_alignParentEnd="true"
+        android:src="@android:drawable/ic_menu_sort_by_size"
+        android:background="@drawable/background_colour"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/received_messages_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:background="@drawable/round_textview"
+        android:layout_below="@id/received_messages_textview"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        >
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <Spinner
+        android:id="@+id/received_messages_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginRight="10dp"
+        android:layout_below="@id/received_messages_recyclerview"
+        android:background="@drawable/round_textview"
+        android:elevation="10dp"
+        />
+
+    <Button
+        android:id="@+id/recipients_rec_messages"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="27dp"
+        android:layout_marginTop="7dp"
+        android:layout_below="@id/received_messages_spinner"
+        android:elevation="10dp"
+        android:background="@drawable/button_corners"
+        android:text="Choose recipents"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        />
+    <Button
+        android:id="@+id/send_button_rec"
+        android:layout_width="90dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="27dp"
+        android:layout_marginTop="7dp"
+        android:layout_below="@id/received_messages_spinner"
+        android:layout_alignParentEnd="true"
+        android:elevation="10dp"
+        android:background="@drawable/button_corners"
+        android:text="Send"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        />
+</RelativeLayout>

@@ -34,7 +34,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="@+id/receiver_message_text"
         android:background="@drawable/sender_messages_layout"
-        android:text="sender messages here"
+        android:text="rootModel messages here"
         android:padding="10dp"
         android:textSize="14sp"
         android:textStyle="bold"

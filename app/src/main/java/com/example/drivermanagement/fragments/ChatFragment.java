@@ -210,7 +210,7 @@ public class ChatFragment extends Fragment {
         {
             super(itemView);
             userName = itemView.findViewById(R.id.user_profile_name);
-            lastChats =itemView.findViewById(R.id.last_chats_textview);
+//            lastChats =itemView.findViewById(R.id.last_chats_textview);
             profileImage = itemView.findViewById(R.id.users_profile_image);
         }
     }

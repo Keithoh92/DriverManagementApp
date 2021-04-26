@@ -13,4 +13,11 @@
         android:enabled="true"
         android:icon="@drawable/ocr_icon3"
         />
+
+    <item
+        android:id="@+id/routes_menu_button"
+        android:title="ROUTES"
+        android:enabled="true"
+        android:icon="@drawable/mapsmenuoption"
+        />
 </menu>

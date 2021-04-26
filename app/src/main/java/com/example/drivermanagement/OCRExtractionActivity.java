@@ -529,8 +529,9 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
 
                 }
             });
-
-                OrderRef.child(currentUserId).child("Orders").child(currentDate).child(String.valueOf(noOFOrders+1)).setValue(map).addOnCompleteListener(new OnCompleteListener() {
+                int noOFOrdersd = Integer.parseInt(String.valueOf(noOFOrders));
+                noOFOrdersd = noOFOrdersd+1;
+                OrderRef.child(currentUserId).child("Orders").child(currentDate).child(String.valueOf(noOFOrdersd)).setValue(map).addOnCompleteListener(new OnCompleteListener() {
                 @Override
                 public void onComplete(@NonNull Task task) {
                     if (task.isSuccessful()) {

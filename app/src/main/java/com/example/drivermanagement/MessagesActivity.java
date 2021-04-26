@@ -32,6 +32,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -46,7 +48,7 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
     private FirebaseAuth fAuth;
     private FirebaseUser currentUser;
     private DatabaseReference RootRef, DriversRef, usersRef;
-    public String currentUserID;
+    public String currentUserID, currentDate;
     private boolean isNormalUser;
 
     private ActivityToFragment sCallback;
@@ -87,6 +89,10 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
         messagesTablayout = (TabLayout) findViewById(R.id.tablayout_messages);
         messagesTablayout.setupWithViewPager(viewPager);
 
+        Calendar calForDate = Calendar.getInstance();
+        SimpleDateFormat currentDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        currentDate = currentDateFormat.format(calForDate.getTime());
+
 
         addDrivers = fm.findFragmentById(R.id.add_drivers_fragment);
 
@@ -102,7 +108,11 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.options_menu, menu);
+        if(isNormalUser) {
+            getMenuInflater().inflate(R.menu.options_menu_drivers, menu);
+        }else {
+            getMenuInflater().inflate(R.menu.options_menu, menu);
+        }
         return true;
     }
 
@@ -115,16 +125,15 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
             fAuth.signOut();
             SendUserToLoginActivity();
         }
-        if(isNormalUser){
-            Log.d("testing", "Not showing add rivers option, user is not user does not have access");
-        }else {
-            if (item.getItemId() == R.id.add_drivers_option) {
-                OpenFindDriversFragment();
-            }
 
-            if (item.getItemId() == R.id.create_group_option) {
-                RequestNewGroup();
-            }
+        if (item.getItemId() == R.id.add_drivers_option)
+        {
+            OpenFindDriversFragment();
+        }
+
+        if (item.getItemId() == R.id.create_group_option)
+        {
+            RequestNewGroup();
         }
         if(item.getItemId() == R.id.settings_option)
         {
@@ -198,8 +207,11 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
     private void CreateNewGroup(final String groupName)
     {
         Log.d("TAG", "Create new group got called " +groupName);
+            HashMap<String, Object> createGroup = new HashMap<>();
+            createGroup.put("groupname", groupName);
+            createGroup.put("createdon", currentDate);
 
-            RootRef.child(groupName).setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+            RootRef.child(currentUserID).child("GroupInfo").child(groupName).setValue(createGroup).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/group_message_from"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="5dp"
+        android:text="from"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/receiver_message_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@id/group_message_from"
+        android:background="@drawable/receiver_messages_layout"
+        android:text="receiver messages here"
+        android:padding="10dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/sender_message_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="@+id/receiver_message_text"
+        android:background="@drawable/sender_messages_layout"
+        android:text="rootModel messages here"
+        android:padding="10dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"/>
+</RelativeLayout>

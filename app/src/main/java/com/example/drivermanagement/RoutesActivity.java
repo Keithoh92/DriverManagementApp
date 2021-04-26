@@ -104,6 +104,9 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
                     case R.id.ocr_menu_button:
                         SendUserToOCRExtractionActivity();
                         break;
+                    case R.id.routes_menu_home_button:
+                        SendUserToHomeActivity();
+                        break;
                 }
                 return true;
             }
@@ -258,6 +261,11 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
                 Log.d("TAG", "An error occurred: " + status);
             }
         });
+    }
+
+    private void SendUserToHomeActivity() {
+        Intent homeIntent = new Intent(RoutesActivity.this, DriversDashboardActivity.class);
+        startActivity(homeIntent);
     }
 
     private void SendUserToMessagesActivityy()

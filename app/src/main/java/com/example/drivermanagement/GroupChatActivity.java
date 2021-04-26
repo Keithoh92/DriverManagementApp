@@ -4,10 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ScrollView;
@@ -24,9 +28,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 
 public class GroupChatActivity extends AppCompatActivity {
 
@@ -36,7 +43,14 @@ public class GroupChatActivity extends AppCompatActivity {
     EditText inputGroupMessage;
     ImageButton sendMessage;
 
-    private String currentGroupName, currentUser, currentUsername, currentDate, currentTime;
+    private RecyclerView groupMessagesList;
+    private final List<GroupMessages> messageList = new ArrayList<>();
+    private LinearLayoutManager linearLayoutManagerGroups;
+    private GroupMessageAdapter groupMessageAdaptor;
+
+
+    private String currentGroupName, currentUser, currentUsername, currentDate, currentTime, managementID, messageKey;
+    private boolean isNormalUser;
 
     private FirebaseAuth fAuth;
     private DatabaseReference dRef, GroupRef, groupMessageKeyRef;
@@ -46,19 +60,26 @@ public class GroupChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_chat);
 
-        currentGroupName = getIntent().getExtras().get("groupName").toString(); //get group name that user selected for display at top of group chat activity
+        currentGroupName = getIntent().getExtras().get("GroupName").toString(); //get group name that user selected for display at top of group chat activity
         Log.d("TAG", "Retrieved current group name from fragment" +currentGroupName);
 
         fAuth = FirebaseAuth.getInstance();
         currentUser = fAuth.getCurrentUser().getUid();
         //Create 2 database references for users and groups
         dRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
-        GroupRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups").child(currentGroupName);
+        GroupRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
+        Calendar calForDate = Calendar.getInstance();
+        SimpleDateFormat currentDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        currentDate = currentDateFormat.format(calForDate.getTime());
+
+        Calendar calForTime = Calendar.getInstance();
+        SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh-mm a");
+        currentTime = currentTimeFormat.format(calForTime.getTime());
 
         InitialiseFields();
-
         getUserInfo();
+        checkUserAccessLevel();
 
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +87,12 @@ public class GroupChatActivity extends AppCompatActivity {
             {
                 SaveMessageToDatabase();
                 inputGroupMessage.setText("");
-                myScrollView.fullScroll(ScrollView.FOCUS_DOWN); //Ensure last message in chat is always in display
+                try  {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                } catch (Exception e) {
+
+                }
             }
         });
     }
@@ -78,16 +104,22 @@ public class GroupChatActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(currentGroupName);
 
+        groupMessageAdaptor = new GroupMessageAdapter(messageList);
+        groupMessagesList = findViewById(R.id.list_of_group_messages);
+        linearLayoutManagerGroups = new LinearLayoutManager(this);
+        groupMessagesList.setLayoutManager(linearLayoutManagerGroups);
+        groupMessagesList.setAdapter(groupMessageAdaptor);
+
         sendMessage = (ImageButton) findViewById(R.id.send_message_button);
-        groupChatTextDisplay = (TextView) findViewById(R.id.group_chat_text_display);
+//        groupChatTextDisplay = (TextView) findViewById(R.id.group_chat_text_display);
         inputGroupMessage = (EditText) findViewById(R.id.input_group_message);
-        myScrollView = (ScrollView) findViewById(R.id.my_scroll_view);
+//        myScrollView = (ScrollView) findViewById(R.id.my_scroll_view);
 
 
     }
 
     private void getUserInfo() {
-        Log.d("TAG", "Retrieving user information from firestore");
+        Log.d("TAG", "Retrieving user information from DB");
         dRef.child(currentUser).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -107,7 +139,12 @@ public class GroupChatActivity extends AppCompatActivity {
     private void SaveMessageToDatabase()
     {
         String message = inputGroupMessage.getText().toString();
-        String messageKey = GroupRef.push().getKey();
+
+        if(!isNormalUser) {
+            messageKey = GroupRef.child("Groups").child(currentUser).child("GroupInfo").child(currentGroupName).child("GroupMessages").push().getKey();
+        }else{
+            messageKey = GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").push().getKey();
+        }
 
         if(TextUtils.isEmpty(message))
         {
@@ -115,23 +152,24 @@ public class GroupChatActivity extends AppCompatActivity {
         }
         else
         {
-            Calendar calForDate = Calendar.getInstance();
-            SimpleDateFormat currentDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-            currentDate = currentDateFormat.format(calForDate.getTime());
 
-            Calendar calForTime = Calendar.getInstance();
-            SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh-mm a");
-            currentTime = currentTimeFormat.format(calForTime.getTime());
 
             HashMap<String, Object> groupMessageKey = new HashMap<>();
-            GroupRef.updateChildren(groupMessageKey);
-            groupMessageKeyRef = GroupRef.child(messageKey);
 
+            if(!isNormalUser) {
+                GroupRef.child("Groups").child(currentUser).child("GroupInfo").child(currentGroupName).child("GroupMessages").updateChildren(groupMessageKey);
+                groupMessageKeyRef = GroupRef.child("Groups").child(currentUser).child("GroupInfo").child(currentGroupName).child("GroupMessages").child(messageKey);
+            }else{
+                GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").updateChildren(groupMessageKey);
+                groupMessageKeyRef = GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").child(messageKey);
+            }
             HashMap<String, Object> infoMap = new HashMap<>();
             infoMap.put("username", currentUsername);
             infoMap.put("message", message);
             infoMap.put("date", currentDate);
             infoMap.put("time", currentTime);
+            infoMap.put("type", "text");
+            infoMap.put("from", currentUser);
 
             groupMessageKeyRef.updateChildren(infoMap);
 
@@ -142,33 +180,147 @@ public class GroupChatActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        GroupRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName)
-            {
-                if(snapshot.exists())
-                {
-                    DisplayMessages(snapshot);
+
+        if (!isNormalUser) {
+//            messageKey = GroupRef.child(currentUser).child("GroupInfo").child(currentGroupName).child("GroupMessages").push().getKey();
+//            GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages");
+
+//        } else {
+
+            GroupRef.child("Groups").child(currentUser).child("GroupInfo").child(currentGroupName).child("GroupMessages").addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    if (snapshot.exists()) {
+                        GroupMessages groupMessages = snapshot.getValue(GroupMessages.class);
+                        messageList.add(groupMessages);
+                        groupMessageAdaptor.notifyDataSetChanged();
+                    }
                 }
-            }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName)
-            {
-                if(snapshot.exists())
-                {
-                    DisplayMessages(snapshot);
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
                 }
-            }
 
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        messageList.clear();
+        groupMessageAdaptor.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(isNormalUser){
+            GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    if (snapshot.exists()) {
+                        GroupMessages groupMessages = snapshot.getValue(GroupMessages.class);
+                        messageList.add(groupMessages);
+                        groupMessageAdaptor.notifyDataSetChanged();
+                    }
+                    else{
+                        Log.d("GroupChat", "Snapshot not found");
+                    }
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
+
+    private void checkUserAccessLevel() {
+        Log.d("Contacts", "Checking access level - ID passed: "+currentUser);
+        dRef.child(currentUser).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if ((snapshot.exists()) && (snapshot.hasChild("userType"))) {
+                    String retrieveUserType = Objects.requireNonNull(snapshot.child("userType").getValue()).toString();
+                    if (retrieveUserType.equals("Management")) {
+                        Log.d("Contacts", "User is Management user");
+//                        GroupRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups").child(currentUser);
 
-            }
+                    }
+                    if (retrieveUserType.equals("Driver")) {
+                        Log.d("Contacts", "User is normal user");
+                        managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
+//                        GroupRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups").child(managementID);
+                        isNormalUser = true;
+                        GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                                if (snapshot.exists()) {
+                                    GroupMessages groupMessages = snapshot.getValue(GroupMessages.class);
+                                    messageList.add(groupMessages);
+                                    groupMessageAdaptor.notifyDataSetChanged();
+                                }
+                                else{
+                                    Log.d("GroupChat", "Snapshot not found");
+                                }
+                            }
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
+                            }
+
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+                }else{
+                    Log.d("Contacts", "No usertype found");
+                }
             }
 
             @Override
@@ -176,24 +328,5 @@ public class GroupChatActivity extends AppCompatActivity {
 
             }
         });
-    }
-    //Display all messages in group chat
-    private void DisplayMessages(DataSnapshot snapshot)
-    {
-        //Moves line by line in message node in database and returns those messages
-        Iterator iterator = snapshot.getChildren().iterator();
-
-        while(iterator.hasNext())
-        {
-            String chatUsername = (String) ((DataSnapshot)iterator.next()).getValue();
-            String chatDate = (String) ((DataSnapshot)iterator.next()).getValue();
-            String chatMessage = (String) ((DataSnapshot)iterator.next()).getValue();
-            String chatTime = (String) ((DataSnapshot)iterator.next()).getValue();
-
-            groupChatTextDisplay.append(chatUsername + " :\n" + chatMessage + "\n" + chatTime + "        " + chatDate + "\n\n\n");
-
-            myScrollView.fullScroll(ScrollView.FOCUS_DOWN);
-
-        }
     }
 }

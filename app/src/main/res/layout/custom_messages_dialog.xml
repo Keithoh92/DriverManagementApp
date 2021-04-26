@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/editMessage1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editMessage1"
+        android:hint="Enter Message 1"/>
+
+    <EditText
+        android:id="@+id/editMessage2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editMessage1"
+        android:hint="Enter Message 2"/>
+
+    <EditText
+        android:id="@+id/editMessage3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editMessage2"
+        android:hint="Enter Message 3"/>
+
+    <EditText
+        android:id="@+id/editMessage4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editMessage3"
+        android:hint="Enter Message 4"/>
+
+    <EditText
+        android:id="@+id/editMessage5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editMessage4"
+        android:hint="Enter Message 5"/>
+
+</RelativeLayout>

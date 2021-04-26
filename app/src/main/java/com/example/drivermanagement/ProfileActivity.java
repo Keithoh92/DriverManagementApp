@@ -1,22 +1,29 @@
 package com.example.drivermanagement;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.app.IntentService;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +33,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,16 +64,18 @@ public class ProfileActivity extends AppCompatActivity {
     private ValueEventListener listener2;
     private ValueEventListener listener3;
 
-
+    private static final String CHANNEL_ID = "5643";
 
     private FirebaseAuth fAuth;
     private DatabaseReference usersRef, DriversRef, LocationRequestsRef, LocationsRef, NotificationRef;
+    private static boolean isInForeground;
 
     //User to add info
     String imageUri, usersEmail, username;
     //Management users info
     String manImageUri, manEmail, manUsername;
     String currentDate, currentTime, time;
+    String managersID = "";
     Double getLat, getLng;
 
     UsersLocation usersLocation;
@@ -87,7 +95,7 @@ public class ProfileActivity extends AppCompatActivity {
         sendLocation = findViewById(R.id.send_location);
         sendLocation.setVisibility(View.INVISIBLE);
         requestLocation = findViewById(R.id.request_location_update_button);
-        current_state = "new";
+//        current_state;
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -128,13 +136,14 @@ public class ProfileActivity extends AppCompatActivity {
 
         checkUserAccessLevel1();
 
-
+        //getting profile owners id and validating access levels
         if(getIntent().getExtras().containsKey("driversID")){
             receiverUserId = getIntent().getExtras().get("driversID").toString();
             Log.d("TAG", "User id received from Driver username search: "+receiverUserId);
             addDrivers.setVisibility(View.VISIBLE);
             requestLocation.setVisibility(View.INVISIBLE);
-        }else if(getIntent().getExtras().containsKey("visit_user_id")){
+        }
+        if(getIntent().getExtras().containsKey("visit_user_id")){
             receiverUserId = getIntent().getExtras().get("visit_user_id").toString();
             Log.d("TAG", "User id received from choose driver: "+receiverUserId);
             sendMessage.setVisibility(View.VISIBLE);
@@ -143,6 +152,14 @@ public class ProfileActivity extends AppCompatActivity {
             }else{
                 removeDriver.setVisibility(View.VISIBLE);
             }
+        }if(getIntent().getExtras().containsKey("ManagersID")){
+            receiverUserId = getIntent().getExtras().get("ManagersID").toString();
+            if(isNormalUser){
+                removeDriver.setVisibility(View.INVISIBLE);
+                sendMessage.setVisibility(View.VISIBLE);
+            }
+        }else if(getIntent().getExtras().containsKey("DriversID1")){
+            receiverUserId = getIntent().getExtras().get("DriversID1").toString();
         }
 
 
@@ -209,17 +226,19 @@ public class ProfileActivity extends AppCompatActivity {
         Log.d("ProfileActivity", "OnStart called Current state = "+current_state);
 //        ManageLocationRequests();
 //        CheckForLocationUpdates();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        isInForeground = true;
         Log.d("ProfileActivity", "OnResume called Current state = "+current_state);
         if(!isNormalUser){
             CheckForLocationUpdates();
             Log.d("ProfileActivity", "Current state = "+current_state);
         }
-        ManageLocationRequests();
+//        ManageLocationRequests();
 
 
     }
@@ -227,9 +246,10 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        isInForeground = false;
         Log.d("ProfileActivity", "OnPause called Current state = "+current_state);
-        LocationsRef.child(currentUserID).child(currentDate).child(receiverUserId).orderByKey().limitToLast(1).removeEventListener(listener);
-        LocationRequestsRef.child(currentUserID).removeEventListener(listener2);
+//        LocationsRef.child(currentUserID).child(currentDate).child(receiverUserId).orderByKey().limitToLast(1).removeEventListener(listener);
+//        LocationRequestsRef.child(currentUserID).removeEventListener(listener2);
         usersRef.child(currentUserID).removeEventListener(listener3);
     }
 
@@ -274,7 +294,7 @@ public class ProfileActivity extends AppCompatActivity {
                 usersEmail = snapshot.child("email").getValue().toString();
                 userEmail.setText(usersEmail);
 
-
+                ManageLocationRequests();
 
             }
 
@@ -445,6 +465,7 @@ public class ProfileActivity extends AppCompatActivity {
                         .commitAllowingStateLoss();
             }
         });
+        Toast.makeText(ProfileActivity.this, "Click on marker to see time of drivers location update", Toast.LENGTH_LONG).show();
         current_state = "new";
         requestLocation.setText("Request Location Update");
     }
@@ -453,16 +474,24 @@ public class ProfileActivity extends AppCompatActivity {
     public void CheckForLocationUpdates() {
         Log.d("ProfileActivity", "Checking for Updates called");
 
-        listener = new ValueEventListener() {
+        LocationsRef.child(currentUserID).child(currentDate).child(receiverUserId).orderByKey().limitToLast(1).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         usersLocation = ds.getValue(UsersLocation.class);
                         Log.d("ProfileActivity", "Retrieved location for user: " + receiverUserId + ", location: " + usersLocation.getLat() + ", " + usersLocation.getLng() + ", " + usersLocation.getTime());
-//
-                        CallFragment();
-//                        requestLocation.setText("Received Users Location");
+                        if(!isInForeground) {
+                            Log.d("ProfileActivity", "Starting notification service");
+                            Intent notificationServiceLocationReceived = new Intent(getApplicationContext(), NotificationsService.class);
+                            notificationServiceLocationReceived.putExtra("DriversID", receiverUserId);
+                            getApplicationContext().startService(notificationServiceLocationReceived);
+//                        CallFragment();
+                            current_state = "location_received";
+                            requestLocation.setText("Get Users Location");
+                        }
+                        current_state = "location_received";
+                        requestLocation.setText("Get Users Location");
                     }
                 } else {
                     Log.d("profileActivity", "Couldnt find any locations for this user");
@@ -473,8 +502,8 @@ public class ProfileActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d("profileActivity", error.getMessage());
             }
-        };
-        LocationsRef.child(currentUserID).child(currentDate).child(receiverUserId).orderByKey().limitToLast(1).addValueEventListener(listener);
+        });
+//        LocationsRef.child(currentUserID).child(currentDate).child(receiverUserId).orderByKey().limitToLast(1).addValueEventListener(listener);
     }
     //This method is called in the retrieve users info method
     //which will check what the current state of the location requests are in the DB
@@ -491,13 +520,13 @@ public class ProfileActivity extends AppCompatActivity {
     private void ManageLocationRequests()
     {
         Log.d("ProfileActivity", "ManageLocationResuests called Current state = "+current_state);
-        listener2 = new ValueEventListener() {
+        LocationRequestsRef.child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot)
             {
                 if(!snapshot.exists()) {
-                    current_state = "new";
-                    requestLocation.setText("Request Location Update");
+//                    current_state = "new";
+//                    requestLocation.setText("Request Location Update");
                     Log.d("ProfileActivity", "ManageLocationResuests no requests found Current state = " + current_state);
                 }
 
@@ -522,6 +551,31 @@ public class ProfileActivity extends AppCompatActivity {
                                 sendLocation.setEnabled(true);
                                 sendLocation.setVisibility(View.VISIBLE);
                                 }
+
+                            //Get Senders ID
+                            NotificationRef.child(currentUserID).orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if(snapshot.exists()) {
+                                        for (DataSnapshot ds : snapshot.getChildren()) {
+                                            managersID = ds.child("from").getValue().toString();
+                                            if (!managersID.equals("")) {
+                                                if (!isInForeground) {
+                                                    Log.d("ProfileActivity", "Starting notification service");
+                                                    Intent notificationService = new Intent(getApplicationContext(), NotificationsService.class);
+                                                    notificationService.putExtra("ManagerID", managersID);
+                                                    getApplicationContext().startService(notificationService);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
                             }
                         }
 
@@ -533,8 +587,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d("ProfileActivity", "Database error: "+error.getMessage());
             }
-        };
-        LocationRequestsRef.child(currentUserID).addValueEventListener(listener2);
+        });
         requestLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -546,6 +599,10 @@ public class ProfileActivity extends AppCompatActivity {
                 if(current_state.equals("request_sent"))
                 {
                     CancelLocationRequest();
+                }
+                if(current_state.equals("location_received"))
+                {
+                    CallFragment();
                 }
 //                if(current_state.equals("location_received")){
 //                    CallFragment();
@@ -577,6 +634,7 @@ public class ProfileActivity extends AppCompatActivity {
                 if(task.isSuccessful())
                 {
                     LocationRequestsRef.child(receiverUserId).child(currentUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @RequiresApi(api = Build.VERSION_CODES.O)
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
@@ -586,6 +644,7 @@ public class ProfileActivity extends AppCompatActivity {
 //                            requestLocation.setText("Request Location Update");
                                 sendLocation.setEnabled(false);
                                 sendLocation.setVisibility(View.INVISIBLE);
+
                                 //receiverID will be the managers ID, use this to access the location received DB of the manager
                                 //and add a under the mangers id -> usersid -> and current date the latlng of the user
                             }

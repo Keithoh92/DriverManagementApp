@@ -12,33 +12,41 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.drivermanagement.notifications.Client;
+import com.example.drivermanagement.notifications.NotificationModel;
+import com.example.drivermanagement.notifications.Response;
+import com.example.drivermanagement.notifications.RootModel;
+import com.example.drivermanagement.notifications.Token;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class ChatActivity extends AppCompatActivity {
 
+    private RecentMessages mCallback;
 
     ScrollView myScrollview;
     Toolbar toolbar;
@@ -58,6 +66,8 @@ public class ChatActivity extends AppCompatActivity {
     private LinearLayoutManager linearLayoutManager;
     private MessageAdapter messageAdapter;
 
+    boolean notify = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +80,7 @@ public class ChatActivity extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(this);
         userMessagesList.setLayoutManager(linearLayoutManager);
         userMessagesList.setAdapter(messageAdapter);
+
 
 
         fAuth = FirebaseAuth.getInstance();
@@ -94,59 +105,120 @@ public class ChatActivity extends AppCompatActivity {
 
         getReceiverInfo();
         getUserInfo();
+        currentUser.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+            @Override
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
+                updateToken(task.getResult().getToken());
+            }
+        });
 
 
         toolbar = findViewById(R.id.chat_bar_layout);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(receiverUsername);
 
-
-
-
-//        receiverUsername = getIntent().getExtras().get("Username").toString();
-
-
-
     }
 
-    private void SendMessage() {
-        String messageText = inputMessage.getText().toString();
-        Log.d("testing", "message entered: " +messageText);
-        if(TextUtils.isEmpty(messageText)){
-            Log.d("testing", "no message inserted");
-        }else{
-            String messageSenderRef = "Messages/"+userID+"/"+receiverUserID;
-            String messageReceiverRef = "Messages/"+receiverUserID+"/"+userID;
-            Log.d("testing", "creating message references: " +messageSenderRef+", "+messageReceiverRef);
-
-
-            DatabaseReference messageKeyRef = usersRef.child("Messages").child(userID).child(receiverUserID).push();
-            String messagePushID = messageKeyRef.getKey();
-
-            HashMap<String, Object> messageTextBody = new HashMap<>();
-            messageTextBody.put("message", messageText);
-            messageTextBody.put("type", "text");
-            messageTextBody.put("from", userID);
-
-            HashMap<String, Object> messageBodyDetails = new HashMap<>();
-            messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageTextBody);
-            messageBodyDetails.put(messageReceiverRef + "/" + messagePushID, messageTextBody);
-
-            usersRef.updateChildren(messageBodyDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d("testing", "successful");
-                }
-            });
-        }
+    private void updateToken(String token){
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Tokens");
+        Token token1 = new Token(token);
+        reference.child(userID).setValue(token1);
     }
 
-//    //initialise view components
-//    private void InitialiseFields() {
+//    private void SendMessage() {
+//        String messageText = inputMessage.getText().toString();
+//        Log.d("testing", "message entered: " +messageText);
+//        if(TextUtils.isEmpty(messageText)){
+//            Log.d("testing", "no message inserted");
+//        }else{
+//            String messageSenderRef = "Messages/"+userID+"/"+receiverUserID;
+//            String messageReceiverRef = "Messages/"+receiverUserID+"/"+userID;
+//            Log.d("testing", "creating message references: " +messageSenderRef+", "+messageReceiverRef);
 //
 //
+//            DatabaseReference messageKeyRef = usersRef.child("Messages").child(userID).child(receiverUserID).push();
+//            String messagePushID = messageKeyRef.getKey();
 //
+//            HashMap<String, Object> messageTextBody = new HashMap<>();
+//            messageTextBody.put("message", messageText);
+//            messageTextBody.put("type", "text");
+//            messageTextBody.put("from", userID);
+//
+//            HashMap<String, Object> messageBodyDetails = new HashMap<>();
+//            messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageTextBody);
+//            messageBodyDetails.put(messageReceiverRef + "/" + messagePushID, messageTextBody);
+//
+//            usersRef.updateChildren(messageBodyDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                @Override
+//                public void onSuccess(Void aVoid) {
+//                    Log.d("testing", "successful");
+//                    if(notify) {
+//                        sendNotification(receiverUserID, currentUsername, messageText);
+//                    }
+//                    notify = false;
+//                }
+//            });
+//        }
 //    }
+
+    private void sendNotification(String receiverUserID, final String currentUsername, final String messageText) {
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Tokens");
+        Query query = reference.orderByKey().equalTo(receiverUserID);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot sd : snapshot.getChildren()) {
+                    Token token = sd.getValue(Token.class);
+                    Log.d("ChatAct", "Token received: "+token.getToken());
+//                    NotificationModel notificationModel =
+
+                    RootModel rootModel = new RootModel(token.getToken(), new NotificationModel(userID, R.mipmap.ic_launcher, currentUsername+": "+messageText, "New Message",
+                            receiverUserID));
+
+                    APIService apiService = Client.getClient().create(APIService.class);
+                    retrofit2.Call<ResponseBody> responseCall = apiService.sendNotification(rootModel);
+
+                    responseCall.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(retrofit2.Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                            Log.d("ChatAct","Successfully notification send by using retrofit.");
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                        }
+                    });
+//                    apiService.sendNotification(rootModel)
+//                            .enqueue(new Callback<Response>(){
+//
+//
+//                                @Override
+//                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+//                                    if(response.code() == 200)
+//                                    {
+//                                        if(response.body().success != 1)
+//                                        {
+//                                            Log.d("ChatActivity", "Failed to send notification: ");
+//                                        }
+//                                    }
+//                                }
+//
+//                                @Override
+//                                public void onFailure(Call<Response> call, Throwable t) {
+//
+//                                }
+//                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
 
     @Override
@@ -160,7 +232,10 @@ public class ChatActivity extends AppCompatActivity {
                 messagesList.add(messages);
                 messageAdapter.notifyDataSetChanged();
 
+
                 userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
+
+
             }
 
             @Override
@@ -188,7 +263,9 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d("testing","Called send message method" );
-                SendMessage();
+                notify = true;
+                SendMessage sendMessage = new SendMessage();
+                sendMessage.SendingMessage(inputMessage.getText().toString(), userID, receiverUserID);
                 inputMessage.setText("");
                 try  {
                     InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
@@ -256,4 +333,10 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
+
+    public interface RecentMessages{
+        public void sendMessages(String messageSending);
+    }
+    private void sendTheMessage(String messageSending){ mCallback.sendMessages(messageSending);}
+
 }
