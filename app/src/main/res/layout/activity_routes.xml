@@ -48,7 +48,7 @@
         android:id="@+id/maps_fragment_routes_activity"
         android:name="com.example.drivermanagement.MapsFragment"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="290dp"
         android:layout_below="@id/cardview_layout"
         android:layout_marginTop="20dp">
     </fragment>

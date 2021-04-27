@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.drivermanagement.CustomMessagesDialog;
+import com.example.drivermanagement.CustomMessagesDialogManagersDash;
 import com.example.drivermanagement.LoginActivity;
 import com.example.drivermanagement.MessagesActivity;
 import com.example.drivermanagement.R;
@@ -21,7 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
-public class ManagementDashboard extends AppCompatActivity implements CustomMessagesDialog.DialogListener {
+public class ManagementDashboard extends AppCompatActivity implements CustomMessagesDialog.DialogListener, CustomMessagesDialogManagersDash.DialogListener {
     Toolbar managementToolbar;
     BottomNavigationView bottomNavigationView;
     Button sendLocation;
@@ -47,7 +48,7 @@ public class ManagementDashboard extends AppCompatActivity implements CustomMess
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch(item.getItemId()){
-                    case R.id.messages_menu_button:
+                    case R.id.messages_menu_button_manage:
                         SendUserToMessagesActivity();
                         break;
                 }
@@ -124,6 +125,7 @@ public class ManagementDashboard extends AppCompatActivity implements CustomMess
         ArrayList<String> messageArray = new ArrayList<>();
         if (messageA != null) {
             messageArray.clear();
+            messageArray.add("NA");
             messageArray.add(messageA);
             messageArray.add(messageB);
             messageArray.add(messageC);
@@ -131,6 +133,34 @@ public class ManagementDashboard extends AppCompatActivity implements CustomMess
             messageArray.add(messageE);
             TinyDB tinyDB = new TinyDB(getApplicationContext());
             tinyDB.putListString("MessagesList", messageArray);
+
+        }
+    }
+
+    @Override
+    public void applyMessagesManagement(String listName, String messageA, String messageB, String messageC, String messageD, String messageE) {
+        ArrayList<String> returnedItems = new ArrayList<>();
+        TinyDB tinyDB = new TinyDB(getApplicationContext());
+        if(listName != null){
+            returnedItems.clear();
+            returnedItems.add("NA");
+            returnedItems.add(messageA);
+            returnedItems.add(messageB);
+            returnedItems.add(messageC);
+            returnedItems.add(messageD);
+            returnedItems.add(messageE);
+            if(listName.equals("OrdersList")){
+                tinyDB.getListString("OrdersList").clear();
+                tinyDB.putListString("OrdersList", returnedItems);
+            }
+            if(listName.equals("LocationsList")){
+                tinyDB.getListString("LocationsList").clear();
+                tinyDB.putListString("LocationsList", returnedItems);
+            }
+            if(listName.equals("MessagesList2")){
+                tinyDB.getListString("MessagesList2").clear();
+                tinyDB.putListString("MessagesList2", returnedItems);
+            }
 
         }
     }

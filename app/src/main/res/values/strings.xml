@@ -83,6 +83,7 @@
 
     <string name="LocationService">service_label</string>
     <string name="channel_name">my_notification_channel</string>
+    <string name="channel_name2">my_notification_channel_messages</string>
     <string name="channel_description">notification_settings</string>
 
     //REMOVE API KEY FROM HERE WHEN USING VERSION CONTROL

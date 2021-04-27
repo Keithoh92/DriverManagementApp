@@ -79,7 +79,7 @@ public class ManagementDash2Fragment extends Fragment {
     private DatabaseReference UsersRef, DriverRef, GroupRef, groupMessageKeyRef1, sendToGroupsRef;
     private FirebaseAuth fAuth;
     FirebaseUser currentUser;
-    String userID, receiverUserId, messageToSend, messageKey, currentUsername, currentDate, currentTime;
+    String userID, retrieveUserType, receiverUserId, messageToSend, messageKey, currentUsername, currentDate, currentTime;
     String managementID;
     boolean isNormalUser = false;
 
@@ -135,7 +135,7 @@ public class ManagementDash2Fragment extends Fragment {
         DriverRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers");
         GroupRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups");
         sendToGroupsRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups");
-
+        checkUserAccessLevel();
 
 //        anyDriversRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers");
 
@@ -181,98 +181,7 @@ public class ManagementDash2Fragment extends Fragment {
             }
         });
 
-//        TinyDB tinyDB1 = new TinyDB(getContext());
-        if (tinyDB.getListString("MessagesList").isEmpty()) {
-            Toast.makeText(getContext(), "Click menu button in corner to edit your quick messages in the dropdown", Toast.LENGTH_LONG).show();
-        }
-//        tinyDB.getListString("MessagesList")
-        if (tinyDB.getListString("MessagesList").isEmpty()) ;
-        {
-            adapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, messageArray);
-        }
-        if (!tinyDB.getListString("MessagesList").isEmpty()) {
-            adapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, tinyDB.getListString("MessagesList"));
-        }
 
-        driverListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                //if theres no drivers in the DB
-                if (!snapshot.exists()) {
-                    Log.d("DashTesting", "No Drivers found");
-
-                    //AND if the user is normal driver display this message
-//                    if (isNormalUser) {
-//                        Toast.makeText(getContext(), "Your manager has not added other contacts yet or you are not yet in your managements system", Toast.LENGTH_LONG).show();
-//                        //ELSE if its management user display this message
-//                    } else {
-//                        Toast.makeText(getContext(), "You have not yet added any Drivers to the system, please go to add drivers in menu", Toast.LENGTH_LONG).show();
-//                    }
-                } else {
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        contactsClass = ds.getValue(Contacts.class);
-                        Log.d("DashTesting", "Drivers retrieved: " + contactsClass.getUsername());
-                        contactsList.add(contactsClass.getUsername());
-                    }
-                    for (int i = 0; i < contactsList.size(); i++) {
-                        Log.d("DashTesting", "Drivers in contactsList: " + contactsList.get(i));
-                    }
-
-                    contacts = new String[contactsList.size()];
-                    Log.d("DashTesting", "contactsList size: " + contactsList.size());
-
-                    for (int i = 0; i < contactsList.size(); i++) {
-                        contacts[i] = contactsList.get(i);
-                        Log.d("DashTesting", "Adding to contacts: " + contacts[i]);
-                    }
-                    checkedContacts = new boolean[contacts.length];
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-        if (isNormalUser) {
-            DriverRef.child(managementID).addValueEventListener(driverListener);
-//            DriverRef.addValueEventListener(driverListener);
-        } else {
-            DriverRef.child(userID).addValueEventListener(driverListener);
-        }
-        groupListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    groupsClass = ds.getValue(Groups.class);
-                    Log.d("DashTesting", "Groups retrieved: " + groupsClass.getGroupname());
-                    groupsList.add(groupsClass.getGroupname());
-                }
-                for (int i = 0; i < groupsList.size(); i++) {
-                    Log.d("DashTesting", "Groups in groupsList: " + groupsList.get(i));
-                }
-
-                groups = new String[groupsList.size()];
-                Log.d("DashTesting", "groupsList size: " + groupsList.size());
-
-                for (int i = 0; i < groupsList.size(); i++) {
-                    groups[i] = groupsList.get(i);
-                    Log.d("DashTesting", "Adding to contacts: " + groups[i]);
-                }
-                checkedGroups = new boolean[groups.length];
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-        if (isNormalUser) {
-//            GroupRef.child("GroupInfo").addValueEventListener(groupListener);
-            GroupRef.child(managementID).child("GroupInfo").addValueEventListener(groupListener);
-        } else {
-            GroupRef.child(userID).child("GroupInfo").addValueEventListener(groupListener);
-        }
 
     }
 
@@ -397,78 +306,77 @@ public class ManagementDash2Fragment extends Fragment {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (selectedContacts.size() != 0) {
-                    for (int i = 0; i < selectedContacts.size(); i++) {
-                        Log.d("DashFrag", "Testing send Message selected contacts retrieval: " + contacts[selectedContacts.get(i)]);
-                        UsersRef.orderByChild("username").equalTo(contacts[selectedContacts.get(i)]).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.exists()) {
-                                    for (DataSnapshot ds : snapshot.getChildren()) {
-                                        String receiverUserId1 = ds.getKey();
-                                        Log.d("SendMessageTest", "Retrieving users ID: " + receiverUserId1);
-
-                                        SendMessage sendMessage = new SendMessage();
-                                        if(messageToSend != null && !customMessage.getText().toString().equals("")){
-                                            Toast.makeText(getContext(), "Remove the message from quick replies to send custom message", Toast.LENGTH_SHORT).show();
-                                        }
-                                        if (messageToSend != null && TextUtils.isEmpty(customMessage.getText().toString())) {
-                                            sendMessage.SendingMessage(messageToSend, userID, receiverUserId1);
-                                            chosenRecipients1.setText("");
-                                        }
-                                        if(TextUtils.isEmpty(messageToSend) && !customMessage.getText().toString().equals("")){
-                                            sendMessage.SendingMessage(userID, receiverUserId1, customMessage.getText().toString());
-                                            chosenRecipients1.setText("");
-                                            customMessage.setText("");
-                                        }
-                                        else {
-                                                Toast.makeText(getContext(), "Please type a message", Toast.LENGTH_SHORT).show();
-                                            }
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
-
-
-                    }
-                    for (int i = 0; i < checkedContacts.length; i++) {
-                        checkedContacts[i] = false;
-                        selectedContacts.clear();
-                        chosenRecipients1.setText("");
-                    }
-//                Toast.makeText(getContext(), "Sending to - "+contacts[selectedContacts(i)]);
+                String setMessage;
+                if(messageToSend.equals("NA") && TextUtils.isEmpty(customMessage.getText().toString())){
+                    Toast.makeText(listener.getApplicationContext(), "No message selected or entered", Toast.LENGTH_SHORT).show();
                 }
 
-                if (selectedGroups.size() != 0) {
-                    SaveGroupMessageToDatabase sendGroupMessage = new SaveGroupMessageToDatabase();
-                    for(int i = 0; i < selectedGroups.size(); i++) {
-                        if(messageToSend != null && !customMessage.getText().toString().equals("")){
-                            Toast.makeText(getContext(), "Remove the message from quick replies to send custom message", Toast.LENGTH_SHORT).show();
-                        }
-                        if (!TextUtils.isEmpty(messageToSend) && TextUtils.isEmpty(customMessage.getText().toString())) {
-                            sendGroupMessage.SendingGroupMessage(groups[selectedGroups.get(i)], userID, messageToSend);
-                            chosenRecipients1.setText("");
-                        }
-                        if(!TextUtils.isEmpty(customMessage.getText().toString()) && TextUtils.isEmpty(messageToSend))
-                        {
-                            sendGroupMessage.SendingGroupMessage(groups[selectedGroups.get(i)], userID, customMessage.getText().toString());
-                            chosenRecipients1.setText("");
-                            customMessage.setText("");
-                        }
-                    }
-                    for (int i = 0; i < checkedGroups.length; i++) {
-                        checkedGroups[i] = false;
-                        selectedGroups.clear();
-                        chosenRecipients1.setText("");
-                    }
+                else if(!messageToSend.equals("NA") && !TextUtils.isEmpty(customMessage.getText().toString())){
+                    Toast.makeText(listener.getApplicationContext(), "Can only send one of the above messages - remove one", Toast.LENGTH_LONG).show();
+                }
+                else if(messageToSend.equals("NA") && !TextUtils.isEmpty(customMessage.getText().toString())){
+                    setMessage = customMessage.getText().toString();
+                    SendMessageFromFrag(setMessage);
+                    customMessage.setText("");
+                }
+                else if(!messageToSend.equals("NA") && TextUtils.isEmpty(customMessage.getText().toString())){
+                    setMessage = messageToSend;
+                    SendMessageFromFrag(setMessage);
                 }
             }
         });
+    }
+
+    private void SendMessageFromFrag(String setMessage)
+    {
+        SendMessage sendMessage = new SendMessage();
+        if (selectedContacts.size() != 0) {
+            for (int i = 0; i < selectedContacts.size(); i++) {
+                Log.d("DashFrag", "Testing send Message selected contacts retrieval: " + contacts[selectedContacts.get(i)]);
+                UsersRef.orderByChild("username").equalTo(contacts[selectedContacts.get(i)]).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            for (DataSnapshot ds : snapshot.getChildren()) {
+                                String receiverUserId1 = ds.getKey();
+                                Log.d("SendMessageTest", "Retrieving users ID: " + receiverUserId1);
+                                sendMessage.SendingMessage(setMessage, userID, receiverUserId1);
+                                chosenRecipients1.setText("");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+            for (int i = 0; i < checkedContacts.length; i++) {
+                checkedContacts[i] = false;
+                selectedContacts.clear();
+                chosenRecipients1.setText("");
+            }
+//                Toast.makeText(getContext(), "Sending to - "+contacts[selectedContacts(i)]);
+        }
+
+        if (selectedGroups.size() != 0) {
+            SaveGroupMessageToDatabase sendGroupMessage = new SaveGroupMessageToDatabase();
+            for(int i = 0; i < selectedGroups.size(); i++) {
+                if(isNormalUser){
+                    sendGroupMessage.SendingGroupMessage(groups[selectedGroups.get(i)], managementID, setMessage);
+                }else {
+                    sendGroupMessage.SendingGroupMessage(groups[selectedGroups.get(i)], userID, setMessage);
+                    chosenRecipients1.setText("");
+                    customMessage.setText("");
+                }
+            }
+            for (int i = 0; i < checkedGroups.length; i++) {
+                checkedGroups[i] = false;
+                selectedGroups.clear();
+                chosenRecipients1.setText("");
+            }
+        }
     }
 
     @Override
@@ -479,63 +387,18 @@ public class ManagementDash2Fragment extends Fragment {
 //        adapter.setNotifyOnChange(true);
     }
 
-//    private void SaveMessageToDatabase(){
-//        GroupRef.child(userID).child("GroupInfo").removeEventListener(groupListener);
-//        for (int i = 0; i < selectedGroups.size(); i++) {
-//            Log.d("SendMessageGroupTest", "GroupName: " + groups[selectedGroups.get(i)]);
-//
-//            messageKey = sendToGroupsRef.child("GroupInfo").child(groups[selectedGroups.get(i)]).child("GroupMessages").push().getKey();
-//            Log.d("SendMessageGroupTest", "Message key retrieved: " + messageKey);
-//
-//            if (TextUtils.isEmpty(messageToSend) && TextUtils.isEmpty(customMessage.getText())) {
-//                Toast.makeText(getContext(), "Please select a message from dropdown or type a message", Toast.LENGTH_LONG).show();
-//            } else {
-//
-//                HashMap<String, Object> groupMessageKey = new HashMap<>();
-//
-//                sendToGroupsRef.child("GroupInfo").child(groups[selectedGroups.get(i)]).child("GroupMessages").updateChildren(groupMessageKey);
-////                            groupMessageKeyRef = sendToGroupsRef.child(groups[selectedGroups.get(i)]).child("GroupMessages").child(messageKey);
-//                groupMessageKeyRef1 = sendToGroupsRef.child("GroupInfo").child(groups[selectedGroups.get(i)]).child("GroupMessages").child(messageKey);
-//                Log.d("SendMessageGroupTest", "Group Message key retrieved: " + groupMessageKey);
-//
-//
-//                if (!TextUtils.isEmpty(messageToSend)) {
-//                    Log.d("SendMessageGroupTest", "Attempting to send message: " + messageToSend);
-//                    HashMap<String, Object> infoMap = new HashMap<>();
-//                    infoMap.put("username", currentUsername);
-//                    infoMap.put("message", messageToSend);
-//                    infoMap.put("date", currentDate);
-//                    infoMap.put("time", currentTime);
-//                    infoMap.put("type", "text");
-//                    infoMap.put("from", currentUser);
-//
-//                    groupMessageKeyRef1.updateChildren(infoMap);
-//                } else if (!TextUtils.isEmpty(customMessage.getText().toString())) {
-//                    HashMap<String, Object> infoMap = new HashMap<>();
-//                    infoMap.put("username", currentUsername);
-//                    infoMap.put("message", customMessage.getText().toString());
-//                    infoMap.put("date", currentDate);
-//                    infoMap.put("time", currentTime);
-//                    infoMap.put("type", "text");
-//                    infoMap.put("from", currentUser);
-//
-//                    groupMessageKeyRef.updateChildren(infoMap);
-//                }
-//            }
-//
-//        }
-//    }
+
     private void openMessagesDialog() {
         CustomMessagesDialog customMessagesDialog = new CustomMessagesDialog();
         Bundle messageDialogBundle = new Bundle();
         TinyDB tinyDB = new TinyDB(getContext());
         List<String> fillCustomDialog = new ArrayList<>();
-
+        messageDialogBundle.putString("UserType", retrieveUserType);
         for(int i = 0; i < tinyDB.getListString("MessagesList").size(); i++){
             messageDialogBundle.putString("message"+i+"", tinyDB.getListString("MessagesList").get(i));
         }
         customMessagesDialog.setArguments(messageDialogBundle);
-        customMessagesDialog.show(getChildFragmentManager(), "Order Dialog");
+        customMessagesDialog.show(getChildFragmentManager(), "Messages Dialog");
     }
 
     private void checkUserAccessLevel() {
@@ -544,22 +407,24 @@ public class ManagementDash2Fragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if ((snapshot.exists()) && (snapshot.hasChild("userType"))) {
-                    String retrieveUserType = Objects.requireNonNull(snapshot.child("userType").getValue()).toString();
+                    retrieveUserType = Objects.requireNonNull(snapshot.child("userType").getValue()).toString();
                     currentUsername = snapshot.child("username").getValue().toString();
                     if (retrieveUserType.equals("Management")) {
-                        Log.d("Contacts", "User is Management user");
+                        Log.d("ManDash2", "User is Management user");
 //                        DriverRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers").child(userID);
 //                        GroupRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups").child(userID);
-
+                        GetDriversAndGroups();
 
                     }
                     if (retrieveUserType.equals("Driver")) {
-                        Log.d("Contacts", "User is normal user");
+                        Log.d("ManDash2", "User is normal user");
                         managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
                         currentUsername = Objects.requireNonNull(snapshot.child("username").getValue()).toString();
 //                        DriverRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers").child(managementID);
 //                        GroupRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups").child(managementID);
                         isNormalUser = true;
+                        GetDriversAndGroups();
+                        chooseGroups.setVisibility(View.INVISIBLE);
 
                     }
                 }else{
@@ -572,5 +437,87 @@ public class ManagementDash2Fragment extends Fragment {
 
             }
         });
+    }
+
+    private void GetDriversAndGroups() {
+        driverListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //if theres no drivers in the DB
+                if (!snapshot.exists()) {
+                    Log.d("DashTesting", "No Drivers found");
+
+                    //AND if the user is normal driver display this message
+//                    if (isNormalUser) {
+//                        Toast.makeText(getContext(), "Your manager has not added other contacts yet or you are not yet in your managements system", Toast.LENGTH_LONG).show();
+//                        //ELSE if its management user display this message
+//                    } else {
+//                        Toast.makeText(getContext(), "You have not yet added any Drivers to the system, please go to add drivers in menu", Toast.LENGTH_LONG).show();
+//                    }
+                } else {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        contactsClass = ds.getValue(Contacts.class);
+                        Log.d("DashTesting", "Drivers retrieved: " + contactsClass.getUsername());
+                        contactsList.add(contactsClass.getUsername());
+                    }
+                    for (int i = 0; i < contactsList.size(); i++) {
+                        Log.d("DashTesting", "Drivers in contactsList: " + contactsList.get(i));
+                    }
+
+                    contacts = new String[contactsList.size()];
+                    Log.d("DashTesting", "contactsList size: " + contactsList.size());
+
+                    for (int i = 0; i < contactsList.size(); i++) {
+                        contacts[i] = contactsList.get(i);
+                        Log.d("DashTesting", "Adding to contacts: " + contacts[i]);
+                    }
+                    checkedContacts = new boolean[contacts.length];
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+        if (isNormalUser) {
+            DriverRef.child(managementID).addValueEventListener(driverListener);
+//            DriverRef.addValueEventListener(driverListener);
+        } else {
+            DriverRef.child(userID).addValueEventListener(driverListener);
+        }
+        groupListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    groupsClass = ds.getValue(Groups.class);
+                    Log.d("DashTesting", "Groups retrieved: " + groupsClass.getGroupname());
+                    groupsList.add(groupsClass.getGroupname());
+                }
+                for (int i = 0; i < groupsList.size(); i++) {
+                    Log.d("DashTesting", "Groups in groupsList: " + groupsList.get(i));
+                }
+
+                groups = new String[groupsList.size()];
+                Log.d("DashTesting", "groupsList size: " + groupsList.size());
+
+                for (int i = 0; i < groupsList.size(); i++) {
+                    groups[i] = groupsList.get(i);
+                    Log.d("DashTesting", "Adding to contacts: " + groups[i]);
+                }
+                checkedGroups = new boolean[groups.length];
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+        if (isNormalUser) {
+//            GroupRef.child("GroupInfo").addValueEventListener(groupListener);
+            GroupRef.child(managementID).child("GroupInfo").addValueEventListener(groupListener);
+        } else {
+            GroupRef.child(userID).child("GroupInfo").addValueEventListener(groupListener);
+        }
     }
 }

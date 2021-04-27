@@ -11,23 +11,35 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.drivermanagement.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class NotificationsService extends IntentService {
 
     private static final String CHANNEL_ID_LOCATION_REQUESTS = "5643";
     private static final String CHANNEL_ID_LOCATION_RECEIVED = "7845";
     private static final String CHANNEL_ID_MESSAGE = "9173";
+    String username;
 
-    NotificationChannel channel;
+    NotificationChannel channel, channel2;
     NotificationManager notificationManager;
 
-    String ManagersID, DriversID;
+    private FirebaseAuth fAuth;
+    private DatabaseReference usersRef;
+
+
+    String ManagersID, DriversID, messengersID, messageReceived, messageFromUsername;
 
     public NotificationsService() {super("NotificationsService");}
 
@@ -38,6 +50,8 @@ public class NotificationsService extends IntentService {
         CharSequence name = getString(R.string.channel_name);
         String description = getString(R.string.channel_description);
         int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        usersRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
+
 
 
         if(intent.getExtras().containsKey("ManagerID")) {
@@ -106,6 +120,64 @@ public class NotificationsService extends IntentService {
                         .setContentTitle("DriverX")
                         .setContentText("Received location update from driver")
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setOnlyAlertOnce(true)
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true);
+
+
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+                notificationManager.notify(0, builder.build());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        /////Received message notification
+        if(intent.getExtras().containsKey("messageReceivedFrom")) {
+            messengersID = intent.getStringExtra("messageReceivedFrom");
+            messageReceived = intent.getStringExtra("message");
+            messageFromUsername = intent.getStringExtra("fromUsername");
+            Log.d("NotificationsService", "Received messangers ID from Chat Activity on received message: " + messengersID);
+            Log.d("NotificationsService", "Received message from Chat Activity on received message: " + messageReceived);
+
+
+            usersRef.child(messengersID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    username = snapshot.child("username").getValue().toString();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+            CharSequence name2 = getString(R.string.channel_name2);
+            channel2 = new NotificationChannel(CHANNEL_ID_MESSAGE, name2, importance);
+            try{
+                // Create the NotificationChannel, but only on API 26+ because
+                // the NotificationChannel class is new and not in the support library
+                channel2.setDescription(description);
+                // Register the channel with the system; you can't change the importance
+                // or other notification behaviors after this
+                notificationManager = getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel2);
+
+
+
+                Intent notificationIntent = new Intent(this, ChatActivity.class);
+                notificationIntent.putExtra("MessengersID", messengersID);
+                notificationIntent.putExtra("MessengersUsername", username);
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID_MESSAGE)
+                        .setSmallIcon(R.drawable.mess_icon2)
+                        .setContentTitle("DriverX")
+                        .setContentText("Received message from "+username+": \n"+messageReceived)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setOnlyAlertOnce(true)
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true);

@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -53,9 +54,10 @@ public class ChatActivity extends AppCompatActivity {
     TextView chatTextDisplay;
     EditText inputMessage;
     ImageButton sendMessage;
-    private DatabaseReference ChatRef, usersRef;
+    private DatabaseReference ChatRef, usersRef, LastMessagesRef;
+    private static boolean isInForeground;
 
-    private String userID, currentUsername, receiverUsername, receiverUserID, currentDate, currentTime;
+    private String userID, currentUsername,fromUsername, receiverUsername, receiverUserID, currentDate, currentTime;
     private RecyclerView userMessagesList;
 
     private FirebaseUser currentUser;
@@ -90,6 +92,8 @@ public class ChatActivity extends AppCompatActivity {
 
         ChatRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("Messages");
         usersRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
+        LastMessagesRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
+
 //        dRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
 //        chatIntent.putExtra("UserID", receiverUserId);
@@ -97,9 +101,13 @@ public class ChatActivity extends AppCompatActivity {
         if(getIntent().getExtras().containsKey("UserID")){
             receiverUserID = getIntent().getExtras().get("UserID").toString();
             receiverUsername = getIntent().getExtras().get("Username").toString();
-        }else if(getIntent().getExtras().containsKey("visit_user_id")){
+        }
+        if(getIntent().getExtras().containsKey("visit_user_id")){
             receiverUserID = getIntent().getExtras().get("visit_user_id").toString();
             receiverUsername = getIntent().getExtras().get("visit_user_name").toString();
+        }
+        else if(getIntent().getExtras().containsKey("MessengersID")) {
+            receiverUserID = getIntent().getExtras().get("MessengersID").toString();
         }
         Log.d("ChatActivity", "receiver ID received: "+receiverUserID);
 
@@ -232,10 +240,48 @@ public class ChatActivity extends AppCompatActivity {
                 messagesList.add(messages);
                 messageAdapter.notifyDataSetChanged();
 
-
                 userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
 
+            }
 
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        LastMessagesRef.child("Messages").child(userID).child(receiverUserID).orderByKey().limitToLast(1).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Messages messages = snapshot.getValue(Messages.class);
+                if(messages.getFrom().equals(userID)){
+                    Log.d("ReceivedFrag", "Not sending notification message because its from this user");
+                }else {
+                    if (!isInForeground) {
+                        String fromUser = getMessageFromUsername(messages.getFrom());
+
+                        Intent notificationServiceMessageReceived = new Intent(getApplicationContext(), NotificationsService.class);
+                        notificationServiceMessageReceived.putExtra("messageReceivedFrom", receiverUserID);
+                        notificationServiceMessageReceived.putExtra("message", messages.getMessage());
+                        notificationServiceMessageReceived.putExtra("fromUsername", fromUser);
+                        getApplicationContext().startService(notificationServiceMessageReceived);
+                    }
+                }
             }
 
             @Override
@@ -278,9 +324,33 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+
+
+
+    private String getMessageFromUsername(String from) {
+            Log.d("Contacts", "Getting username - ID passed: "+from);
+            usersRef.child("Users").child(from).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if ((snapshot.exists()) && (snapshot.hasChild("userType"))) {
+                        fromUsername = snapshot.child("username").getValue().toString();
+                        Log.d("Contacts", "username retrieved: "+fromUsername);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+            return fromUsername;
+
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
+        isInForeground = false;
         Log.d("Chat activity", "OnPause called");
         messagesList.clear();
         messageAdapter.notifyDataSetChanged();
@@ -293,6 +363,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d("Chat activity", "OnResume called");
+        isInForeground = true;
 
 
     }

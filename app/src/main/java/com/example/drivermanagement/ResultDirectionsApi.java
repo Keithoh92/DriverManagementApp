@@ -26,6 +26,12 @@ public class ResultDirectionsApi {
     //API Call
 //    String api_key = getString(R.string.api_key);
     private static String BASE_URL;
+    String url;
+
+//    ResultDirectionsApi(SendTheUrl interface1){
+//        this.interface1 = interface1;
+//    }
+
 //            = "https://maps.googleapis.com/maps/api/directions/";
     //REMOVE API KEY FROM HERE WHEN USING VERSION CONTROL
     private static String APPID = "AIzaSyDhxtD_YBCkj5eZ4Uu4v7UJW8nsNvRIdoM";
@@ -84,6 +90,9 @@ public class ResultDirectionsApi {
 //            Log.d("testing", "new base url with waypoints: " +BASE_URL);
 //        }
 //        else{
+        //Construct url for google maps intent
+
+
         BASE_URL= "https://maps.googleapis.com/maps/api/directions/";
         Log.d("testing", "Reset base url: " +BASE_URL);
         BASE_URL = BASE_URL + output + "?" + parameters + "&key=" + APPID;
@@ -102,6 +111,9 @@ public class ResultDirectionsApi {
         StringBuilder sb = new StringBuilder(parameters + "&waypoints=");
         String barSeperator = "";
 
+        StringBuilder startMapsUrl = new StringBuilder(origin.latitude+","+origin.longitude+"/");
+        String sepereator = "";
+
         //Get new waypoints
         for (int i = 0; i < destinationsList.size()-1; i++) {
             //Get the list item at i
@@ -118,15 +130,23 @@ public class ResultDirectionsApi {
             sb.append(barSeperator + waypointLat + "," + waypointLng);
             barSeperator = "|";
 
+            startMapsUrl.append(sepereator + waypointLat +","+ waypointLng);
+            sepereator = "/";
+
         }
+        startMapsUrl.append("/"+destination.latitude+","+destination.longitude);
+
 
         BASE_URL= "https://maps.googleapis.com/maps/api/directions/";
         Log.d("testing", "Reset base url: " +BASE_URL);
         BASE_URL = BASE_URL + output + sb + "&key=" + APPID;
         Log.d("testing", "New url with waypoints: " + BASE_URL);
 
+
         return BASE_URL;
     }
+
+
 }
 
 //    public String ResultDirectionsApiWaypoint (LatLng origin, LatLng destination, LatLng... waypoints) {

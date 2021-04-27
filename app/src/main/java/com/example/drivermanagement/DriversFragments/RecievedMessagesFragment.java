@@ -162,7 +162,8 @@ public class RecievedMessagesFragment extends Fragment {
         if (!tinyDB.getListString("DriversMessagesList").isEmpty()) {
             adapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, tinyDB.getListString("DriversMessagesList"));
         }
-
+//        GetMessages();
+        Log.d("ReceivedFrag", "onCreateView calling get messages");
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         Spinner spinner = view.findViewById(R.id.received_messages_spinner);
         spinner.setAdapter(adapter);
@@ -182,8 +183,16 @@ public class RecievedMessagesFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("ReceivedMessagesFrag", "onResume called");
+//        GetMessages();
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
+        Log.d("ReceivedMessagesFrag", "onstart called");
         getUserInfo();
 
         TinyDB tinyDB = new TinyDB(getContext());
@@ -273,7 +282,7 @@ public class RecievedMessagesFragment extends Fragment {
 
                                         SendMessage sendMessage = new SendMessage();
 
-                                        if (messageToSend != null) {
+                                        if (!messageToSend.equals("NA")) {
                                             sendMessage.SendingMessage(messageToSend, userID, receiverUserId1);
                                             Toast.makeText(getContext(), "Sent Message", Toast.LENGTH_SHORT).show();
                                         }
@@ -335,7 +344,7 @@ public class RecievedMessagesFragment extends Fragment {
             }
         };
 
-        DriverRef.child(managementID).addValueEventListener(contactsListener);
+        DriverRef.child(managementID).addListenerForSingleValueEvent(contactsListener);
 
     }
 
@@ -408,64 +417,66 @@ public class RecievedMessagesFragment extends Fragment {
 
     public void GetMessages(){
         Log.d("ReceivedMessagesFrag", "Get messages called");
-        for(int i = 0; i < drivesIDs.size(); i++){
-            Log.d("ReceivedMessagesFrag", "Drivers ID: "+drivesIDs.get(i));
-            LastMessagesRef.child("Messages").child(userID).child(drivesIDs.get(i)).limitToLast(1).addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                    if(snapshot.exists()) {
-                        Messages messages = snapshot.getValue(Messages.class);
-                        if(messages.getFrom().equals(userID)){
-                            Log.d("ReceivedFrag", "Not showing message because its from the user");
-                        }else {
-                            Log.d("ReceivedMessagesFrag", "Last Message retrieved from user: " + messages.getMessage());
-                            TinyDB tinyDB = new TinyDB(getContext());
-                            ArrayList<String> tempListOFMessages = new ArrayList<>();
-                            Log.d("ReceivedMessagesFrag", "Adding message to RecentMessagesList");
-                            tempListOFMessages.clear();
-                            String fromUser = getMessageFromUsername(messages.getFrom());
-                            if(fromUser != null) {
-                                tempListOFMessages.add(fromUser + ": " + messages.getMessage());
-                            }else{
-                                tempListOFMessages.add(messages.getMessage());
-                            }
-                            tinyDB.putListString("RecentMessagesList", tempListOFMessages);
-                            for (int j = 0; j < tempListOFMessages.size(); j++) {
-                                Log.d("ReceivedMessagesFrag", "List of messages to add to recycler view: " + tempListOFMessages.get(j));
-                            }
-                            if (!tinyDB.getListString("RecentMessagesList").isEmpty()) {
-                                listOfRecentMessages.clear();
-                                listOfRecentMessages.addAll(tinyDB.getListString("RecentMessagesList"));
-                                recyclerRecentMessagesAdaptor.notifyDataSetChanged();
+        for(int i = 0; i < drivesIDs.size(); i++) {
+            Log.d("ReceivedMessagesFrag", "Drivers ID: " + drivesIDs.get(i));
+            if (isVisible()) {
+                LastMessagesRef.child("Messages").child(userID).child(drivesIDs.get(i)).limitToLast(1).addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        if (snapshot.exists()) {
+                            Messages messages = snapshot.getValue(Messages.class);
+                            if (messages.getFrom().equals(userID)) {
+                                Log.d("ReceivedFrag", "Not showing message because its from the user");
                             } else {
-                                listOfRecentMessages.clear();
-                                listOfRecentMessages.add("No Recent Messages");
-                                recyclerRecentMessagesAdaptor.notifyDataSetChanged();
+                                Log.d("ReceivedMessagesFrag", "Last Message retrieved from user: " + messages.getMessage());
+                                TinyDB tinyDB = new TinyDB(getContext());
+                                ArrayList<String> tempListOFMessages = new ArrayList<>();
+                                Log.d("ReceivedMessagesFrag", "Adding message to RecentMessagesList");
+                                tempListOFMessages.clear();
+                                String fromUser = getMessageFromUsername(messages.getFrom());
+                                if (fromUser != null) {
+                                    tempListOFMessages.add(fromUser + ": " + messages.getMessage());
+                                } else {
+                                    tempListOFMessages.add(messages.getMessage());
+                                }
+                                tinyDB.putListString("RecentMessagesList", tempListOFMessages);
+                                for (int j = 0; j < tempListOFMessages.size(); j++) {
+                                    Log.d("ReceivedMessagesFrag", "List of messages to add to recycler view: " + tempListOFMessages.get(j));
+                                }
+                                if (!tinyDB.getListString("RecentMessagesList").isEmpty()) {
+                                    listOfRecentMessages.clear();
+                                    listOfRecentMessages.addAll(tinyDB.getListString("RecentMessagesList"));
+                                    recyclerRecentMessagesAdaptor.notifyDataSetChanged();
+                                } else {
+                                    listOfRecentMessages.clear();
+                                    listOfRecentMessages.add("No Recent Messages");
+                                    recyclerRecentMessagesAdaptor.notifyDataSetChanged();
+                                }
                             }
                         }
                     }
-                }
 
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                }
+                    }
 
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
-                }
+                    }
 
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                }
+                    }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-                }
-            });
+                    }
+                });
+            }
         }
     }
 }

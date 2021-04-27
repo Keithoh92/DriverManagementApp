@@ -91,6 +91,7 @@ public class DriversDashboardActivity extends AppCompatActivity implements Custo
 
     private void SendUserToRoutesActivity() {
         Intent routesIntent = new Intent(DriversDashboardActivity.this, RoutesActivity.class);
+        routesIntent.putExtra("StartedFromDriversDashboard", "");
         startActivity(routesIntent);
     }
 
@@ -128,6 +129,7 @@ public class DriversDashboardActivity extends AppCompatActivity implements Custo
         ArrayList<String> messageArray = new ArrayList<>();
         if (messageA != null) {
             messageArray.clear();
+            messageArray.add("NA");
             messageArray.add(messageA);
             messageArray.add(messageB);
             messageArray.add(messageC);
@@ -143,6 +145,7 @@ public class DriversDashboardActivity extends AppCompatActivity implements Custo
         ArrayList<String> messageArray2 = new ArrayList<>();
         if (messageA != null) {
             messageArray2.clear();
+            messageArray2.add("NA");
             messageArray2.add(messageA);
             messageArray2.add(messageB);
             messageArray2.add(messageC);

@@ -23,18 +23,10 @@ public class TabsAdaptor1 extends FragmentStatePagerAdapter {
         switch (i)
         {
             case 0:
-                ManagementDash1Fragment manDash1Fragment = new ManagementDash1Fragment();
-                return manDash1Fragment;
-
-            case 1:
-                ManagementDash2Fragment manDash2Fragment = new ManagementDash2Fragment();
-                return manDash2Fragment;
-
-            case 2:
                 managementDash3Fragment manDash3Fragment = new managementDash3Fragment();
                 return manDash3Fragment;
 
-            case 3:
+            case 1:
                 Management_dashboard4 manDash4Fragment = new Management_dashboard4();
                 return manDash4Fragment;
 
@@ -46,7 +38,7 @@ public class TabsAdaptor1 extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 4;
+        return 2;
     }
 
 //    @Nullable

@@ -21,12 +21,12 @@ public class TabsAdaptorDriversDash2 extends FragmentStatePagerAdapter {
         switch (i)
         {
             case 0:
-                ManagementDash2Fragment manDash2Fragment = new ManagementDash2Fragment();
-                return manDash2Fragment;
+                OrdersFragment ordersFragment = new OrdersFragment();
+                return ordersFragment;
 
             case 1:
-                MapsFragHolder mapsFragHolder = new MapsFragHolder();
-                return mapsFragHolder;
+                RecievedMessagesFragment recievedMessagesFragment = new RecievedMessagesFragment();
+                return recievedMessagesFragment;
 
             default:
                 return null;

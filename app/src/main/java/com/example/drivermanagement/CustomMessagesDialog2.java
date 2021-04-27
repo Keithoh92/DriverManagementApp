@@ -45,21 +45,23 @@ public class CustomMessagesDialog2 extends AppCompatDialogFragment {
 
 
         if(receivedMessages.containsKey("message0")){
-            message1.setText(receivedMessages.getString("message0"));
+            Log.d("CustomOrdersFrag2", "This is NA not adding to edit messages form");
         }if(receivedMessages.containsKey("message1")){
-            message2.setText(receivedMessages.getString("message1"));
+            message1.setText(receivedMessages.getString("message1"));
         }if(receivedMessages.containsKey("message2")){
-            message3.setText(receivedMessages.getString("message2"));
+            message2.setText(receivedMessages.getString("message2"));
         }if(receivedMessages.containsKey("message3")){
-            message4.setText(receivedMessages.getString("message3"));
+            message3.setText(receivedMessages.getString("message3"));
         }if(receivedMessages.containsKey("message4")){
-            message5.setText(receivedMessages.getString("message4"));
+            message4.setText(receivedMessages.getString("message4"));
+        }if(receivedMessages.containsKey("message5")){
+            message5.setText(receivedMessages.getString("message5"));
         }
 
         //Firebase initialisation
 
         builder.setView(view)
-                .setTitle("Add to My Orders")
+                .setTitle("Edit Custom Messages")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

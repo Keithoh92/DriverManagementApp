@@ -13,11 +13,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -45,8 +48,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-public class RoutesActivity extends AppCompatActivity implements DataPasser, MapsFragment.FragmentToActivity {
+public class RoutesActivity extends AppCompatActivity implements DataPasser, MapsFragment.FragmentToActivity{
 
     //Location config
     private ArrayList<String> permissionsToRequest;
@@ -81,7 +85,7 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
     double myLat = 0;
     double myLon = 0;
     String distanceStr = "Dist: 0km | Duration: 0mins";
-    String url = "";
+    String googleMapsUrl = "";
 //    String myLocationName = "My Location";
 
 
@@ -168,12 +172,19 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
         Log.d("testing", "Users Location: " + myLat + "," + myLon);
 
         //Intent from OCR activity - receives extracted addresses scanned from invoices and adds to destinations list
-        Intent ocrIntent = getIntent();
-        Bundle args =ocrIntent.getBundleExtra("BUNDLE");
-        ArrayList<String> ocrList = (ArrayList<String>) args.getSerializable("listOfAddress");
-        for(int i = 0; i < ocrList.size(); i++){
-            destinationsList.add((String) ocrList.get(i));
+        if(getIntent().getExtras().containsKey("BUNDLE")) {
+            Intent ocrIntent = getIntent();
+            Bundle args = ocrIntent.getBundleExtra("BUNDLE");
+            ArrayList<String> ocrList = (ArrayList<String>) args.getSerializable("listOfAddress");
+            for (int i = 0; i < ocrList.size(); i++) {
+                destinationsList.add((String) ocrList.get(i));
+            }
         }
+        if(getIntent().getExtras().containsKey("StartedFromDriversDashboard")){
+//            Intent normalOpenOfRoutesActivity = getIntent();
+                Log.d("Routes", "Activity was started from main dash");
+        }
+
         //Call method to calculate the route and distance from users location to destinations in destinations list
         RecalculateDestination();
 
@@ -190,7 +201,7 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri mapsUri = Uri.parse(url);
+                Uri mapsUri = Uri.parse(googleMapsUrl);
                 Intent mapsIntent = new Intent(Intent.ACTION_VIEW, mapsUri);
                 mapsIntent.setPackage("com.google.android.apps.maps");
                 startActivity(mapsIntent);
@@ -425,7 +436,7 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             int position = viewHolder.getAdapterPosition();
             destinationsList.remove(position);
-            recyclerView.getAdapter().notifyItemRemoved(position);
+            Objects.requireNonNull(recyclerView.getAdapter()).notifyItemRemoved(position);
             Log.d("TAG", "User Removed Item From List");
             Log.d("TAG", "Size of list after deletion destinationsList in routes activity: "+destinationsList.size());
             RecalculateDestination();
@@ -452,6 +463,39 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
             Log.d("testing", "New destination upon destination reordering by user= (" + newPlaceName + ", Lat: " + newDestLat + ", Lng: " + newDestLng+")");
 
             processRoutes(newPlaceName, newDestLat, newDestLng);
+
+            if(destinationsList.size() ==1 ){
+                googleMapsUrl = "https://www.google.co.in/maps/dir/";
+                googleMapsUrl = googleMapsUrl +myLat+","+myLon+"/"+newDestLat+","+newDestLng;
+            }
+            else if(destinationsList.size() > 1)
+            {
+                StringBuilder startMapsUrl = new StringBuilder(myLat+","+myLon+"/");
+                String sepereator = "";
+                for (int i = 0; i < destinationsList.size()-1; i++) {
+                    //Get the list item at i
+                    String destinations = destinationsList.get(i);
+                    //split the list item into tokens
+                    String[] googleArray = destinations.split(",");
+                    //latitiude is always the token 2 from last
+                    //longitude is always the token 1 from last
+                    Double waypointLat = Double.parseDouble(googleArray[googleArray.length - 2]);
+                    Log.d("testing", "Getting Waypoint latitude at " + i + " from list: " + waypointLat);
+                    Double waypointLng = Double.parseDouble(googleArray[googleArray.length - 1]);
+                    Log.d("testing", "Getting Waypoint longitude at " + i + " from list: " + waypointLng);
+
+
+                    startMapsUrl.append(sepereator + waypointLat +","+ waypointLng);
+                    sepereator = "/";
+
+                }
+                startMapsUrl.append("/"+newDestLat+","+newDestLng);
+
+                //This is for the google maps intent on routes activity
+                googleMapsUrl = "https://www.google.co.in/maps/dir/";
+                googleMapsUrl = googleMapsUrl + startMapsUrl;
+
+            }
         }
     }
 
@@ -520,6 +564,18 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
     public void startDirections(final String urlOnStart) {
 //        url = urlOnStart
     }
+
+//    @Override
+//    public void sendTheUrl(String url) {
+//        Handler handler = new Handler(Looper.getMainLooper());
+//        handler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                googleMapsUrl = url;
+//            }
+//        });
+//
+//    }
 }
 
 

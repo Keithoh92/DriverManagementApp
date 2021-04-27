@@ -194,6 +194,9 @@ public class GroupChatActivity extends AppCompatActivity {
                         GroupMessages groupMessages = snapshot.getValue(GroupMessages.class);
                         messageList.add(groupMessages);
                         groupMessageAdaptor.notifyDataSetChanged();
+
+                        groupMessagesList.smoothScrollToPosition(groupMessagesList.getAdapter().getItemCount());
+
                     }
                 }
 
