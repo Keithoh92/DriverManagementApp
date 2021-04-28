@@ -25,6 +25,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+/*
+
+    ALL NOTIFICATIONS PASS THROUGH THIS SERVICE
+        - LOCATION REQUESTS FROM THE MANAGER
+        - LOCATION UPDATE RECEIVED FROM DRIVER
+        - MESSAGE NOTIFICATIONS
+
+ */
 public class NotificationsService extends IntentService {
 
     private static final String CHANNEL_ID_LOCATION_REQUESTS = "5643";
@@ -47,13 +55,14 @@ public class NotificationsService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
 
+        //SET UP NOTIFICATION CHANNEL
         CharSequence name = getString(R.string.channel_name);
         String description = getString(R.string.channel_description);
         int importance = NotificationManager.IMPORTANCE_DEFAULT;
         usersRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
 
 
-
+        //LOCATION REQUEST RECEIVED FROM MANAGER - NOTIFY DRIVER
         if(intent.getExtras().containsKey("ManagerID")) {
             ManagersID = intent.getStringExtra("ManagerID");
             Log.d("NotificationsService", "Received ManagerID from Profile Activity on received location Request: " + ManagersID);
@@ -95,6 +104,7 @@ public class NotificationsService extends IntentService {
 
 
         }
+        //LOCATION UPDATE RECEIVED FROM USER - NOTIFY MANAGER
         if(intent.getExtras().containsKey("DriversID")) {
             DriversID = intent.getStringExtra("DriversID");
             Log.d("NotificationsService", "Received DriversID from Profile Activity on received Location Update: " + DriversID);

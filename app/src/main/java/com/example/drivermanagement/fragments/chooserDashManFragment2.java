@@ -18,6 +18,15 @@ import com.example.drivermanagement.TabsAdaptor1;
 import com.example.drivermanagement.TabsAdaptor2;
 import com.google.android.material.tabs.TabLayout;
 
+/*
+
+THIS IS THE FRAGMENT THAT IS ATTACHED TO THE DASHBOARD ON THE MANAGERS SYSTEM MAIN ACTIVITY
+EACH FRAGMENT THAT APPEARS ON THE MAIN DASHBOARD IS ADDED TO THE VIEWPAGER DEFINED BELOW AND THEN THIS FRAGMENT
+IS ADDED TO THE MANAGERS MAIN DASHBOARD
+THE USER CAN THEN FLICK THROUGH THE FRAGMENTS
+
+ */
+
 public class chooserDashManFragment2 extends Fragment {
 
     Activity listener;

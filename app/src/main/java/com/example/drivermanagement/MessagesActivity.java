@@ -37,7 +37,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
+/*
 
+    ACTIVITY THAT HOLDS THE MESSAGING VIEWPAGER, TABS ADAPTOR AND CHAT, GROUP AND CONTACT FRAGMENTS
+
+ */
 public class MessagesActivity extends AppCompatActivity implements AddDriversFragment.AddDriversFragmentToActivity {
 
     Toolbar messagesToolbar;
@@ -61,8 +65,6 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
-//        addDrivers = new Fragment();
-//        foundDrivers = new Fragment();
 
         fAuth = FirebaseAuth.getInstance();
         currentUser = fAuth.getCurrentUser();
@@ -83,8 +85,6 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
         myTabsAdaptor = new TabsAdaptor(getSupportFragmentManager());
         viewPager.setAdapter(myTabsAdaptor);
 
-//        viewPager.
-
         //Create tab layout for viewpager
         messagesTablayout = (TabLayout) findViewById(R.id.tablayout_messages);
         messagesTablayout.setupWithViewPager(viewPager);
@@ -96,12 +96,10 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
 
         addDrivers = fm.findFragmentById(R.id.add_drivers_fragment);
 
-
+        //HIDE ADD DRIVERS FRAG ON LOADED
         fm.beginTransaction()
                 .hide(addDrivers)
                 .commit();
-
-//        foundDrivers.onDestroy();
 
     }
 
@@ -224,6 +222,8 @@ public class MessagesActivity extends AppCompatActivity implements AddDriversFra
             });
     }
 
+    //WHEN A DRIVER IS FOUND WITH THE USERNAME ENTERED ON THE ADD DRIVERS FRAGMENT
+    //OPEN THEIR PROFILE
     @Override
     public void comm(String foundDriversID) {
         if(foundDriversID != null){

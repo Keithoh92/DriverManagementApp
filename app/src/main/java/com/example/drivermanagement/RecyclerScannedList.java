@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+////////////////// ADAPTOR FOR LIST OF SCANNED ADDRESSES ON OCR ACTIVITY /////////////////////////////////
+
+
 public class RecyclerScannedList extends RecyclerView.Adapter<RecyclerScannedList.ViewHolder>{
 
     private List<String> scannedList;

@@ -86,7 +86,7 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
     EditText editText;
     TextView ocrTextview;
     Button addToOrders, correct, retry;
-    String textRecognitionresult, userClickedAddress;
+    String textRecognitionresult, userClickedAddress, newOrderKey;
     StringBuilder sb = new StringBuilder();
     String seperator = "";
 
@@ -97,10 +97,10 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
 
     //Order Database
     private FirebaseAuth fAuth;
-    private DatabaseReference OrderRef;
+    private DatabaseReference OrderRef, orderKeyRef;
     HashMap<String, HashMap<String, String>> myHashMaps = new HashMap<String, HashMap<String, String>>();
     long noOFOrders = 0;
-    int noOFOrdersToAdd;
+    int count;
     String currentDate, currentTime;
     int listPosition;
 
@@ -383,7 +383,7 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
         Log.d("TAG", "Setting dialog address field to the address selected by user: "+userClickedAddress);
         orderDialog.show(getSupportFragmentManager(), "Order Dialog");
     }
-
+    //METHOD TO CONVERT BITMAP TO IMAGE URI
     public Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -485,6 +485,7 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
         Log.d("TAG", "Updating Hashmap at position: "+position);
     }
 
+    //ADD ADDRESSES EXTRACTED TO ORDER DATABASE
     public void CreateNewOrder(int noOFOrdersToAdd)
     {
 
@@ -514,33 +515,18 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
 
             String currentUserId = fAuth.getCurrentUser().getUid();
 
-                OrderRef.child(currentUserId).child("Orders").child(currentDate).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        //We will use this to increment the order number in the DB
-                        noOFOrders = snapshot.getChildrenCount();
-                        Log.d("testing", "Number of orders currently in database: " + noOFOrders);
-                    }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+        count = (int) noOFOrders+1;
+        Log.d("OCR", "Position to add new order in DB: "+count);
+        newOrderKey =  OrderRef.child(currentUserId).child("Orders").child(currentDate).push().getKey();
 
-                }
-            });
-                int noOFOrdersd = Integer.parseInt(String.valueOf(noOFOrders));
-                noOFOrdersd = noOFOrdersd+1;
-                OrderRef.child(currentUserId).child("Orders").child(currentDate).child(String.valueOf(noOFOrdersd)).setValue(map).addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(OCRExtractionActivity.this, "Successfully uploaded order details to Order Database", Toast.LENGTH_SHORT).show();
-                        Log.d("testing", "Successfully added orders to DB");
+        HashMap<String, Object> orderKey = new HashMap<>();
 
-                    }
-                }
-            });
+        OrderRef.child(currentUserId).child("Orders").child(currentDate).updateChildren(orderKey);
+        orderKeyRef = OrderRef.child(currentUserId).child("Orders").child(currentDate).child(newOrderKey);
+
+        orderKeyRef.updateChildren(map);
+
     }
     //swipe list item to delete
     ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -559,7 +545,7 @@ public class OCRExtractionActivity extends AppCompatActivity implements OrderDia
         }
     };
 
-    //Async task method to get latlngs of eazch address in list
+    //Async task method to get latlngs of each address in list
     private class GetLatLngs extends AsyncTask<Void, Void, ArrayList<String>>{
     ProgressDialog dialog;
     @Override

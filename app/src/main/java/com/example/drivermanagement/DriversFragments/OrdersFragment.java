@@ -31,10 +31,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+
+/*
+THIS FRAGMENT IS CAUSING A LOT OF PROBLEMS ON THE DRIVERS DASHBOARD
+HOWEVER, THIS IS WHERE THE DATES OF THE ORDERS ARE LOADED INTO THE DROPDOWN
+AND THE USER CAN SELECT THE ORDERS FRO THAT DAY AND EDIT THEM AS THEY WISH
+ */
 
 
 public class OrdersFragment extends Fragment {
@@ -48,6 +55,7 @@ public class OrdersFragment extends Fragment {
     List<String> dateList = new ArrayList<>();
     ValueEventListener ordersListener, ordersListener2;
     ChildEventListener ordersListenerChild;
+    private boolean isInForeground;
 
     ArrayAdapter adapter;
     Spinner spinner;
@@ -56,7 +64,8 @@ public class OrdersFragment extends Fragment {
     private DatabaseReference UsersRef, OrdersRef, DatesRef;
     private FirebaseAuth fAuth;
     FirebaseUser currentUser;
-    String userID, noOfOrders, dateAdded, companyName, deliveryCharge, orderNotes, orderNumber, price, recipientsName, address, dateSelected;
+    Query query;
+    String userID, noOfOrders, dateAdded, companyName, deliveryCharge, orderNotes, orderNumber, price, recipientsName, address, dateSelected, listOfOrdersString;
 
 
 
@@ -107,6 +116,7 @@ public class OrdersFragment extends Fragment {
         recyclerOrdersList = new RecyclerOrdersList(listOfOrders);
         ordersListView.setAdapter(recyclerOrdersList);
 
+        //Fill the dates dropdown with the saved dateslist that is retrieved from firebase
         TinyDB tinyDB = new TinyDB(getContext());
         if(!tinyDB.getListString("DatesList").isEmpty()) {
             adapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, tinyDB.getListString("DatesList"));
@@ -116,76 +126,7 @@ public class OrdersFragment extends Fragment {
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        recyclerOrdersList.setClickListener(new RecyclerOrdersList.ItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-
-                String listOfOrdersString = listOfOrders.get(position);
-//                DatesRef.child("Users").child(userID).child("Orders").orderByChild("Address")
-                Log.d("OrdersFrag", "Chosen address: "+listOfOrdersString);
-                ordersListener2 = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()){
-                            for(DataSnapshot dss : snapshot.getChildren()) {
-                                Log.d("OrdersFrag", "order no. in DB: " + dss.getKey());
-                                noOfOrders = dss.getKey();
-                                address = dss.child("Address").getValue().toString();
-                                if (dss.hasChild("Company Name")) {
-                                    companyName = dss.child("Company Name").getValue().toString();
-                                }
-                                if (dss.hasChild("Delivery Charge")) {
-                                    deliveryCharge = dss.child("Delivery Charge").getValue().toString();
-                                }
-                                if (dss.hasChild("Order Notes")) {
-                                    orderNotes = dss.child("Order Notes").getValue().toString();
-                                }
-                                if (dss.hasChild("Order Number")) {
-                                    orderNumber = dss.child("Order Number").getValue().toString();
-                                }
-                                if (dss.hasChild("Price")) {
-                                    price = dss.child("Price").getValue().toString();
-                                }
-                                if (dss.hasChild("Recipients Name")) {
-                                    recipientsName = dss.child("Recipients Name").getValue().toString();
-                                }
-                            }
-                            EditOrderDialog editOrderDialog = new EditOrderDialog();
-                            Bundle editOrderBundle = new Bundle();
-                            editOrderBundle.putString("Address", address);
-                            editOrderBundle.putString("NoOFOrders", noOfOrders);
-                            editOrderBundle.putString("DateSelected", dateSelected);
-                            if(companyName != null) {
-                                editOrderBundle.putString("CompanyName", companyName);
-                            }if(deliveryCharge != null) {
-                                editOrderBundle.putString("DeliveryCharge", deliveryCharge);
-                            }if(orderNotes != null) {
-                                editOrderBundle.putString("OrderNotes", orderNotes);
-                            }if(orderNumber != null) {
-                                editOrderBundle.putString("OrderNumber", orderNumber);
-                            }if(price != null) {
-                                editOrderBundle.putString("Price", price);
-                            }if(recipientsName != null) {
-                                editOrderBundle.putString("RecipientsName", recipientsName);
-                            }
-                            editOrderDialog.setArguments(editOrderBundle);
-                            editOrderDialog.show(getChildFragmentManager(), "Edit Order Dialog");
-                        }else{
-                            Log.d("OrdersFrag", "No snapshot found");
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.d("OrdersFrag", error.getMessage());
-                    }
-                };
-                OrdersRef.child("Users").child(userID).child("Orders").child(dateSelected).orderByChild("Address").equalTo(listOfOrdersString).addListenerForSingleValueEvent(ordersListener2);
-            }
-        });
-
-//        GetOrders();
-//
+        //On date selected save to date slected variable
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -196,12 +137,9 @@ public class OrdersFragment extends Fragment {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                         if(snapshot.exists()){
-//                            for(DataSnapshot sd : snapshot.getChildren())
-//                            {
-                                String address = snapshot.child("Address").getValue().toString();
-                                listOfOrders.add(address);
-                                recyclerOrdersList.notifyDataSetChanged();
-//                            }
+                            String address = snapshot.child("Address").getValue().toString();
+                            listOfOrders.add(address);
+                            recyclerOrdersList.notifyDataSetChanged();
                         }
                     }
 
@@ -233,7 +171,6 @@ public class OrdersFragment extends Fragment {
 
             }
         });
-
     }
 
     @Override
@@ -241,8 +178,103 @@ public class OrdersFragment extends Fragment {
         super.onStart();
         GetOrders();
 
+        //ON ORDER SELECTED, OPEN DIALOG AND FILL ORDER DETAILS WITH THE ORDER SELECTED DETAILS
+        recyclerOrdersList.setClickListener(new RecyclerOrdersList.ItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+
+                listOfOrdersString = listOfOrders.get(position);
+                List<String> orderDetails = new ArrayList<>();
+                query = OrdersRef.child("Users").child(userID).child("Orders").child(dateSelected).orderByChild("Address").equalTo(listOfOrdersString);
+
+                Log.d("OrdersFrag", "Chosen address: " + listOfOrdersString);
+                if (isInForeground) {
+                    ordersListener2 = new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                for (DataSnapshot dss : snapshot.getChildren()) {
+                                    Log.d("OrdersFrag", "order no. in DB: " + dss.getKey());
+                                    noOfOrders = dss.getKey();
+                                    address = dss.child("Address").getValue().toString();
+                                    if (dss.hasChild("Company Name")) {
+                                        companyName = dss.child("Company Name").getValue().toString();
+                                    }
+                                    if (dss.hasChild("Delivery Charge")) {
+                                        deliveryCharge = dss.child("Delivery Charge").getValue().toString();
+                                    }
+                                    if (dss.hasChild("Order Notes")) {
+                                        orderNotes = dss.child("Order Notes").getValue().toString();
+                                    }
+                                    if (dss.hasChild("Order Number")) {
+                                        orderNumber = dss.child("Order Number").getValue().toString();
+                                    }
+                                    if (dss.hasChild("Price")) {
+                                        price = dss.child("Price").getValue().toString();
+                                    }
+                                    if (dss.hasChild("Recipients Name")) {
+                                        recipientsName = dss.child("Recipients Name").getValue().toString();
+                                    }
+                                }
+                                //CODE TO PASS SELECTED ORDER DETAILS AND OPEN EDIT ORDER DIALOG
+                                EditOrderDialog editOrderDialog = new EditOrderDialog();
+                                Bundle editOrderBundle = new Bundle();
+                                editOrderBundle.putString("Address", address);
+                                editOrderBundle.putString("NoOFOrders", noOfOrders);
+                                editOrderBundle.putString("DateSelected", dateSelected);
+                                if (companyName != null) {
+                                    editOrderBundle.putString("CompanyName", companyName);
+                                }
+                                if (deliveryCharge != null) {
+                                    editOrderBundle.putString("DeliveryCharge", deliveryCharge);
+                                }
+                                if (orderNotes != null) {
+                                    editOrderBundle.putString("OrderNotes", orderNotes);
+                                }
+                                if (orderNumber != null) {
+                                    editOrderBundle.putString("OrderNumber", orderNumber);
+                                }
+                                if (price != null) {
+                                    editOrderBundle.putString("Price", price);
+                                }
+                                if (recipientsName != null) {
+                                    editOrderBundle.putString("RecipientsName", recipientsName);
+                                }
+                                editOrderDialog.setArguments(editOrderBundle);
+                                editOrderDialog.show(getChildFragmentManager(), "Edit Order Dialog");
+                                noOfOrders = "";
+                                recipientsName = "";
+                                companyName = "";
+                                deliveryCharge = "";
+                                orderNotes = "";
+                                orderNumber = "";
+                                price = "";
+                                recipientsName = "";
+                            } else {
+                                Log.d("OrdersFrag", "No snapshot found");
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.d("OrdersFrag", error.getMessage());
+                        }
+                    };
+                    query.addListenerForSingleValueEvent(ordersListener2);
+                }
+            }
+        });
+
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        isInForeground = true;
+
+    }
+
+    //
     private void GetOrders()
     {
         Log.d("OrdersFragment", "Get Orders Called");
@@ -280,11 +312,16 @@ public class OrdersFragment extends Fragment {
 
     }
 
+    //ON PAUSE REMOVE ALL THE FIREBASE LISTENERS
     @Override
     public void onPause() {
         super.onPause();
+        isInForeground = false;
         dateList.clear();
         UsersRef.child(userID).child("Orders").orderByChild("Address").removeEventListener(ordersListener);
-//        UsersRef.child(userID).child("Orders").removeEventListener(ordersListenerChild);
+        UsersRef.child(userID).child("Orders").child(dateSelected).removeEventListener(ordersListenerChild);
+        DatesRef.child("Users").child(userID).child("Orders").orderByChild("Address").removeEventListener(ordersListener);
+        query.removeEventListener(ordersListener2);
+//        OrdersRef.child("Users").child(userID).child("Orders").child(dateSelected).orderByChild("Address").equalTo(listOfOrdersString).removeEventListener(ordersListener2);
     }
 }

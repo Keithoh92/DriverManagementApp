@@ -60,14 +60,17 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.ContentValues.TAG;
 
+/*
+
+EACH GROUP THE USER IS A MEMBER OF IS LOADED INTO THIS FRAGMENT
+ */
 
 public class GroupsFragment extends Fragment {
 
     ValueEventListener listener;
     private View groupFragmentView;
     private RecyclerView list_view;
-//    private ArrayAdapter<String> arrayAdaptor;
-//    private ArrayList<String> list_of_groups = new ArrayList<>();
+
 
     private DatabaseReference RootRef, UsersRef, anyGroupsRef;
     private FirebaseAuth fAuth;
@@ -103,23 +106,6 @@ public class GroupsFragment extends Fragment {
         list_view = groupFragmentView.findViewById(R.id.find_groups_list);
         list_view.setLayoutManager(new LinearLayoutManager(getContext()));
 
-
-//        list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                String groupName = parent.getItemAtPosition(position).toString();
-//
-//                Intent groupChatIntent = new Intent(getActivity(), GroupChatActivity.class);
-//                groupChatIntent.putExtra("groupName", groupName);
-//                if(!isNormalUser){
-//                    groupChatIntent.putExtra("usersID", userID);
-//                }else{
-//                    groupChatIntent.putExtra("managersID", managementID);
-//                }
-//                startActivity(groupChatIntent);
-//            }
-//        });
-
         return groupFragmentView;
     }
 
@@ -148,7 +134,6 @@ public class GroupsFragment extends Fragment {
                             new FirebaseRecyclerOptions.Builder<Groups>()
                                     .setQuery(RootRef.child("GroupInfo"), Groups.class)
                                     .build();
-//                    RootRef.child(currentUserID).child("GroupInfo").child(groupName).setValue(createGroup).addOnCompleteListener(new OnCompleteListener<Void>() {
 
                     FirebaseRecyclerAdapter<Groups, GroupsFragment.FindGroupsViewHolder> adapter =
                             new FirebaseRecyclerAdapter<Groups, GroupsFragment.FindGroupsViewHolder>(options) {
@@ -172,8 +157,6 @@ public class GroupsFragment extends Fragment {
                                         }
                                     });
                                 }
-
-
 
                                 @NonNull
                                 @Override
@@ -212,48 +195,12 @@ public class GroupsFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-//        RootRef.removeEventListener(listener);
-
     }
 
-//    @Override
-//    public void setUserVisibleHint(boolean isVisibleToUser) {
-//        super.setUserVisibleHint(isVisibleToUser);
-//        if(isVisibleToUser){
-//            listener = new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    if (!snapshot.exists()) {
-//                        //AND if the user is normal driver display this message
-//                        if (isNormalUser) {
-//                            Toast.makeText(getContext(), "Your manager has not created any groups yet or you are not yet in your managements system", Toast.LENGTH_LONG).show();
-//                            //ELSE if its management user display this message
-//                        } else {
-//                            Toast.makeText(getContext(), "You have not yet created any Groups yet, please go to create group in menu", Toast.LENGTH_LONG).show();
-//                        }
-//                    } else {
-//                        Set<String> set = new HashSet<>();
-//                        Iterator iterator = snapshot.getChildren().iterator();
-//                        while (iterator.hasNext()) {
-//                            set.add(((DataSnapshot) iterator.next()).getKey());
-//                        }
-//                        list_of_groups.clear();
-//                        list_of_groups.addAll(set);
-//                        arrayAdaptor.notifyDataSetChanged();
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//
-//                }
-//            };
-//            RootRef.addValueEventListener(listener);
-//
-//        }
-//    }
-
-
+    // METHOD TO CHECK THE USERS ACCESS LEVEL
+    // WHEN RETRIEVING DRIVERS, THE DRIVERS ARE STORED UNDER THE MANAGERS SYSTEM ID, SO IF THE USER IS A DRIVER
+    // THEIR MANAGERS ID WILL BE STORED UNDER THEIR USER INFO IN THE DATABASE WHEN THE MANAGER ADDS THEM TO THE SYSTEM,
+    // WE THEN RETRIEVE THIS EVERYTIME WE NEED ACCESS TO THE OTHER DRIVERS IN THE SYSTEM
     private void checkUserAccessLevel() {
         Log.d("GroupsFragment", "Checking access level - ID passed: "+userID);
         UsersRef.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -268,9 +215,12 @@ public class GroupsFragment extends Fragment {
                     }
                     if (retrieveUserType.equals("Driver")) {
                         Log.d("GroupsFragment", "User is normal user");
-                        managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
-                        Log.d("GroupsFragment", "Retrieving managers Id for group access: "+managementID);
-                        RootRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups").child(managementID);
+
+                        if(snapshot.hasChild("myManagersID")) {
+                            managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
+                            Log.d("GroupsFragment", "Retrieving managers Id for group access: " + managementID);
+                            RootRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups").child(managementID);
+                        }
                         isNormalUser = true;
                     }
                 }else{
@@ -286,72 +236,3 @@ public class GroupsFragment extends Fragment {
         });
     }
 }
-//    private void RetrieveAndDisplayGroups() {
-//        FirebaseUser user = fAuth.getCurrentUser();
-////        DocumentReference df = GroupRef.collection("Groups").document();
-////        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-////            @Override
-////            public void onSuccess(DocumentSnapshot documentSnapshot) {
-////                String groupName = documentSnapshot.getString("Group Name");
-////
-////                list_of_groups.clear();
-////                list_of_groups.add(groupName);
-////                arrayAdaptor.notifyDataSetChanged();
-////            }
-////        });
-////        DocumentReference df = collection("cities")
-//        GroupRef.collection("Groups")
-//                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            list_of_groups.clear();
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                Log.d("TAG", document.getId() + " => " + document.getData());
-//                                String stripped = document.getData().toString().replace("{Group Name=", "");
-//                                String stripped2 = stripped.replace("}", "");
-//                                Set<String> set = new HashSet<>();
-//                                set.add(stripped2);
-////                                list_of_groups.clear();
-//                                list_of_groups.addAll(set);
-//                                arrayAdaptor.notifyDataSetChanged();
-//                            }
-//
-//                        } else {
-//                            Log.d("TAG", "Error getting documents: ", task.getException());
-//                        }
-//                        list_of_groups.clear();
-//                        list_of_groups.addAll(set);
-//                    }
-//                });
-
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                Log.d(TAG, document.getId() + " => " + document.getData());
-//                            }
-//                        } else {
-//                            Log.d(TAG, "Error getting documents: ", task.getException());
-//                        }
-//                    }
-//                });
-
-//                Set<String> set = new HashSet<>();
-//                Iterator iterator = (Iterator) GroupRef.collection("Groups").document("My Created Groups");
-
-
-//                String groupName = documentSnapshot.getString("Group Name");
-//                list_of_groups.clear();
-//                list_of_groups.add(groupName);
-//                arrayAdaptor.notifyDataSetChanged();
-
-
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                Toast.makeText(getActivity(), "You are not a memeber of any groups yet", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
-//}

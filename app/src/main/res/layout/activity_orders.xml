@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OrdersActivity">
+
+    <TextView
+        android:id="@+id/orders_textview"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Your Orders"
+        android:textAlignment="center"
+        android:textColor="#e3792d"
+        android:textSize="26sp"
+        android:layout_marginTop="7dp"/>
+
+    <TextView
+        android:id="@+id/date_textview"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/orders_textview"
+        android:layout_marginStart="15dp"
+        android:textColor="#e3792d"
+        android:gravity="center"
+        android:text="Date:"
+        android:textSize="20sp" />
+
+    <Spinner
+        android:id="@+id/orders_spinner"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/orders_textview"
+        android:background="@drawable/round_textview"
+        android:elevation="10dp"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/orders_recyclerview2"
+        android:layout_width="match_parent"
+        android:layout_height="125dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:background="@drawable/round_textview"
+        android:layout_below="@id/orders_spinner"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        >
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/add_order_button"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_below="@id/orders_recyclerview2"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="10dp"
+        android:text="Add"
+        android:background="@drawable/button_corners"
+        />
+
+</RelativeLayout>

@@ -45,6 +45,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+/*
+
+THIS IS ONE OF THE FRAGMENTS ON THE MANAGERS DASHBOARD WHERE THEY CAN ADD CUSTOM
+MESSAGES TO 3 DROPDOWN MENUS AND THEN SEND THESE TO THE DRIVERS IN THEIR SYSTEM
+
+ */
 
 public class ManagementDash1Fragment extends Fragment {
     Activity listener;
@@ -251,13 +257,6 @@ public class ManagementDash1Fragment extends Fragment {
                 if (!snapshot.exists()) {
                     Log.d("DashTesting", "No Drivers found");
 
-                    //AND if the user is normal driver display this message
-//                    if (isNormalUser) {
-//                        Toast.makeText(getContext(), "Your manager has not added other contacts yet or you are not yet in your managements system", Toast.LENGTH_LONG).show();
-//                        //ELSE if its management user display this message
-//                    } else {
-//                        Toast.makeText(getContext(), "You have not yet added any Drivers to the system, please go to add drivers in menu", Toast.LENGTH_LONG).show();
-//                    }
                 } else {
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         contactsClass = ds.getValue(Contacts.class);
@@ -324,7 +323,7 @@ public class ManagementDash1Fragment extends Fragment {
         super.onStart();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////           CONTACTS DROPDOWN                               ///////////////////////////////////////
+////////////////////////           CONTACTS SELECTOR DIALOG                               ///////////////////////////////////////
 /////////////////////////                                       ////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -380,7 +379,7 @@ public class ManagementDash1Fragment extends Fragment {
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////           GROUPS DROPDOWN                               ///////////////////////////////////////
+////////////////////////           GROUPS SELECTOR DIALOG                               ///////////////////////////////////////
 /////////////////////////                                       ////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
         chooseGroups.setOnClickListener(new View.OnClickListener() {
@@ -434,10 +433,6 @@ public class ManagementDash1Fragment extends Fragment {
         });
 
 
-
-
-
-
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -488,14 +483,11 @@ public class ManagementDash1Fragment extends Fragment {
 
                             }
                         });
-
-
                     }
                     for (int i = 0; i < checkedContacts.length; i++) {
                         checkedContacts[i] = false;
                         selectedContacts.clear();
                     }
-//                Toast.makeText(getContext(), "Sending to - "+contacts[selectedContacts(i)]);
                 }
 
                 if (selectedGroups.size() != 0) {

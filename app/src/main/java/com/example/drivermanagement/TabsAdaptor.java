@@ -10,6 +10,10 @@ import com.example.drivermanagement.fragments.ChatFragment;
 import com.example.drivermanagement.fragments.ContactsFragment;
 import com.example.drivermanagement.fragments.GroupsFragment;
 
+
+///////////// TABS ADAPTOR FOR MESSAGES ACTIVITY VIEWPAGER
+
+
 public class TabsAdaptor extends FragmentStatePagerAdapter {
 
     public TabsAdaptor(@NonNull FragmentManager fm) {

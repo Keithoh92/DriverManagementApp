@@ -45,6 +45,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+/*
+
+    MAPS FRAGMENT IN THE ROUTE FINDER FEATURE
+
+ */
+
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback, GoogleMap.OnMarkerClickListener {
 
@@ -156,6 +162,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             double sLon = getArguments().getDouble("newDestinationLng", -6.266155);
             destinationLatLng = new LatLng(sLat, sLon);//DESTINATION
 
+            //FOR ALTERING THE SIZE OF MAPS WINDOW
             LatLng bound1 = new LatLng(usersLatLng.latitude, usersLatLng.longitude);
             LatLng bound2 = new LatLng(destinationLatLng.latitude, destinationLatLng.longitude);
             float bear = getBearing(bound1, bound2);
@@ -163,12 +170,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
             List<String> receivedDestinationsList = myDataPasser.getList();
             if(receivedDestinationsList.size() > 1){
-                //Retrieve Waypoint
+                //Retrieve WaypointS
                 Log.d("testing", "Multiple Destinations");
 
                 map.clear();
 
-//                List<String> receivedDestinationsList = myDataPasser.getList();
                 for(int i = 0; i < receivedDestinationsList.size()-1; i++) {
                    String destinations = receivedDestinationsList.get(i);
                    String[] arr = destinations.split(",");
@@ -206,29 +212,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                         .build();                   // Creates a CameraPosition from the builder
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
+                //GET ROUTE, DISTANCE AND TRAVEL TIME FROM API FOR MULTIPLE DESTINATIONS
                 url = resultDirectionsApi.ConstructAPIMultipleDestinations(usersLatLng, destinationLatLng, receivedDestinationsList);
                 DownloadTask downloadTask = new DownloadTask();
                 downloadTask.execute(url);
-//                sendUrl(url);
                 Log.d("testing", "Sent url to Async task Download task");
 
-//                LatLng newLocation2 = new LatLng(wayLat, wayLng);
-//                map.addMarker(new MarkerOptions()
-//                        .position(usersLatLng).title("My Location")
-//                        .position(waypointLatLng).title(wayPlaceName)
-//                        .position(destinationLatLng)
-//                        .title(placeName));
-//                CameraPosition cameraPosition = new CameraPosition.Builder().target(destinationLatLng).zoom(20.0f).build();
-//                CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
-//                map.moveCamera(cameraUpdate);
 
             } else {
                 Log.d("testing", "received selected Location LatLng" + sLat + ", " + sLon);
-
+                //GET ROUTE, DISTANCE AND TRAVEL TIME FROM API FOR SINGLE DESTINATION
                 url = resultDirectionsApi.ConstructAPISingleDestination(usersLatLng, destinationLatLng); //pass origin and destination to Directions client to return url
                 DownloadTask downloadTask = new DownloadTask();
                 downloadTask.execute(url);
-//                sendUrl(url);
                 map.clear();
                 map.addMarker(new MarkerOptions()
                         .position(destinationLatLng)
@@ -282,7 +278,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             try {
                 data = resultDirectionsApi.downloadUrl(url[0]);
                 Log.d("testing", "URL : " +url[0]);
-//                Log.d("testing", "URL : " +url[1]);
                 Log.d("testing", "API response: " +data);
             } catch (Exception e) {
                 Log.d("Background Task", e.toString());
@@ -345,7 +340,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
             progressDialog.dismiss();
             ArrayList points = null;
-//            PolylineOptions lineOptions;
             MarkerOptions markerOptions = new MarkerOptions();
 
             for (int i = 0; i < result.size(); i++) {
@@ -359,9 +353,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                     HashMap<String, String> point = path.get(j);
 
                     double lat = Double.parseDouble(point.get("lat"));
-//                    Log.d("testing", "Route Lat at "+i+":" +lat);
                     double lng = Double.parseDouble(point.get("lng"));
-//                    Log.d("testing", "Route Lng at "+i+":" +lng);
                     LatLng position = new LatLng(lat, lng);
 
                     points.add(position);
@@ -370,7 +362,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 lineOptions.width(15);
                 lineOptions.color(Color.parseColor("#05b1fb"));
                 lineOptions.geodesic(true);
-//                lineOptions.setJointType(JointType.ROUND);
 
 
             }
@@ -399,6 +390,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         }
     }
 
+    //METHOD FOR ORIENTATION OF MAP ICONS
     private LatLng getMarkerProjectionOnSegment(LatLng carPos, List<LatLng> segment, Projection projection) {
         LatLng markerProjection = null;
 

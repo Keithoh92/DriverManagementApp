@@ -43,7 +43,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
 
+    NOT USED - CHANGED FOR ACTIVITY
+
+ */
 public class ScannedOrdersFragment extends Fragment implements OrderDialog.DialogListener, RecyclerScannedList.ItemClickListener {
 
     Activity listener;

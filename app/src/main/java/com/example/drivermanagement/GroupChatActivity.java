@@ -35,6 +35,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+/*
+
+    USERS CAN CHAT INSIDE THE GROUP SELECTED
+
+
+ */
 public class GroupChatActivity extends AppCompatActivity {
 
     ScrollView myScrollView;
@@ -142,8 +148,10 @@ public class GroupChatActivity extends AppCompatActivity {
 
         if(!isNormalUser) {
             messageKey = GroupRef.child("Groups").child(currentUser).child("GroupInfo").child(currentGroupName).child("GroupMessages").push().getKey();
-        }else{
-            messageKey = GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").push().getKey();
+        }else {
+            if (managementID != null) {
+                messageKey = GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").push().getKey();
+            }
         }
 
         if(TextUtils.isEmpty(message))
@@ -159,9 +167,11 @@ public class GroupChatActivity extends AppCompatActivity {
             if(!isNormalUser) {
                 GroupRef.child("Groups").child(currentUser).child("GroupInfo").child(currentGroupName).child("GroupMessages").updateChildren(groupMessageKey);
                 groupMessageKeyRef = GroupRef.child("Groups").child(currentUser).child("GroupInfo").child(currentGroupName).child("GroupMessages").child(messageKey);
-            }else{
-                GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").updateChildren(groupMessageKey);
-                groupMessageKeyRef = GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").child(messageKey);
+            }else {
+                if (managementID != null) {
+                    GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").updateChildren(groupMessageKey);
+                    groupMessageKeyRef = GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").child(messageKey);
+                }
             }
             HashMap<String, Object> infoMap = new HashMap<>();
             infoMap.put("username", currentUsername);
@@ -234,39 +244,40 @@ public class GroupChatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if(isNormalUser){
-            GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                    if (snapshot.exists()) {
-                        GroupMessages groupMessages = snapshot.getValue(GroupMessages.class);
-                        messageList.add(groupMessages);
-                        groupMessageAdaptor.notifyDataSetChanged();
+            if(managementID != null) {
+                GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        if (snapshot.exists()) {
+                            GroupMessages groupMessages = snapshot.getValue(GroupMessages.class);
+                            messageList.add(groupMessages);
+                            groupMessageAdaptor.notifyDataSetChanged();
+                        } else {
+                            Log.d("GroupChat", "Snapshot not found");
+                        }
                     }
-                    else{
-                        Log.d("GroupChat", "Snapshot not found");
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
                     }
-                }
 
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
-                }
+                    }
 
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                }
+                    }
 
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
+                    }
+                });
+            }
         }
     }
 
@@ -284,42 +295,45 @@ public class GroupChatActivity extends AppCompatActivity {
                     }
                     if (retrieveUserType.equals("Driver")) {
                         Log.d("Contacts", "User is normal user");
-                        managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
-//                        GroupRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups").child(managementID);
+
+                        if(snapshot.hasChild("myManagersID")) {
+                            managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
+                        }//                        GroupRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups").child(managementID);
                         isNormalUser = true;
-                        GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").addChildEventListener(new ChildEventListener() {
-                            @Override
-                            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                                if (snapshot.exists()) {
-                                    GroupMessages groupMessages = snapshot.getValue(GroupMessages.class);
-                                    messageList.add(groupMessages);
-                                    groupMessageAdaptor.notifyDataSetChanged();
+                        if(managementID != null) {
+                            GroupRef.child("Groups").child(managementID).child("GroupInfo").child(currentGroupName).child("GroupMessages").addChildEventListener(new ChildEventListener() {
+                                @Override
+                                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                                    if (snapshot.exists()) {
+                                        GroupMessages groupMessages = snapshot.getValue(GroupMessages.class);
+                                        messageList.add(groupMessages);
+                                        groupMessageAdaptor.notifyDataSetChanged();
+                                    } else {
+                                        Log.d("GroupChat", "Snapshot not found");
+                                    }
                                 }
-                                else{
-                                    Log.d("GroupChat", "Snapshot not found");
+
+                                @Override
+                                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
                                 }
-                            }
 
-                            @Override
-                            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                                @Override
+                                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                                @Override
+                                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
 
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
+                                }
+                            });
+                        }
                     }
                 }else{
                     Log.d("Contacts", "No usertype found");

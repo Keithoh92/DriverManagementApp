@@ -217,55 +217,13 @@ public class PhoneLoginActivity extends AppCompatActivity {
                 } else {
                     Log.d("TAG", "Login failed" +task.getException());
                     Toast.makeText(PhoneLoginActivity.this, "Login Failed, Please try again, Your number could already be associated with another account!", Toast.LENGTH_LONG).show();
-//                    final FirebaseUser prevUser = FirebaseAuth.getInstance().getCurrentUser();
-//                    fAuth.signInWithCredential(credential)
-//                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<AuthResult> task) {
-//                                    FirebaseUser currentUser = task.getResult().getUser();
-//                                    Log.d("TAG", "Login Failed, Getting current user for delete");
-//                                    currentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                        @Override
-//                                        public void onComplete(@NonNull Task<Void> task) {
-//                                            Log.d("TAG", "Deleting current user to merge new credentials with new user login" +credential);
-//                                            prevUser.linkWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                                                @Override
-//                                                public void onComplete(@NonNull Task<AuthResult> task) {
-//                                                    Log.d("TAG", "Successfully merged accounts email/phone - pass to checkuseraccesslevel method" +credential);
-//                                                    fAuth.signInWithCredential(credential);
-//                                                    FirebaseUser user = fAuth.getCurrentUser();
-//                                                    checkUserAccessLevel(user.getUid());
-//                                                }
-//                                            });
-//                                        }
-//                                    });
-//                                    // Merge prevUser and currentUser accounts and data
-//                                    // ...
-//                                }
-//                            });
+
                 }
             }
         });
     }
 
 
-//        fAuth.signInWithCredential(credential)
-//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                        if (task.isSuccessful()) {
-//                            loadingBar.setVisibility(View.INVISIBLE);
-//                            FirebaseUser user = fAuth.getCurrentUser();
-//                            Toast.makeText(PhoneLoginActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
-//                            checkUserAccessLevel(user.getUid());
-//                        }
-//                        else
-//                        {
-//                            Toast.makeText(PhoneLoginActivity.this, "Login Failed, Please try again", Toast.LENGTH_SHORT).show();
-//                        }
-//                        }
-//                });
-//    }
     private void checkUserAccessLevel(String uid) {
         Log.d("TAG", "Check user access level was called, sign in successful" +uid);
         //extract data from document
@@ -281,7 +239,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
                         finish();
                     }
                     if (retrieveUserType.equals("Driver")) {
-                        startActivity(new Intent(PhoneLoginActivity.this, DriverDashboard.class));
+                        startActivity(new Intent(PhoneLoginActivity.this, DriversDashboardActivity.class));
                         finish();
                     }
                 }

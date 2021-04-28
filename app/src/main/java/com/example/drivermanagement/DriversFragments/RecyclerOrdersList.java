@@ -12,6 +12,9 @@ import com.example.drivermanagement.R;
 
 import java.util.List;
 
+/*
+RECYCLER LIST ON THE ORDERS FRAGMENT ON DRIVERS DASHBOARD
+ */
 public class RecyclerOrdersList extends RecyclerView.Adapter<RecyclerOrdersList.ViewHolder>{
 
     private List<String> listOfOrders;
@@ -20,7 +23,6 @@ public class RecyclerOrdersList extends RecyclerView.Adapter<RecyclerOrdersList.
 
     public RecyclerOrdersList(List<String> listOfOrders){
         this.listOfOrders = listOfOrders;
-//        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

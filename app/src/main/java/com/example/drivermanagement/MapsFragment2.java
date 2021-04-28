@@ -22,10 +22,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+/*
+
+    MAPS FRAGMENT FOR THE USERS PROFILES AND LOCATION TRACKING
+
+ */
+
 public class MapsFragment2 extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback, GoogleMap.OnMarkerClickListener{
 
     private GoogleMap map;
-//    Activity listener;
     double lat1 = 53.3498;
     double lon1 = -6.266155;
     String lastTimeUploaded;
@@ -33,9 +38,7 @@ public class MapsFragment2 extends Fragment implements OnMapReadyCallback, Googl
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-//        if(context instanceof ProfileActivity){
-//            this.listener = (ProfileActivity) context; //MainActivity listener
-//        }
+
     }
 
     @Nullable
@@ -55,7 +58,6 @@ public class MapsFragment2 extends Fragment implements OnMapReadyCallback, Googl
             mapFragment2.getMapAsync(this);
         }
     }
-
 
 
     @Override
@@ -89,10 +91,4 @@ public class MapsFragment2 extends Fragment implements OnMapReadyCallback, Googl
         googleMap.setOnMapLoadedCallback(this);
     }
 
-//    @Override
-//    public void comm(double lat, double lng, String time) {
-//        lat1 = lat;
-//        lon1 = lng;
-//        lastTimeUploaded = time;
-//    }
 }

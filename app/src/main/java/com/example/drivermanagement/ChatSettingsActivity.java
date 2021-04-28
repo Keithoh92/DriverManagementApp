@@ -48,6 +48,11 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+
+/*
+USER CAN UPDATE USERNAME HERE AND ADD A PROFILE PHOTO
+ */
+
 public class ChatSettingsActivity extends AppCompatActivity {
 
     private Button updateButton;
@@ -58,7 +63,6 @@ public class ChatSettingsActivity extends AppCompatActivity {
     private StorageReference fStorage;
 
     private static final int GALLERY_PICK = 1;
-
 
 
     @Override
@@ -99,13 +103,8 @@ public class ChatSettingsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == GALLERY_PICK && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri imgUri = data.getData();
-            // start picker to get image for cropping and then use the image in cropping activity
 
-//            CropImage.activity()
-//                    .setGuidelines(CropImageView.Guidelines.ON)
-//                    .setAspectRatio(1, 1)
-//                    .start(this);
-
+            //EXTERNAL LIBRARY TO CROP THE IMAGE CHOSEN BY THE USER FOR THEIR PROFILE PIC
             CropImage.activity(imgUri)
                     .setAspectRatio(1, 1)
                     .start(this);

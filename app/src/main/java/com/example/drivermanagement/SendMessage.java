@@ -11,6 +11,11 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 
+/*
+
+    CLASS TO SAVE MESSAGES TO FIREBASE CLOUD MESSAGING
+
+ */
 public class SendMessage {
 
     private DatabaseReference usersRef;

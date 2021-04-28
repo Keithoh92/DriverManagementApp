@@ -22,6 +22,13 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
+/*
+
+THIS IS THE MAIN ACTIVITY ON THE MANAGERS DASHBOARD THAT HOLDS ALL THE FRAGMENTS
+
+
+ */
+
 public class ManagementDashboard extends AppCompatActivity implements CustomMessagesDialog.DialogListener, CustomMessagesDialogManagersDash.DialogListener {
     Toolbar managementToolbar;
     BottomNavigationView bottomNavigationView;
@@ -34,11 +41,8 @@ public class ManagementDashboard extends AppCompatActivity implements CustomMess
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_management_dashboard);
         managementToolbar = (Toolbar) findViewById(R.id.management_dashboard_toolbar);
-//        sendLocation = findViewById(R.id.accept_location_request);
 
         fAuth = FirebaseAuth.getInstance();
-
-        //        myButton = (Button) findViewById(R.id.chooseButton);
 
         setSupportActionBar(managementToolbar);
         getSupportActionBar().setTitle("DriverX");
@@ -89,10 +93,7 @@ public class ManagementDashboard extends AppCompatActivity implements CustomMess
         startActivity(loginIntent);
     }
 
-    private void SendUserToCreateOrderActivity()
-    {
 
-    }
     private void SendUserToMessagesActivity(){
         Intent messagesIntent = new Intent(ManagementDashboard.this, MessagesActivity.class);
         messagesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -103,23 +104,10 @@ public class ManagementDashboard extends AppCompatActivity implements CustomMess
     public void onStart() {
         super.onStart();
 
-//        FragmentManager fragment = getSupportFragmentManager();
-//        Fragment myFrag = fragment.findFragmentById(R.id.chooserFrag);
-//        fragment.beginTransaction()
-//                .hide(myFrag)
-//                .commit();
-
-//        FragmentManager fragment1 = getSupportFragmentManager();
-//        Fragment myFrag1 = fragment1.findFragmentById(R.id.manDash2);
-//        fragment1.beginTransaction()
-//                .hide(myFrag1)
-//                .commit();
-
-//        myButton.setVisibility(View.INVISIBLE);
-
-//        if(fragment.isH)
     }
 
+    // THIS GETS THE CUSTOM MESSAGE THAT THE USER ADDS TO THE MAIN DASHBOARD FRAGMENT
+    // AND SAVES IT INTO PERMANENT STORAGE FOR THAT FRAGMENT TO LOAD ON STARTUP INTO THE CUSTOM MESSAGES DROPDOWNS
     @Override
     public void applyMessages(String messageA, String messageB, String messageC, String messageD, String messageE) {
         ArrayList<String> messageArray = new ArrayList<>();
@@ -136,7 +124,8 @@ public class ManagementDashboard extends AppCompatActivity implements CustomMess
 
         }
     }
-
+    // THIS GETS THE CUSTOM MESSAGE THAT THE USER ADDS TO THE MAIN DASHBOARD FRAGMENT
+    // AND SAVES IT INTO PERMANENT STORAGE FOR THAT FRAGMENT TO LOAD ON STARTUP INTO THE CUSTOM MESSAGES DROPDOWNS
     @Override
     public void applyMessagesManagement(String listName, String messageA, String messageB, String messageC, String messageD, String messageE) {
         ArrayList<String> returnedItems = new ArrayList<>();

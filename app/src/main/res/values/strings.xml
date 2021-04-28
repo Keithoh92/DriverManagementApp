@@ -87,6 +87,6 @@
     <string name="channel_description">notification_settings</string>
 
     //REMOVE API KEY FROM HERE WHEN USING VERSION CONTROL
-    <string name="api_key">AIzaSyDhxtD_YBCkj5eZ4Uu4v7UJW8nsNvRIdoM</string>
+    <string name="api_key"></string>
 
 </resources>

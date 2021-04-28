@@ -7,6 +7,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+/*
+
+    ON REGISTRATION - CHOOSE ACCOUNT TYPE - MANAGERS/DRIVER ACCOUNT GO TO REGISTER ACTIVITY
+
+ */
 public class ProfileTypeActivity extends AppCompatActivity {
 
     private Button managementButtonRegister, driverButtonRegister;

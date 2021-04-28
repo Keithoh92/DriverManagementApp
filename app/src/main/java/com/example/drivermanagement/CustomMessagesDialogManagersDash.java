@@ -80,7 +80,6 @@ public class CustomMessagesDialogManagersDash extends AppCompatDialogFragment {
                 Intent reloadOnChange = new Intent(getContext(), ManagementDashboard.class);
                 startActivity(reloadOnChange);
 
-//                CreateNewOrder(address, orderNo, price, notes);
             }
         });
 

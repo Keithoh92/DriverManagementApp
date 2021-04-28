@@ -10,6 +10,9 @@ import com.google.android.gms.maps.model.LatLng;
 
 import io.nlopez.smartlocation.SmartLocation;
 
+/*
+CLASS TO GET USERS LOCATION IN SEPARATE THREAD
+ */
 public class FetchUsersLocation extends AsyncTask<Void, Void, LatLng> {
 
     LatLng usersLatLng;

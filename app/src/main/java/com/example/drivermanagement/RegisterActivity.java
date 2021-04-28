@@ -33,6 +33,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+/////////////////////// USER REGISTRATION /////////////////////////////
+
+
+
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText emailRegister, passwordRegister, companyName, username;
@@ -135,7 +139,6 @@ public class RegisterActivity extends AppCompatActivity {
 
 
                     Toast.makeText(RegisterActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
-//                    DocumentReference df = fStore.collection("Users").document(user.getUid());
                     Map<String, Object> userInfo = new HashMap<>();
                     userInfo.put("companyName", companyName.getText().toString());
                     userInfo.put("uid", currentUserId);
@@ -150,8 +153,7 @@ public class RegisterActivity extends AppCompatActivity {
                                  if(task.isSuccessful())
                                  {
                                      Toast.makeText(RegisterActivity.this, "Successfully created user profile", Toast.LENGTH_SHORT).show();
-//                                     Intent phoneIntent = new Intent(RegisterActivity.this, PhoneLoginActivity.class);
-//                                     startActivity(phoneIntent);
+
                                  }
                                  else
                                  {

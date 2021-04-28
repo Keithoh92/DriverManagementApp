@@ -34,7 +34,11 @@ import com.squareup.picasso.Picasso;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+/*
 
+THIS IS THE CHAT FRAGMENT OF THE MESSAGES FEATURE WHERE THE USER CAN SELECT A DRIVER THEY WANT TO CHAT WITH
+
+ */
 public class ChatFragment extends Fragment {
 
     private View chatsView;
@@ -50,16 +54,6 @@ public class ChatFragment extends Fragment {
     public ChatFragment() {
         // Required empty public constructor
     }
-
-
-//    public static ChatFragment newInstance(String param1, String param2) {
-//        ChatFragment fragment = new ChatFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,8 +89,8 @@ public class ChatFragment extends Fragment {
         Log.d("ChatFrag", "Calling check user access level");
         checkUserAccessLevel();
 
-
-
+        //FIRST WE CHECK TO SEE IF THERE ARE ANY DRIVERS ADDED TO THE COMPANY SYSTEM YET
+        //OR IF THE USER IS A DRIVER AND THEY HAVE NOT YET BEEN ADDED TO THE COMPANY SYSTEM
         anyDriversRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -108,6 +102,8 @@ public class ChatFragment extends Fragment {
                     }
                 }
                 else{
+                    // THIS FIREBASE RECYCLER ADAPTOR IS USED TO DYNAMICALLY LOAD EACH DRIVER IN THE SYSTEM INTO
+                    // THE LIST OF DRIVERS ON THE CHAT FRAGMENT
                     Log.d("Testing", "Found contacts");
                     FirebaseRecyclerOptions<Contacts> options =
                             new FirebaseRecyclerOptions.Builder<Contacts>()
@@ -119,8 +115,8 @@ public class ChatFragment extends Fragment {
                                 @Override
                                 protected void onBindViewHolder(@NonNull ContactsFragment.FindDriversViewHolder holder, final int position, @NonNull Contacts model) {
                                     if(!model.getImage().equals("")) {
-//                        holder.userName.setText(model.getUsername());
-//                        Log.d("TAG", "Getting username" +model.getUsername());
+                                        // HERE WE CHECK IF THE USER RETURNED FROM THE DRIVERS DATABASE IS THE CURRENT USER
+                                        // IF IT IS WE DO NOT DISPLAY IT IN THE LIST
                                         if(isNormalUser && normalUserUsername.equals(model.getUsername())){
                                             Log.d("Testing", "Current user, not adding to view");
                                             RecyclerView.LayoutParams param = (RecyclerView.LayoutParams)holder.itemView.getLayoutParams();
@@ -140,6 +136,7 @@ public class ChatFragment extends Fragment {
                                             holder.userName.setText(model.getUsername());
                                             Log.d("TAG", "Getting username" + model.getUsername());
 
+                                            //IF THE DRIVER HAS A PROFILE PIC ADD IT TO THE VIEW BESIDE USERNAME
                                             Picasso.get().load(model.getImage()).placeholder(R.drawable.profile_image).into(holder.profileImage);
                                             Log.d("TAG", "Getting Profile pic" + model.getImage());
 
@@ -163,12 +160,11 @@ public class ChatFragment extends Fragment {
                                         else{
                                             holder.userName.setText(model.getUsername());
                                         }
-//                            holder.profileImage.setImageURI(R.drawable.profile_image);
                                     }
                                     holder.itemView.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            //Get user id when user selects user
+                                            //Get user id when user selects user and go to chat activity
                                             String visit_user_id = getRef(position).getKey();
                                             String userNameR = getItem(position).username;
                                             Intent chatIntent = new Intent(getContext(), ChatActivity.class);
@@ -210,11 +206,14 @@ public class ChatFragment extends Fragment {
         {
             super(itemView);
             userName = itemView.findViewById(R.id.user_profile_name);
-//            lastChats =itemView.findViewById(R.id.last_chats_textview);
             profileImage = itemView.findViewById(R.id.users_profile_image);
         }
     }
 
+    //METHOD TO CHECK THE USERS ACCESS LEVEL
+    // WHEN RETRIEVING DRIVERS, THE DRIVERS ARE STORED UNDER THE MANAGERS SYSTEM ID, SO IF THE USER IS A DRIVER
+    // THEIR MANAGERS ID WILL BE STORED UNDER THEIR USER INFO IN THE DATABASE WHEN THE MANAGER ADDS THEM TO THE SYSTEM,
+    // WE THEN RETRIEVE THIS EVERYTIME WE NEED ACCESS TO THE OTHER DRIVERS IN THE SYSTEM
     private void checkUserAccessLevel() {
         Log.d("Contacts", "Checking access level - ID passed: "+userID);
         UsersRef.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -229,8 +228,9 @@ public class ChatFragment extends Fragment {
                     }
                     if (retrieveUserType.equals("Driver")) {
                         Log.d("ChatFrag", "User is normal user");
-                        managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
-                        normalUserUsername = Objects.requireNonNull(snapshot.child("username").getValue()).toString();
+                        if(snapshot.hasChild("myManagersID")) {
+                            managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
+                        }                        normalUserUsername = Objects.requireNonNull(snapshot.child("username").getValue()).toString();
                         DriverRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers").child(managementID);
                         isNormalUser = true;
                     }

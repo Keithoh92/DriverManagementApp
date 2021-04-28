@@ -33,6 +33,12 @@ import java.util.HashMap;
 
 import io.nlopez.smartlocation.SmartLocation;
 
+/*
+
+    MAPS FRAGMENT ON THE DRIVERS DASHBOARD
+
+ */
+
 public class MapsFragment3 extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap map;

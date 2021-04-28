@@ -29,6 +29,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+/*
+THIS IS THE FRAGMENT THAT POPS UP WHEN THE MANAGER WANTS TO ADD A NEW DRIVER
+THEY ENTER THE DRIVERS USERNAME AND CLICK FIND, IF A DRIVER IS FOUND THEY WILL BE TAKEN TO THAT DRIVERS PROFILE
+WHERE THEY CAN THEN BE ADDED TO THE MANAGERS SYSTEM AND TO THE OTHER DRIVERS OF THIS COMPANIES SYSTEMS
+
+ */
 public class AddDriversFragment extends Fragment {
 
 
@@ -67,12 +73,7 @@ public class AddDriversFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-//        foundDriversFragment = fm.findFragmentById(R.id.add_drivers_fragment);
-//        fm.beginTransaction()
-//                .show(foundDriversFragment)
-//                .commit();
         Log.d("AddDriversFrag", "onStart Add drivers called");
-//        findDriversSearchbar.callOnClick();
         findDriversSearchbar = getView().findViewById(R.id.driver_search_bar);
 
 
@@ -118,21 +119,10 @@ public class AddDriversFragment extends Fragment {
                                         Log.d("AddDriversFragment", "Not null, Sending ID " +foundDriver1);
                                         mCallback.comm(foundDriver1);
                                     }
-//                                    FoundDriversFragment foundDrive = new FoundDriversFragment();
-//                                    foundDrive = (FoundDriversFragment) fm.findFragmentById(R.id.found_driver_result);
-//                                    Bundle foundDriverBundle = new Bundle();
-//                                    foundDriverBundle.putString("foundDriver", foundDriver1);
-//                                    assert foundDrive != null;
-//                                    foundDrive.setArguments(foundDriverBundle);
-//                                    fm.beginTransaction()
-//                                            .replace(R.id.found_driver_result, foundDrive)
-//                                            .show(foundDrive)
-//                                            .commit();
+
                                     findDriversButton.setVisibility(View.INVISIBLE);
                                     cancel.setVisibility(View.INVISIBLE);
-//                                    fm.beginTransaction()
-//                                            .show(fdf)
-//                                            .commit();
+
                                 }
                             } else {
                                 Toast.makeText(getContext(), "No Driver with this username is using this application", Toast.LENGTH_SHORT).show();
@@ -189,21 +179,11 @@ public class AddDriversFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_drivers, container, false);
 
-//        foundDriversFragment = fm.findFragmentById(R.id.found_driver_result);
-//        addDriversFragment = fm.findFragmentById(R.id.add_drivers_fragment);
         fm = getChildFragmentManager();
         findDriversButton = view.findViewById(R.id.find_drivers_button);
         findDriversSearchbar = view.findViewById(R.id.driver_search_bar);
-//        findDriversSearchbar.setBackgroundColor();
-
-//        foundDriversFragment = fm.findFragmentById(R.id.found_driver_result);
-
-
 
         cancel = view.findViewById(R.id.cancel_button);
-//        foundDriversFragment = new Fragment();
-//        addDriversFragment = new Fragment();
-
 
         driverRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
 
@@ -212,11 +192,9 @@ public class AddDriversFragment extends Fragment {
     public interface AddDriversFragmentToActivity{
         public void comm(String foundDriversID);
     }
-//    private void sendUsersID(String foundDriversID){mCallback.comm(foundDriversID);}
 
     @Override
     public void onDetach() {
-//        mCallback = null;
         super.onDetach();
     }
 }

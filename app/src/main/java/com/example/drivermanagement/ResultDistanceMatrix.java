@@ -3,6 +3,14 @@ package com.example.drivermanagement;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
+/*
+
+    REMOVED FROM PROJECT
+
+    INITIALLY USED THIS CLASS TO RETRIEVE THE ROUTE DISTANCES FROM GOOGLE API USING RETROFIT AND OKHTTP
+
+
+ */
 public class ResultDistanceMatrix {
     @SerializedName("status")
     public String status;

@@ -7,7 +7,10 @@ import android.graphics.Paint;
 import com.squareup.picasso.Transformation;
 public class CircleImage implements Transformation{
 
+/*
 
+    EXTERNAL LIBRARY CLASS THAT LOADS PROFILE IMAGE INTO CIRCULAR VIEW
+ */
     @Override
     public Bitmap transform(Bitmap source) {
         int size = Math.min(source.getWidth(), source.getHeight());

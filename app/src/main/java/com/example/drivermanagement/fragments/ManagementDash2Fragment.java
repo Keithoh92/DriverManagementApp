@@ -53,6 +53,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+/*
+
+THIS IS THE FRAGMENT FOR CHOOSING A QUICK MESSAGE OR WRITING A MESSAGE TO SEND
+THIS IS USED ON BOTH DRIVER SIDE AND MANAGEMENT SYSTEMS
+
+ */
 
 public class ManagementDash2Fragment extends Fragment {
     Activity listener;
@@ -364,8 +370,10 @@ public class ManagementDash2Fragment extends Fragment {
             SaveGroupMessageToDatabase sendGroupMessage = new SaveGroupMessageToDatabase();
             for(int i = 0; i < selectedGroups.size(); i++) {
                 if(isNormalUser){
-                    sendGroupMessage.SendingGroupMessage(groups[selectedGroups.get(i)], managementID, setMessage);
-                }else {
+                    if(managementID != null) {
+                        sendGroupMessage.SendingGroupMessage(groups[selectedGroups.get(i)], managementID, setMessage);
+                    }
+                    }else {
                     sendGroupMessage.SendingGroupMessage(groups[selectedGroups.get(i)], userID, setMessage);
                     chosenRecipients1.setText("");
                     customMessage.setText("");
@@ -418,7 +426,9 @@ public class ManagementDash2Fragment extends Fragment {
                     }
                     if (retrieveUserType.equals("Driver")) {
                         Log.d("ManDash2", "User is normal user");
-                        managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
+                        if(snapshot.hasChild("myManagersID")) {
+                            managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
+                        }
                         currentUsername = Objects.requireNonNull(snapshot.child("username").getValue()).toString();
 //                        DriverRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers").child(managementID);
 //                        GroupRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups").child(managementID);
@@ -481,7 +491,9 @@ public class ManagementDash2Fragment extends Fragment {
             }
         };
         if (isNormalUser) {
-            DriverRef.child(managementID).addValueEventListener(driverListener);
+            if(managementID != null) {
+                DriverRef.child(managementID).addValueEventListener(driverListener);
+            }
 //            DriverRef.addValueEventListener(driverListener);
         } else {
             DriverRef.child(userID).addValueEventListener(driverListener);
@@ -515,8 +527,10 @@ public class ManagementDash2Fragment extends Fragment {
         };
         if (isNormalUser) {
 //            GroupRef.child("GroupInfo").addValueEventListener(groupListener);
-            GroupRef.child(managementID).child("GroupInfo").addValueEventListener(groupListener);
-        } else {
+            if(managementID != null) {
+                GroupRef.child(managementID).child("GroupInfo").addValueEventListener(groupListener);
+            }
+            } else {
             GroupRef.child(userID).child("GroupInfo").addValueEventListener(groupListener);
         }
     }

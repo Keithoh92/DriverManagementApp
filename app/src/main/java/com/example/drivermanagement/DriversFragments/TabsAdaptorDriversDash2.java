@@ -8,6 +8,13 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.example.drivermanagement.MapsFragment2;
 import com.example.drivermanagement.fragments.ManagementDash2Fragment;
 
+
+/*
+
+THIS IS THE TABS ADAPTOR FOR THE DRIVERS DASHBOARD SO THE USER CAN SWITCH BETWEEN DIFFERENT FRAGMENTS ON THE BOTTOM FRAGMENT OF THE DASHBOARD
+
+ */
+
 public class TabsAdaptorDriversDash2 extends FragmentStatePagerAdapter {
 
     public TabsAdaptorDriversDash2(@NonNull FragmentManager fm) {

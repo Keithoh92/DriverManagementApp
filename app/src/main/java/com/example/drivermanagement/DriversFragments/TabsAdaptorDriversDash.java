@@ -12,6 +12,13 @@ import com.example.drivermanagement.fragments.ManagementDash2Fragment;
 import com.example.drivermanagement.fragments.Management_dashboard4;
 import com.example.drivermanagement.fragments.managementDash3Fragment;
 
+/*
+
+THIS IS THE TABS ADAPTOR FOR THE DRIVERS DASHBOARD SO THE USER CAN SWITCH BETWEEN DIFFERENT FRAGMENTS ON THE TOP FRAGMENT OF THE DASHBOARD
+
+ */
+
+
 public class TabsAdaptorDriversDash extends FragmentStatePagerAdapter {
 
     public TabsAdaptorDriversDash(@NonNull FragmentManager fm) {

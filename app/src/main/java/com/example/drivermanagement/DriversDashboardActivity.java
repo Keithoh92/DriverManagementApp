@@ -23,6 +23,13 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
+/*
+
+THIS IS THE MAIN ACTIVITY ON THE DRIVERS DASHBOARD THAT HOLDS ALL THE FRAGMENTS
+
+
+ */
+
 public class DriversDashboardActivity extends AppCompatActivity implements CustomMessagesDialog.DialogListener, CustomMessagesDialog2.DialogListener{
 
     Toolbar toolbar;
@@ -76,12 +83,21 @@ public class DriversDashboardActivity extends AppCompatActivity implements Custo
             fAuth.signOut();
             SendUserToLoginActivity();
         }
+        if(item.getItemId() == R.id.orders_option)
+        {
+            SendUserToOrdersActivity();
+        }
 
         if(item.getItemId() == R.id.settings_option)
         {
             SendUserToChatSettingsActivity();
         }
         return true;
+    }
+
+    private void SendUserToOrdersActivity() {
+        Intent ordersIntent = new Intent(DriversDashboardActivity.this, ChatSettingsActivity.class);
+        startActivity(ordersIntent);
     }
 
     private void SendUserToChatSettingsActivity() {
@@ -113,6 +129,7 @@ public class DriversDashboardActivity extends AppCompatActivity implements Custo
     {
         Intent ocrIntent = new Intent(DriversDashboardActivity.this, OCRExtractionActivity.class);
         startActivity(ocrIntent);
+        finish();
     }
 
     private boolean checkPermission() {

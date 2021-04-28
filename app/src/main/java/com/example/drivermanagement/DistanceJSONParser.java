@@ -21,12 +21,12 @@ public class DistanceJSONParser {
         for(int i =0; i< legs.length(); i++) {
             JSONObject legsObjects = legs.getJSONObject(0);
 
-//get the distance
+        //get the distance
             JSONObject distance = legsObjects.getJSONObject("distance");
             String distanceStr = distance.getString("value");
             dist = dist + Float.parseFloat(distanceStr);
 
-//get the time
+        //get the time
             JSONObject time = legsObjects.getJSONObject("duration");
             String duration = time.getString("value");
             dur += Float.parseFloat(duration);

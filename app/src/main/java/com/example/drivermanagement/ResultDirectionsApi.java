@@ -21,20 +21,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+////////////// GET DIRECTIONS FROM GOOGLE ROUTES API FOR USERS CHOSEN DESTINATIONS////////////////////////////
 
 public class ResultDirectionsApi {
     //API Call
-//    String api_key = getString(R.string.api_key);
+
     private static String BASE_URL;
     String url;
 
-//    ResultDirectionsApi(SendTheUrl interface1){
-//        this.interface1 = interface1;
-//    }
 
-//            = "https://maps.googleapis.com/maps/api/directions/";
     //REMOVE API KEY FROM HERE WHEN USING VERSION CONTROL
-    private static String APPID = "AIzaSyDhxtD_YBCkj5eZ4Uu4v7UJW8nsNvRIdoM";
+    private static String APPID = "";
 
 
     String downloadUrl(String strUrl) throws IOException {
@@ -67,6 +64,7 @@ public class ResultDirectionsApi {
         return data;
     }
 
+    //CALLED FROM MAPS FRAGMENT ON ROUTES ACTIVITY WHEN ONLY ONE DESTINATION IS CHOSEN
     public String ConstructAPISingleDestination(LatLng origin, LatLng destination) {
         String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
         String str_destination = "destination=" + destination.latitude + "," + destination.longitude;
@@ -74,33 +72,21 @@ public class ResultDirectionsApi {
 
         String parameters = str_origin + "&" + str_destination;
 
-//        StringBuilder sb = new StringBuilder(parameters+"&waypoints=via:");
-//        if(waypoints.length != 0){
-//            Log.d("testing", "Waypoints url processing : " +waypoints);
-//            for(int i = 0; i < waypoints.length; i++){
-//                sb.append(waypoints[i].latitude+ "%" +waypoints[i].longitude);
-////                Log.d("testing", "new url with waypoints: " +sb);
-//            }
-//        }
         String output = "json";
-//        if(waypoints.length != 0){
-//            BASE_URL= "https://maps.googleapis.com/maps/api/directions/";
-//            Log.d("testing", "Waypoints not null, reset base url: " +BASE_URL);
-//            BASE_URL = BASE_URL + output+ "?" + sb + "&key="+APPID;
-//            Log.d("testing", "new base url with waypoints: " +BASE_URL);
-//        }
-//        else{
-        //Construct url for google maps intent
 
 
         BASE_URL= "https://maps.googleapis.com/maps/api/directions/";
         Log.d("testing", "Reset base url: " +BASE_URL);
         BASE_URL = BASE_URL + output + "?" + parameters + "&key=" + APPID;
-//        }
+
         return BASE_URL;
     }
 
-
+    //CALLED FROM MAPS FRAGMENT ON ROUTES ACTIVITY WHEN MORE THAN ONE DESTINATION IS CHOSEN
+    //THE ORIGIN IS THE USERS LOCATION
+    //THE DESTINATION IS THE FINAL STOP
+    //AND THE LIST HAS ALL THE DESTINATIONS BUT IS PICKED APART TO GET THE STOPOVER LOCATIONS (WAYPOINTS)
+    // TO CALCULATE THE ROUTES ALONG THE WAY TO THE FINAL DESTINATION FROM THE USERS LOCATION
     public String ConstructAPIMultipleDestinations(LatLng origin, LatLng destination, List<String> destinationsList) {
         String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
         String str_destination = "destination=" + destination.latitude + "," + destination.longitude;
@@ -149,37 +135,4 @@ public class ResultDirectionsApi {
 
 }
 
-//    public String ResultDirectionsApiWaypoint (LatLng origin, LatLng destination, LatLng... waypoints) {
-//        Log.d("testing", "Waypoint directions method called");
-//
-//        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-//        String str_destination = "destination=" + destination.latitude + "," + destination.longitude;
-//        String mode = "mode=driving";
-//
-//        String parameters = str_origin + "&" +str_destination;
-//
-//        StringBuilder sb = new StringBuilder(parameters+"&waypoints=");
-//        if(waypoints.length != 0){
-//            Log.d("testing", "Waypoints url processing : " +waypoints);
-//            for(int i = 0; i < waypoints.length; i++){
-//                    sb.append(waypoints[i].latitude + "," + waypoints[i].longitude);
-//            }
-//        }
-//        String output = "json";
-//            BASE_URL= "https://maps.googleapis.com/maps/api/directions/";
-//            Log.d("testing", "Waypoints not null, reset base url: " +BASE_URL);
-//            BASE_URL = BASE_URL + output+ "?" + sb + "&key="+APPID;
-//        return BASE_URL;
-//    }
-
-
-//
-//        DirectionsResult result = DirectionsApi.newRequest(context)
-//                .mode(TravelMode.DRIVING)
-//                .origin(new LatLng(-7.372732, 110.50824))
-//                .waypoints(new LatLng(-7.272732, 110.508244), new LatLng(-7.172732, 110.508244))
-//                .optimizeWaypoints(true)
-//                .destination(new LatLng(-7.372732, 110.508244))
-//                .awaitIgnoreError();
-//    }
 

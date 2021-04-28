@@ -11,6 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+/*
+
+    ADAPTOR FOR DESTINATIONS CHOSEN BY USER ON ROUTES ACTIVITY
+
+ */
 public class RecyclerAdapterDestinations extends RecyclerView.Adapter<RecyclerAdapterDestinations.ViewHolder> {
 
     private static final String TAG = "RecyclerAdapter";

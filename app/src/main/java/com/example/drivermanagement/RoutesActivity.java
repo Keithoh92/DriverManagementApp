@@ -60,7 +60,7 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
     private static String BASE_URL= "https://maps.googleapis.com/maps/api/directions/";
     private final static String WAYPOINTS_ID = "I AM WAYPOINTS ID";
     //REMOVE API KEY FROM HERE WHEN USING VERSION CONTROL
-    private static String APPID = "AIzaSyDhxtD_YBCkj5eZ4Uu4v7UJW8nsNvRIdoM";
+    private static String APPID = "";
 
     //    ConnectionReceiver receiver;
     IntentFilter intentFilter;
@@ -84,7 +84,7 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
     AutocompleteSupportFragment autocompleteSupportFragment;
     double myLat = 0;
     double myLon = 0;
-    String distanceStr = "Dist: 0km | Duration: 0mins";
+    String distanceStr = "Dist: 0km | ETA: 0mins";
     String googleMapsUrl = "";
 //    String myLocationName = "My Location";
 
@@ -159,16 +159,17 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
         userLocationTask.execute();
         Log.d("testing", "Calling FetchUsersLocation in background task");
 
-//        final Location usersLocation = SmartLocation.with(RoutesActivity.this).location().getLastLocation();
+        final Location usersLocation = SmartLocation.with(RoutesActivity.this).location().getLastLocation();
 ////        final LatLng usersLatLng = new LatLng(usersLocation.getLatitude(), usersLocation.getLatitude());
-//        if (usersLocation != null) {
-//        myLat = 53.3498;
-//        //usersLocation.getLatitude();
+        if (usersLocation != null) {
+        myLat = usersLocation.getLatitude();
+            ;
+//        usersLocation.getLatitude();
 //        //53.3498;
-//        myLon = -6.266155;
-//        //usersLocation.getLongitude();
+        myLon = usersLocation.getLongitude();
+//        usersLocation.getLongitude();
 //        //-6.266155;
-//        }
+        }
         Log.d("testing", "Users Location: " + myLat + "," + myLon);
 
         //Intent from OCR activity - receives extracted addresses scanned from invoices and adds to destinations list
@@ -181,7 +182,6 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
             }
         }
         if(getIntent().getExtras().containsKey("StartedFromDriversDashboard")){
-//            Intent normalOpenOfRoutesActivity = getIntent();
                 Log.d("Routes", "Activity was started from main dash");
         }
 
@@ -245,14 +245,6 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
                 recyclerView.getAdapter().notifyDataSetChanged();
 
                 RecalculateDestination();
-
-                /////////Directions Code//////////////////////
-//                ResultDirectionsApi directionsApiClient = new ResultDirectionsApi();
-//                String url = directionsApiClient.ResultDirectionsApi(usersLatLng, selectedPlaceLatLng); //pass origin and destination to Directions client to return url
-//                Intent directionsServiceIntent = new Intent(RoutesActivity.this, DirectionsService.class);
-//                directionsServiceIntent.putExtra("DirectionsApiUrl", url);
-//                startService(directionsServiceIntent);
-//                Log.d("testing", "Starting service, sending origin & Destination: " + url);
 
                 /////////////////////////////////////////////////
                 autocompleteSupportFragment.getView().findViewById(R.id.places_autocomplete_clear_button).setOnClickListener(new View.OnClickListener() {
@@ -327,8 +319,8 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
                 return true;
         }
         return super.onOptionsItemSelected(item);
-//        return super.onOptionsItemSelected(item);
     }
+
     //On phone back button pressed clear list and go back
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -514,23 +506,6 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
         return destinationsList;
     }
 
-//    private void processRoutesOneDestination(String placeName, double lat, double lng){
-//        Log.d("ProcessRoutesOne", "Constructing URL and setting up maps");
-//        Bundle addLocation = new Bundle();
-//        addLocation.putString("placeName", placeName);
-//        addLocation.putDouble("selectedLat", lat);
-//        addLocation.putDouble("selectedLon", lng);
-//
-//        MapsFragment mf = new MapsFragment();
-//        assert mf != null;
-//        mf.setArguments(addLocation);
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.maps_fragment_routes_activity, mf)
-//                .commit();
-//        Log.d("testing", "Sending 1 destination to maps: " + placeName + "LatLng: " + lat + "," + lng);
-//    }
-
 
     private void processRoutes(String placeName, double lat, double lng) {
         //Here we take the 1st destination in list and add it is a >>>>>>   waypoint
@@ -552,7 +527,6 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
             Log.d("testing", "Sending to maps: " + placeName + "LatLng: " + lat + "," + lng);
 
         }
-//
 
 
     @Override
@@ -565,63 +539,4 @@ public class RoutesActivity extends AppCompatActivity implements DataPasser, Map
 //        url = urlOnStart
     }
 
-//    @Override
-//    public void sendTheUrl(String url) {
-//        Handler handler = new Handler(Looper.getMainLooper());
-//        handler.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                googleMapsUrl = url;
-//            }
-//        });
-//
-//    }
 }
-
-
-
-
-//            String originStr = destinationsList.get(0);
-//            String[] arr = originStr.split(",");//-> Address, Latitude, Longitude
-//
-//            String waypointPlaceName = arr[1];
-//            Log.d("testing", "Getting Waypoint placename from list: "+waypointPlaceName);
-//            Double waypointLat = Double.parseDouble(arr[arr.length-2]);
-//            Log.d("testing", "Getting Waypoint latitude from list: "+waypointLat);
-//            Double waypointLng = Double.parseDouble(arr[arr.length-1]);
-//            Log.d("testing", "Getting Waypoint longitude from list: "+waypointLng);
-
-//            Log.d("testing", "New waypoint = " + waypointPlaceName + "LatLng: " + waypointLat + "," + waypointLng);
-
-
-
-//    private void sendLocations()
-//    public class ConnectionReceiver extends BroadcastReceiver{
-//
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            Log.d("testing", "Received Broadcast from service");
-//            if(intent.getAction().equals("MyBroadcast")){
-//                PolylineOptions routeLines = (PolylineOptions) intent.getExtras().get("polylines");
-//                Log.d("testing", "Polylines received from broadcast: "+routeLines.getColor());
-//
-//
-//                Bundle routeDirections = new Bundle();
-//                routeDirections.putParcelable("polyLinesResult", routeLines);
-//                routeDirections.putString("placeName", placeName);
-//                routeDirections.putDouble("selectedLat", selectedLat);
-//                routeDirections.putDouble("selectedLon", selectedLon);
-//
-//
-//                MapsFragment mf = new MapsFragment();
-//                assert mf != null;
-//                mf.setArguments(routeDirections);
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.maps_fragment_routes_activity, mf)
-//                        .commit();
-//                Log.d("testing", "Sending new route directions to maps" +placeName+ ", " +selectedLat+ ", " + selectedLon);
-//            }
-//        }
-
-//}

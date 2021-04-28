@@ -1,5 +1,9 @@
 package com.example.drivermanagement;
 
+/*
+    CLASS FOR GETTING GROUPS FROM FIREBASE DATABASE AND LOADING INTO FIREBASE RECYCLER ADAPTOR
+ */
+
 public class Groups {
 
     public String getGroupname() {

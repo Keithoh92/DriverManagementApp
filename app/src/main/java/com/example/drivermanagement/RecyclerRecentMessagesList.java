@@ -10,6 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+/*
+
+    RECENT MESSAGES ADAPTOR FOR RECENT MESSAGES FRAGMENT ON DRIVERS DASHBOARD
+
+ */
 public class RecyclerRecentMessagesList extends RecyclerView.Adapter<RecyclerRecentMessagesList.ViewHolder>{
 
     private List<String> listOfRecentMessages;
@@ -18,7 +23,6 @@ public class RecyclerRecentMessagesList extends RecyclerView.Adapter<RecyclerRec
 
     public RecyclerRecentMessagesList(List<String> listOfRecentMessages){
         this.listOfRecentMessages = listOfRecentMessages;
-//        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -29,13 +33,11 @@ public class RecyclerRecentMessagesList extends RecyclerView.Adapter<RecyclerRec
 
             recent_messages_textview = v.findViewById(R.id.textview_recent_messages);
             v.setOnClickListener(this);
-//            getItemCount();
         }
 
         @Override
         public void onClick(View v) {
             if(mClickListener != null) mClickListener.onItemClick(v, getAdapterPosition());
-//            String fds = scannedList.get(getAdapterPosition());
             Toast.makeText(v.getContext(), listOfRecentMessages.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
         }
     }
@@ -63,11 +65,6 @@ public class RecyclerRecentMessagesList extends RecyclerView.Adapter<RecyclerRec
         return listOfRecentMessages.size();
     }
 
-
-    // convenience method for getting data at click position
-//    String getItem(int id) {
-//        return mData.get(id);
-//    }
 
     // allows clicks events to be caught
     void setClickListener(ItemClickListener itemClickListener) {

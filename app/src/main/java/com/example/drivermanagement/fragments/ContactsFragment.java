@@ -36,6 +36,11 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/*
+
+THIS IS WHERE THE USER CAN SELECT ANOTHER USER AND SEE THEIR PROFILE, GET THEIR NUMBER, EMAIL ADDRESS AND LOCATION IS THE USER IS A MANAGER USER
+
+ */
 
 public class ContactsFragment extends Fragment {
 
@@ -47,21 +52,12 @@ public class ContactsFragment extends Fragment {
     String userID, normalUserUsername;
     String managementID;
     boolean isNormalUser = false;
-//    private
 
 
     public ContactsFragment() {
         // Required empty public constructor
     }
 
-//    public static ContactsFragment newInstance(String param1, String param2) {
-//        ContactsFragment fragment = new ContactsFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,7 +95,6 @@ public class ContactsFragment extends Fragment {
         checkUserAccessLevel();
 
 
-
         anyDriversRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -125,8 +120,7 @@ public class ContactsFragment extends Fragment {
                                 @Override
                                 protected void onBindViewHolder(@NonNull ContactsFragment.FindDriversViewHolder holder, final int position, @NonNull Contacts model) {
                                     if(!model.getImage().equals("")) {
-//                        holder.userName.setText(model.getUsername());
-//                        Log.d("TAG", "Getting username" +model.getUsername());
+
                                         if(isNormalUser && normalUserUsername.equals(model.getUsername())){
                                             Log.d("Testing", "Current user, not adding to view");
                                             RecyclerView.LayoutParams param = (RecyclerView.LayoutParams)holder.itemView.getLayoutParams();
@@ -169,7 +163,6 @@ public class ContactsFragment extends Fragment {
                                         else{
                                             holder.userName.setText(model.getUsername());
                                         }
-//                            holder.profileImage.setImageURI(R.drawable.profile_image);
                                     }
                                     holder.itemView.setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -218,7 +211,10 @@ public class ContactsFragment extends Fragment {
             profileImage = itemView.findViewById(R.id.users_profile_image);
         }
     }
-
+    //METHOD TO CHECK THE USERS ACCESS LEVEL
+    // WHEN RETRIEVING DRIVERS, THE DRIVERS ARE STORED UNDER THE MANAGERS SYSTEM ID, SO IF THE USER IS A DRIVER
+    // THEIR MANAGERS ID WILL BE STORED UNDER THEIR USER INFO IN THE DATABASE WHEN THE MANAGER ADDS THEM TO THE SYSTEM,
+    // WE THEN RETRIEVE THIS EVERYTIME WE NEED ACCESS TO THE OTHER DRIVERS IN THE SYSTEM
     private void checkUserAccessLevel() {
         Log.d("Contacts", "Checking access level - ID passed: "+userID);
         UsersRef.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -233,7 +229,9 @@ public class ContactsFragment extends Fragment {
                     }
                     if (retrieveUserType.equals("Driver")) {
                         Log.d("Contacts", "User is normal user");
-                        managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
+                        if(snapshot.hasChild("myManagersID")) {
+                            managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
+                        }
                         normalUserUsername = Objects.requireNonNull(snapshot.child("username").getValue()).toString();
                         DriverRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers").child(managementID);
                         isNormalUser = true;

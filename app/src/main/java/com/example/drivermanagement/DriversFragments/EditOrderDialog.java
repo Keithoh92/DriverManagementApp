@@ -102,11 +102,19 @@ public class EditOrderDialog extends AppCompatDialogFragment {
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        //Reset all the editTextViews
+                        editAddress.setText("");
+                        editOrderNo.setText("");
+                        editPrice.setText("");
+                        editNotes.setText("");
+                        editDeliveryCharge.setText("");
+                        editName.setText("");
+                        editCompanyName.setText("");
                     }
                 }).setPositiveButton("Submit", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                //Get the entered order details
                 String address = editAddress.getText().toString();
                 String orderNo = editOrderNo.getText().toString();
                 String price = editPrice.getText().toString();
@@ -117,6 +125,7 @@ public class EditOrderDialog extends AppCompatDialogFragment {
 //                listenerEditOrders.editedOrder(address, orderNo, price, notes, deliveryCharge, nameOfRecipient, companyName);
                 Log.d("TAG", "User submit order form");
 
+                //Construct new Hashmap with updated details
                 HashMap<String, String> updateTheOrderMap = new HashMap<>();
                 updateTheOrderMap.put("Address", address);
                 updateTheOrderMap.put("Recipients Name", nameOfRecipient);
@@ -126,6 +135,7 @@ public class EditOrderDialog extends AppCompatDialogFragment {
                 updateTheOrderMap.put("Company Name", companyName);
                 updateTheOrderMap.put("Order Notes", notes);
                 updateTheOrderMap.put("Time Updated", currentTime);
+                //Update the order in the DB
                 OrdersRef.child("Users").child(userID).child("Orders").child(DateSelected).child(noOfOrders).setValue(updateTheOrderMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

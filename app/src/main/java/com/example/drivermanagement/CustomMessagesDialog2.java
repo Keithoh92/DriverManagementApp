@@ -80,7 +80,6 @@ public class CustomMessagesDialog2 extends AppCompatDialogFragment {
                 Intent reloadOnChange = new Intent(getContext(), DriversDashboardActivity.class);
                 startActivity(reloadOnChange);
 
-//                CreateNewOrder(address, orderNo, price, notes);
             }
         });
 

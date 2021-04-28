@@ -19,7 +19,9 @@ import com.example.drivermanagement.R;
 import com.google.android.gms.maps.model.LatLng;
 
 import io.nlopez.smartlocation.SmartLocation;
-
+/*
+This is for the maps fragment on the Drivers Dashboard
+ */
 
 public class MapsFragHolder extends Fragment {
 
@@ -46,11 +48,7 @@ public class MapsFragHolder extends Fragment {
         return inflater.inflate(R.layout.fragment_maps_frag_holder, container, false);
     }
 
-    //    @Override
-//    public void setUserVisibleHint(boolean isVisibleToUser) {
-//        super.setUserVisibleHint(isVisibleToUser);
-//        if(isVisibleToUser){
-
+    //Only Update the users location when the user navigates to the fragment
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -70,14 +68,11 @@ public class MapsFragHolder extends Fragment {
         LatLng thisUsersLatLng;
 
 
-
-
         @Override
         protected LatLng doInBackground(Void... voids) {
             Log.d("testing", "Fetching users location in AsyncTask");
             try {
                 final Location usersLocation = SmartLocation.with(getContext()).location().getLastLocation();
-//        final LatLng usersLatLng = new LatLng(usersLocation.getLatitude(), usersLocation.getLatitude());
                 if (usersLocation != null) {
                     Log.d("testing", "Fetch Users Location: Not null: " + usersLocation.getLatitude() + "," + usersLocation.getLongitude());
                     thisUsersLatLng = new LatLng(usersLocation.getLatitude(), usersLocation.getLongitude());
@@ -93,6 +88,7 @@ public class MapsFragHolder extends Fragment {
         @Override
         protected void onPostExecute(LatLng latLng) {
             super.onPostExecute(latLng);
+            //When users location is retrieved update the map
             Bundle getMyLocation = new Bundle();
             getMyLocation.putDouble("myLat", latLng.latitude);
             getMyLocation.putDouble("myLng", latLng.longitude);
@@ -103,8 +99,6 @@ public class MapsFragHolder extends Fragment {
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.maps_fragment_drivers_dash, mf2)
                     .commit();
-
         }
     }
-
 }

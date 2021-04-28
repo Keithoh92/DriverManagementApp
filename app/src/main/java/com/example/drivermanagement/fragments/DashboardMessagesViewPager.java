@@ -16,6 +16,15 @@ import com.example.drivermanagement.R;
 import com.example.drivermanagement.TabsAdaptor;
 import com.google.android.material.tabs.TabLayout;
 
+/*
+
+THIS IS THE FRAGMENT THAT IS ATTACHED TO THE DASHBOARD ON THE DRIVERS SYSTEM MAIN ACTIVITY
+EACH FRAGMENT THAT APPEARS ON THE MAIN DRIVER DASHBOARD IS ADDED TO THE VIEWPAGER DEFINED BELOW AND THEN THIS FRAGMENT
+IS ADDED TO THE DRIVERS  MAIN DASHBOARD
+THE USER CAN THEN FLICK THROUGH THE FRAGMENTS
+
+ */
+
 public class DashboardMessagesViewPager extends Fragment {
 
     private ViewPager viewPager;

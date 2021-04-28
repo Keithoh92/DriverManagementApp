@@ -21,6 +21,10 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
+/*
+*********************NOT USED*****************************
+
+ */
 public class DriverDashboard extends AppCompatActivity implements RecyclerViewAdapter.ItemClickListener{
 
     String[] driverNotifications, messageReplies;

@@ -39,6 +39,7 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+//////  EXTERNAL LIBRARY FOR PERMANENTLY STORING DATA STRUCTURES
 
 public class TinyDB {
 

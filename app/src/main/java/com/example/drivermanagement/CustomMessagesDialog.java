@@ -90,8 +90,6 @@ public class CustomMessagesDialog extends AppCompatDialogFragment {
                     startActivity(reloadOnChange);
                 }
 
-
-//                CreateNewOrder(address, orderNo, price, notes);
             }
         });
 

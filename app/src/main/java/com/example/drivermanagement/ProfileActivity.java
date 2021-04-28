@@ -49,6 +49,15 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.nlopez.smartlocation.SmartLocation;
 
+/*
+
+    USERS ACCOUNT PROFILE
+    USERS INFO - EMAIL, PHONE NUMBER
+    MANAGER CAN ADD/REMOVE DRIVERS
+    MANAGER CAN REQUEST LOCATION UPDATE
+    DRIVER CAN SEND LOCATION UPDATE
+
+ */
 public class ProfileActivity extends AppCompatActivity {
 
     private String receiverUserId, currentUserID, current_state;
@@ -217,16 +226,12 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         Log.d("ProfileActivity", "OnStart called Current state = "+current_state);
-//        ManageLocationRequests();
-//        CheckForLocationUpdates();
-
     }
 
     @Override
@@ -238,9 +243,6 @@ public class ProfileActivity extends AppCompatActivity {
             CheckForLocationUpdates();
             Log.d("ProfileActivity", "Current state = "+current_state);
         }
-//        ManageLocationRequests();
-
-
     }
 
     @Override
@@ -248,8 +250,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onPause();
         isInForeground = false;
         Log.d("ProfileActivity", "OnPause called Current state = "+current_state);
-//        LocationsRef.child(currentUserID).child(currentDate).child(receiverUserId).orderByKey().limitToLast(1).removeEventListener(listener);
-//        LocationRequestsRef.child(currentUserID).removeEventListener(listener2);
+
         usersRef.child(currentUserID).removeEventListener(listener3);
     }
 
@@ -295,7 +296,6 @@ public class ProfileActivity extends AppCompatActivity {
                 userEmail.setText(usersEmail);
 
                 ManageLocationRequests();
-
             }
 
             @Override
@@ -356,9 +356,6 @@ public class ProfileActivity extends AppCompatActivity {
                     sendMessage.setVisibility(View.VISIBLE);
                     removeDriver.setVisibility(View.VISIBLE);
                     requestLocation.setVisibility(View.VISIBLE);
-//                    Intent goBackToMessagesActivity = new Intent(ProfileActivity.this, MessagesActivity.class);
-//                    startActivity(goBackToMessagesActivity);
-//                    finish();
 
                     usersRef.child(userIDReceived).updateChildren(myManagersID).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -419,7 +416,6 @@ public class ProfileActivity extends AppCompatActivity {
                     String retrieveUserType = Objects.requireNonNull(snapshot.child("userType").getValue()).toString();
                     if (retrieveUserType.equals("Management")) {
                         Log.d("ProfileActivity", "User is Management user");
-//                        CheckForLocationUpdates();
 
                     }
                     if (retrieveUserType.equals("Driver")) {
@@ -428,7 +424,6 @@ public class ProfileActivity extends AppCompatActivity {
                         removeDriver.setVisibility(View.INVISIBLE);
                         requestLocation.setVisibility(View.INVISIBLE);
                         isNormalUser = true;
-//                        GetUsersLocation();
                     }
                 }else{
                     Log.d("ProfileActivity", "No usertype found");
@@ -443,10 +438,6 @@ public class ProfileActivity extends AppCompatActivity {
         usersRef.child(currentUserID).addValueEventListener(listener3);
     }
 
-//    private void CheckForLocationUpdates() {
-//        //LOCATIONSREF = USERS -> MANAGERSID -> LOCATIONS
-//
-//    }
 
     private void CallFragment() {
         new Handler().post(new Runnable() {
@@ -525,7 +516,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot)
             {
                 if(!snapshot.exists()) {
-//                    current_state = "new";
+                    current_state = "new";
 //                    requestLocation.setText("Request Location Update");
                     Log.d("ProfileActivity", "ManageLocationResuests no requests found Current state = " + current_state);
                 }
@@ -591,7 +582,6 @@ public class ProfileActivity extends AppCompatActivity {
         requestLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                requestLocation.setEnabled(false);
 
                 if(current_state.equals("new")){
                     SendLocationRequest();
@@ -604,9 +594,7 @@ public class ProfileActivity extends AppCompatActivity {
                 {
                     CallFragment();
                 }
-//                if(current_state.equals("location_received")){
-//                    CallFragment();
-//                }
+
             }
         });
         sendLocation.setOnClickListener(new View.OnClickListener() {
@@ -616,10 +604,8 @@ public class ProfileActivity extends AppCompatActivity {
                 {
                     AcceptLocationRequest();
                 }
-
             }
         });
-
 
     }
 
@@ -639,9 +625,7 @@ public class ProfileActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 GetUsersLocation();
-//                            requestLocation.setEnabled(true);
-//                            current_state = "new";
-//                            requestLocation.setText("Request Location Update");
+
                                 sendLocation.setEnabled(false);
                                 sendLocation.setVisibility(View.INVISIBLE);
 
@@ -691,10 +675,6 @@ public class ProfileActivity extends AppCompatActivity {
     {
         Log.d("ProfileActivity", "Send Location Requests called");
 
-//        requestLocation.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-
                 LocationRequestsRef.child(currentUserID).child(receiverUserId).child("request_type").setValue("sent").addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task)
@@ -727,8 +707,7 @@ public class ProfileActivity extends AppCompatActivity {
                         }
                     }
                 });
-//            }
-//        });
+
     }
 
     public class GetUsersLocation extends AsyncTask<Void, Void, LatLng>{
@@ -742,7 +721,6 @@ public class ProfileActivity extends AppCompatActivity {
             Log.d("testing", "Fetching users location in AsyncTask");
             try {
                 final Location usersLocation = SmartLocation.with(ProfileActivity.this).location().getLastLocation();
-//        final LatLng usersLatLng = new LatLng(usersLocation.getLatitude(), usersLocation.getLatitude());
                 if (usersLocation != null) {
                     Log.d("testing", "Fetch Users Location: Not null: " + usersLocation.getLatitude() + "," + usersLocation.getLongitude());
                     thisUsersLatLng = new LatLng(usersLocation.getLatitude(), usersLocation.getLongitude());
@@ -803,6 +781,5 @@ public class ProfileActivity extends AppCompatActivity {
                 });
         }
     }
-
 
 }

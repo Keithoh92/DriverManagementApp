@@ -28,6 +28,11 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+/*
+
+    ********************** NOT USED **************************************
+
+ */
 public class MainActivity extends AppCompatActivity {
 
     TextView title, date, heading1, chosenRecipients;

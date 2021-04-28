@@ -22,7 +22,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/*
+CLASS TO GET THE DIRECTIONS FROM GOOGLE API FOR EACH LOCATION
 
+ */
 public class DirectionsService extends IntentService {
 
     private int result1 = Activity.RESULT_CANCELED;
@@ -122,15 +125,5 @@ public class DirectionsService extends IntentService {
             Log.d("testing", "Sending new route directions to maps");
         }
     }
-
-//    private void publishResults(PolylineOptions lineOptions, int result) {
-//    Log.d("testing", "Publish JSON results got called");
-//
-//    Intent processedDirections = new Intent("MyBroadcast");
-//    processedDirections.putExtra("polylines", lineOptions.PARCELABLE_WRITE_RETURN_VALUE);
-//    sendBroadcast(processedDirections);
-//    Log.d("testing", "Sending broadcast");
-//
-//    }
 
 }

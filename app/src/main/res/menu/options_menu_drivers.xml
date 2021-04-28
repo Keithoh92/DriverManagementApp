@@ -10,6 +10,13 @@
     </item>
 
     <item
+        android:title="My Orders"
+        android:id="@+id/orders_option"
+        app:showAsAction="never"
+        >
+    </item>
+
+    <item
         android:title="Logout"
         android:id="@+id/logout_option"
         app:showAsAction="never"

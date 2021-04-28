@@ -21,6 +21,11 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/*
+
+    ADAPTOR FOR LOADING MESSAGES INTO CHAT ACTIVITY BETWEEN 2 USERS
+
+ */
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder>
 {
     private List<Messages> userMessagesList;
@@ -63,24 +68,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         String fromUserID = messages.getFrom();
         String fromMessageType = messages.getType();
 
-//        UsersRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(fromUserID);
-//        UsersRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if(snapshot.hasChild("image") && !snapshot.child("image").equals(""))
-//                {
-//                    String receiverImage = snapshot.child("image").getValue().toString();
-//                    Picasso.get().load(receiverImage).placeholder(R.drawable.profile_image).into(holder.receiverProfileImage);//library to load image from firebase storage into circleimageview
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-
         if(fromMessageType.equals("text"))
         {
             holder.receiverMessageText.setVisibility(View.INVISIBLE);
@@ -103,8 +90,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 holder.receiverMessageText.setBackgroundResource(R.drawable.receiver_messages_layout);
                 holder.receiverMessageText.setTextColor(Color.BLACK);
                 holder.receiverMessageText.setText(messages.getMessage());
-
-
             }
         }
     }

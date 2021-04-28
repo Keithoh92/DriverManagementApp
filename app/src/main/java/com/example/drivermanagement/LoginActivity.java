@@ -163,10 +163,6 @@ public class LoginActivity extends AppCompatActivity {
             FirebaseUser user = fAuth.getCurrentUser();
             checkUserAccessLevel(user.getUid());
         }
-//        } else {
-//            fAuth.signOut();
-//            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
-//            finish();
-//        }
+
     }
 }

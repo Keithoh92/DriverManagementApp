@@ -115,12 +115,8 @@ public class RecievedMessagesFragment extends Fragment {
         send = view.findViewById(R.id.send_button_rec);
         heading = view.findViewById(R.id.received_messages_textview);
         recentMessagesRecyclerView = view.findViewById(R.id.received_messages_recyclerview);
-//        quickreply = view.findViewById(R.id.received_messages_spinner);
         recipients = view.findViewById(R.id.recipients_rec_messages);
         listOfRecentMessages = new ArrayList<>();
-//        listOfRecentMessages.add("Your Recent Messages");
-//        recyclerRecentMessagesAdaptor.notifyDataSetChanged();
-
 
         messageArray = new ArrayList<>();
         messageArray.add("Please add quick replies");
@@ -132,12 +128,14 @@ public class RecievedMessagesFragment extends Fragment {
         assert currentUser != null;
         userID = currentUser.getUid();
 
-        UsersRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
+        //FIREBASE INITIALISATION
+        UsersRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
         DriverRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Drivers");
         GroupRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups");
         sendToGroupsRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Groups");
         LastMessagesRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
+        //BUTTON TO EDIT CUSTOM REPLIES
         optionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,13 +146,16 @@ public class RecievedMessagesFragment extends Fragment {
 
         recyclerRecentMessagesAdaptor = new RecyclerRecentMessagesList(listOfRecentMessages);
         recentMessagesRecyclerView.setAdapter(recyclerRecentMessagesAdaptor);
-//        recyclerRecentMessagesAdaptor.notifyDataSetChanged();
 
         //Recycler view line divider
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         recentMessagesRecyclerView.addItemDecoration(dividerItemDecoration);
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //              TINYDB IS AN EXTERNAL LIBRARY USED TO SAVE DATA STRUCTURES PERMANENTLY TO THE DEVICE    /////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        //HERE WE ARE CHECKING TO SEE IF THE USER HAS ALREADY SET CUSTOM REPLIES AND IF SO ADD THEM TO DROPDOWN
         if (tinyDB.getListString("DriversMessagesList").isEmpty()) ;
         {
             adapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, messageArray);
@@ -162,7 +163,7 @@ public class RecievedMessagesFragment extends Fragment {
         if (!tinyDB.getListString("DriversMessagesList").isEmpty()) {
             adapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, tinyDB.getListString("DriversMessagesList"));
         }
-//        GetMessages();
+
         Log.d("ReceivedFrag", "onCreateView calling get messages");
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         Spinner spinner = view.findViewById(R.id.received_messages_spinner);
@@ -199,7 +200,6 @@ public class RecievedMessagesFragment extends Fragment {
         if (tinyDB.getListString("DriversMessagesList").isEmpty()) {
             Toast.makeText(getContext(), "Click menu button in corner to edit your quick messages in the dropdown", Toast.LENGTH_LONG).show();
         }
-//        tinyDB.getListString("MessagesList")
         if (tinyDB.getListString("DriversMessagesList").isEmpty()) ;
         {
             adapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, messageArray);
@@ -208,12 +208,7 @@ public class RecievedMessagesFragment extends Fragment {
             adapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, tinyDB.getListString("MessagesList"));
         }
 
-
-//        GetMessages();
-
-
-
-
+        /////CHOSE MESSAGE RECIPIENTS LOGIC
         recipients.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -272,7 +267,7 @@ public class RecievedMessagesFragment extends Fragment {
                 if (selectedContacts.size() != 0) {
                     for (int i = 0; i < selectedContacts.size(); i++) {
                         Log.d("DashFrag", "Testing send Message selected contacts retrieval: " + contacts[selectedContacts.get(i)]);
-                        UsersRef.orderByChild("username").equalTo(contacts[selectedContacts.get(i)]).addListenerForSingleValueEvent(new ValueEventListener() {
+                        UsersRef.child("Users").orderByChild("username").equalTo(contacts[selectedContacts.get(i)]).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
@@ -280,8 +275,10 @@ public class RecievedMessagesFragment extends Fragment {
                                         String receiverUserId1 = ds.getKey();
                                         Log.d("SendMessageTest", "Retrieving users ID: " + receiverUserId1);
 
+                                        //INITIALISE CLASS FOR SENDING MESSAGES IN FIREBASE CLOUD MESSAGING
                                         SendMessage sendMessage = new SendMessage();
 
+                                        //FIRST MESSAGE IN DROPDOWN WILL ALWAYS BE NA SO WILL NOT SEND IF NA IS SELECTED
                                         if (!messageToSend.equals("NA")) {
                                             sendMessage.SendingMessage(messageToSend, userID, receiverUserId1);
                                             Toast.makeText(getContext(), "Sent Message", Toast.LENGTH_SHORT).show();
@@ -292,25 +289,22 @@ public class RecievedMessagesFragment extends Fragment {
                                     }
                                 }
                             }
-
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
 
                             }
                         });
-
-
                     }
                     for (int i = 0; i < checkedContacts.length; i++) {
                         checkedContacts[i] = false;
                         selectedContacts.clear();
-
                     }
                 }
             }
         });
     }
 
+    ////METHOD TO RETRIEVE ALL COMPANY DRIVERS TO THEN BE INSERTED INTO THE CHOOSE RECIPIENTS DIALOG
     private void GetDrivers() {
         contactsListener = new ValueEventListener() {
             @Override
@@ -343,9 +337,9 @@ public class RecievedMessagesFragment extends Fragment {
 
             }
         };
-
-        DriverRef.child(managementID).addListenerForSingleValueEvent(contactsListener);
-
+        if(managementID != null) {
+            DriverRef.child(managementID).addListenerForSingleValueEvent(contactsListener);
+        }
     }
 
     @Override
@@ -354,6 +348,7 @@ public class RecievedMessagesFragment extends Fragment {
         contactsList.clear();
     }
 
+    //METHOD TO OPEN THE CUSTOM MESSAGES DIALOG AND INSERT CUSTOM MESSAGES
     private void openMessagesDialog2() {
         CustomMessagesDialog2 customMessagesDialog2 = new CustomMessagesDialog2();
         Bundle messageDialogBundle2 = new Bundle();
@@ -367,14 +362,17 @@ public class RecievedMessagesFragment extends Fragment {
         customMessagesDialog2.show(getChildFragmentManager(), "Order Dialog");
     }
 
+    ///GET THE USERS USERNAME AND THEIR MANAGERS ID SO THEY CAN ACCESS THE DRIVERS REGISTERED WITH THE COMPANY
     private void getUserInfo() {
         Log.d("Contacts", "Checking access level - ID passed: "+userID);
-        UsersRef.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+        UsersRef.child("Users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if ((snapshot.exists()) && (snapshot.hasChild("userType"))) {
                     currentUsername = snapshot.child("username").getValue().toString();
-                    managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
+                    if(snapshot.hasChild("myManagersID")) {
+                        managementID = Objects.requireNonNull(snapshot.child("myManagersID").getValue()).toString();
+                    }
                     GetDrivers();
                     GetMessages();
                 }
@@ -386,9 +384,10 @@ public class RecievedMessagesFragment extends Fragment {
             }
         });
     }
+    //METHOD TO GET THE USERNAME OF THE MESSAGE SENDER TO DISPLAY BESIDE NAME IN MESSAGES FRAGMENT ON DRIVERS DASHBOARD
     private String getMessageFromUsername(String fromID) {
         Log.d("Contacts", "Getting username - ID passed: "+fromID);
-        UsersRef.child(fromID).addListenerForSingleValueEvent(new ValueEventListener() {
+        UsersRef.child("Users").child(fromID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if ((snapshot.exists()) && (snapshot.hasChild("userType"))) {
@@ -404,17 +403,8 @@ public class RecievedMessagesFragment extends Fragment {
         });
         return fromUsername;
     }
-    //gets recently received messages
-//    @Override
-//    public void sendMessages(String message) {
-//        if(message != null){
-////            TinyDB tinyDB = new TinyDB(getContext());
-////            ArrayList<String> tempListOFMessages = new ArrayList<>();
-////            tempListOFMessages.add(message);
-////            tinyDB.putListString("RecentMessagesList", tempListOFMessages);
-//        }
-//    }
 
+    //METHOD TO GET THE MOST RECENT MESSAGE RECEIVED AND DYNAMICALLY LOAD INTO RECYCLERVIEW USING LISTS
     public void GetMessages(){
         Log.d("ReceivedMessagesFrag", "Get messages called");
         for(int i = 0; i < drivesIDs.size(); i++) {

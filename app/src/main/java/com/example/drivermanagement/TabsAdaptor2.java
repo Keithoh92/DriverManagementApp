@@ -14,6 +14,9 @@ import com.example.drivermanagement.fragments.ManagementDash2Fragment;
 import com.example.drivermanagement.fragments.Management_dashboard4;
 import com.example.drivermanagement.fragments.managementDash3Fragment;
 
+////////////////////TABS ADAPTOR FOR MANAGERS DASHBOARD BOTTOM FRAGMENT
+
+
 public class TabsAdaptor2 extends FragmentStatePagerAdapter {
 
     public TabsAdaptor2(@NonNull FragmentManager fm) {
@@ -45,24 +48,4 @@ public class TabsAdaptor2 extends FragmentStatePagerAdapter {
         return 2;
     }
 
-//    @Nullable
-//    @Override
-//    public CharSequence getPageTitle(int position)
-//    {
-//        switch (position)
-//        {
-//            case 0:
-//                return "Dash 1";
-//
-//            case 1:
-//                return "Dash 2";
-//
-//            case 2:
-//                return "Dash 3";
-//
-//            default:
-//                return null;
-//
-//        }
-//    }
 }

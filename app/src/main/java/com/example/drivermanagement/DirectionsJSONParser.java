@@ -21,7 +21,6 @@ public class DirectionsJSONParser {
         JSONArray jSteps = null;
 
         try {
-//            final JSONObject jsonObject = new JSONObject()
             jRoutes = jObject.getJSONArray("routes");
             Log.d("testing", "Parsing routes: " +jRoutes.toString());
 

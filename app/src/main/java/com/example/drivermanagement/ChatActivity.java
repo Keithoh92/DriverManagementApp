@@ -45,6 +45,10 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 
+/*
+ACTIVITY WHERE USERS CAN CHAT WITH EACHOTHER USING GOOGLE CLOUD MESSAGING
+
+ */
 public class ChatActivity extends AppCompatActivity {
 
     private RecentMessages mCallback;
@@ -83,8 +87,6 @@ public class ChatActivity extends AppCompatActivity {
         userMessagesList.setLayoutManager(linearLayoutManager);
         userMessagesList.setAdapter(messageAdapter);
 
-
-
         fAuth = FirebaseAuth.getInstance();
         currentUser = fAuth.getCurrentUser();
         userID = currentUser.getUid();
@@ -94,10 +96,7 @@ public class ChatActivity extends AppCompatActivity {
         usersRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
         LastMessagesRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-//        dRef = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
-//        chatIntent.putExtra("UserID", receiverUserId);
-//        chatIntent.putExtra("Username", username);
         if(getIntent().getExtras().containsKey("UserID")){
             receiverUserID = getIntent().getExtras().get("UserID").toString();
             receiverUsername = getIntent().getExtras().get("Username").toString();
@@ -133,41 +132,6 @@ public class ChatActivity extends AppCompatActivity {
         reference.child(userID).setValue(token1);
     }
 
-//    private void SendMessage() {
-//        String messageText = inputMessage.getText().toString();
-//        Log.d("testing", "message entered: " +messageText);
-//        if(TextUtils.isEmpty(messageText)){
-//            Log.d("testing", "no message inserted");
-//        }else{
-//            String messageSenderRef = "Messages/"+userID+"/"+receiverUserID;
-//            String messageReceiverRef = "Messages/"+receiverUserID+"/"+userID;
-//            Log.d("testing", "creating message references: " +messageSenderRef+", "+messageReceiverRef);
-//
-//
-//            DatabaseReference messageKeyRef = usersRef.child("Messages").child(userID).child(receiverUserID).push();
-//            String messagePushID = messageKeyRef.getKey();
-//
-//            HashMap<String, Object> messageTextBody = new HashMap<>();
-//            messageTextBody.put("message", messageText);
-//            messageTextBody.put("type", "text");
-//            messageTextBody.put("from", userID);
-//
-//            HashMap<String, Object> messageBodyDetails = new HashMap<>();
-//            messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageTextBody);
-//            messageBodyDetails.put(messageReceiverRef + "/" + messagePushID, messageTextBody);
-//
-//            usersRef.updateChildren(messageBodyDetails).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                @Override
-//                public void onSuccess(Void aVoid) {
-//                    Log.d("testing", "successful");
-//                    if(notify) {
-//                        sendNotification(receiverUserID, currentUsername, messageText);
-//                    }
-//                    notify = false;
-//                }
-//            });
-//        }
-//    }
 
     private void sendNotification(String receiverUserID, final String currentUsername, final String messageText) {
         DatabaseReference reference = FirebaseDatabase.getInstance("https://drivermanagement-64ab9-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Tokens");
@@ -178,8 +142,8 @@ public class ChatActivity extends AppCompatActivity {
                 for (DataSnapshot sd : snapshot.getChildren()) {
                     Token token = sd.getValue(Token.class);
                     Log.d("ChatAct", "Token received: "+token.getToken());
-//                    NotificationModel notificationModel =
 
+                    //CODE TO SEND THE NOTIFICATION TO THE RECEIVER USING RETROFIT AND API SERVICE
                     RootModel rootModel = new RootModel(token.getToken(), new NotificationModel(userID, R.mipmap.ic_launcher, currentUsername+": "+messageText, "New Message",
                             receiverUserID));
 
@@ -198,26 +162,6 @@ public class ChatActivity extends AppCompatActivity {
 
                         }
                     });
-//                    apiService.sendNotification(rootModel)
-//                            .enqueue(new Callback<Response>(){
-//
-//
-//                                @Override
-//                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-//                                    if(response.code() == 200)
-//                                    {
-//                                        if(response.body().success != 1)
-//                                        {
-//                                            Log.d("ChatActivity", "Failed to send notification: ");
-//                                        }
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onFailure(Call<Response> call, Throwable t) {
-//
-//                                }
-//                            });
                 }
             }
 
@@ -241,7 +185,6 @@ public class ChatActivity extends AppCompatActivity {
                 messageAdapter.notifyDataSetChanged();
 
                 userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
-
             }
 
             @Override
@@ -264,7 +207,7 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-
+        //WHEN THE USER RECEIVES A MESSAGE THIS WILL TRIGGER THE NOTIFICATION ON THE DEVICE
         LastMessagesRef.child("Messages").child(userID).child(receiverUserID).orderByKey().limitToLast(1).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {

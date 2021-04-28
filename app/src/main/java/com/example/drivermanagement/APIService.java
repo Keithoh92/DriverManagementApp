@@ -9,6 +9,11 @@ import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
+/*
+
+API INTERFACE FOR COMMUNICATING WITH FIREBASE SERVER TO SEND NOTIFICATION TO USER ON MESSAGE SEND
+THIS TRIGGERS THE FIREBASE SERVER TO NOTIFY THE USER BY USING THE DEVICE TOKEN OF THE RECEIVER OF THE MESSAGE
+ */
 public interface APIService {
     @Headers(
             {

@@ -1,5 +1,7 @@
 package com.example.drivermanagement;
 
+//RETROFIT CLASS FOR RETRIEVING DISTANCES AND DURATIONS OF ROUTES
+
 public class StoreModel {
 
     public String name, address, distance, duration;
